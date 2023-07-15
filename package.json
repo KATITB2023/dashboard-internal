@@ -1,5 +1,5 @@
 {
-  "name": "t3-template",
+  "name": "@katitb2023/dashboard-internal",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,6 +14,9 @@
     "schema": "./node_modules/@katitb2023/database/schema.prisma"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.7.1",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@google-cloud/storage": "^6.11.0",
     "@hookform/resolvers": "^3.1.1",
     "@katitb2023/database": "git+https://github.com/KATITB2023/database.git#15fbf4683847bceafaab8bc2017808094b075e06",
@@ -35,7 +38,7 @@
     "@trpc/server": "^10.26.0",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
-    "framer-motion": "^10.12.17",
+    "framer-motion": "^10.12.21",
     "next": "^13.4.2",
     "next-auth": "^4.22.1",
     "react": "18.2.0",
@@ -66,9 +69,7 @@
     "eslint-config-next": "^13.4.2",
     "postcss": "^8.4.21",
     "prettier": "^2.8.8",
-    "prettier-plugin-tailwindcss": "^0.2.8",
     "prisma": "^4.14.0",
-    "tailwindcss": "^3.3.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   },
