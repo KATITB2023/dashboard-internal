@@ -1,28 +1,57 @@
-# Create T3 App
+# Dashboard Internal
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Dashboard untuk keperluan internal panitia OSKM
 
-## What's next? How do I make an app with this?
+### Langkah-Langkah
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+1. Clone repo `git clone https://github.com/KATITB2023/dashboard-internal.git`
+2. Install Yarn `npm install --global yarn`
+3. Jalankan `yarn install`
+4. Copy file `.env.example` menjadi `.env`
+5. Ubah nilai dari `DATABASE_URL` menjadi alamat database kalian
+6. Jalankan database migration. `yarn migrate-dev`
+7. Jalankan local dev server. `yarn dev`
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Git Branching
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+Setiap repository akan memiliki 3 branch utama, yaitu master, development, dan production.
+Setiap pembuatan branch baru, buat branch baru dengan base master.
+Format: `<tipe>/<judul>`
 
-## Learn More
+List tipe:
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- Story, untuk fitur atau use case baru
+- Task, untuk bug fixing, performance improvement, refactor, dsb.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+Judul: gunakan kebab case
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+Contoh:
 
-## How do I deploy this?
+- story/api-attendance
+- story/page-attendance
+- task/improve-sql-performance-on-xxxx-method
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+Setelah selesai, Pull Request ke master dan wajib minta peer review ke kadiv/wakadiv.
+
+## Code Styling & Repository
+
+Sangat dimohon untuk memperhatikan hal-hal berikut:
+
+1. Penamaan variabel, fungsi, dan kelas yang bermakna
+2. Penyingkatan harus mudah ditebak dan masih terbaca
+   - Misalkan, codeStylingAndRepository, terlalu panjang, disingkat menjadi: codeStyleNRepo
+   - Yang Salah: csnr, cdStNrep
+
+## Semantic Commit Message
+
+- `feat`: (new feature for the user, not a new feature for build script)
+- `fix`: (bug fix for the user, not a fix to a build script)
+- `docs`: (changes to the documentation)
+- `style`: (formatting, missing semi colons, etc; no production code change)
+- `refactor`: (refactoring production code, eg. renaming a variable)
+- `test`: (adding missing tests, refactoring tests; no production code change)
+- `chore`: (updating grunt tasks etc; no production code change)
+
+### [SOP Developers Workflow](https://docs.google.com/document/d/1-4oVwVxLDdNSB2XVaOn4yLy0dI7WCb-5ydRP0Tk5-BE/edit)
+
+### [Figma](https://www.figma.com/file/D13nNg1KRtBD8gNoPDPFIS/OSKM-2023?type=design&t=HfvyQWOFEdgD0gS6-6)
