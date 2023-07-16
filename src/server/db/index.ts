@@ -20,13 +20,13 @@ const instantiatePrisma = () => {
 
   // Add middleware to handle soft deletes
   // Comment this out to disable soft deletes
-  prisma.$use(softDeleteChangeFind);
-  prisma.$use(softDeleteChangeUpdate);
-  prisma.$use(softDeleteChangeDelete);
+  // prisma.$use(softDeleteChangeFind);
+  // prisma.$use(softDeleteChangeUpdate);
+  // prisma.$use(softDeleteChangeDelete);
 
   // Add middleware to handle optimistic concurrency control
   // Comment this out to disable optimistic concurrency control
-  prisma.$use(versioningChangeUpdate);
+  // prisma.$use(versioningChangeUpdate);
 
   return prisma;
 };
