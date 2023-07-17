@@ -11,6 +11,7 @@ import { compare } from "bcrypt";
 import { prisma } from "~/server/db";
 import { type UserRole } from "@prisma/client";
 import { env } from "~/env.mjs";
+import { TRPCError } from "@trpc/server";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -97,29 +98,44 @@ export const authOptions: NextAuthOptions = {
         // Add logic here to look up the user from the credentials supplied
         // You can also use the `req` object to access additional parameters
         // return { id: 1, name: "J Smith", email: "jsmith@example" };
-        if (!credentials) throw new Error("Credentials not provided");
+        if (!credentials) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Credentials not provided"
+          });
+        }
 
         const { nim, password } = credentials;
-        if (!nim || !password) throw new Error("NIM or password not provided");
-
+        if (!nim || !password) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "NIM or password not provided"
+          });
+        }
         const user = await prisma.user.findUnique({
           where: {
-            nim,
-          },
-          select: {
-            id: true,
-            role: true,
-            passwordHash: true,
-          },
+            nim
+          }
         });
-        if (!user) throw new Error("User not found");
+        if (!user) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "User not found"
+          });
+        }
+        console.log("user:", user);
 
         const isValid = await compare(password, user.passwordHash);
-        if (!isValid) throw new Error("Password is incorrect");
+        if (!isValid) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Password is incorrect"
+          });
+        }
 
         return {
           id: user.id,
-          role: user.role,
+          role: user.role
         };
       },
     }),
