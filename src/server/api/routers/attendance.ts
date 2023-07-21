@@ -5,8 +5,8 @@ import {
 } from "~/server/api/trpc";
 
 
-export const adminGetAttendanceRouter = createTRPCRouter({
-  getAllAttendance: adminProcedure
+export const attendanceRouter = createTRPCRouter({
+  adminGetAllAttendance: adminProcedure
   .query(async ({ ctx }) => {
     // Fungsi menerima parameter currentPage. Cari semua baris dari tabel Attendance. Limit pengambilan 10 per halaman, dan lakukan offset data sesuai dengan currentPage.
     // Rumus offset adalah (currentPage - 1) * limitPerPage
@@ -21,7 +21,7 @@ export const adminGetAttendanceRouter = createTRPCRouter({
     });
   }),
 
-  getAttendanceBaseOnDayId: adminProcedure
+  adminGetAttendanceBaseOnDayId: adminProcedure
   .input(z.object({ dayId: z.string().uuid().optional() }))
   .query(async ({ ctx, input }) => {
       // Get attendance based on dayId:
@@ -40,7 +40,7 @@ export const adminGetAttendanceRouter = createTRPCRouter({
       }
     }),
 
-  getAttendanceDayList: adminProcedure
+  adminGetAttendanceDayList: adminProcedure
   .query(async ({ ctx }) => {
     // Get attendance day list
     // Fungsi mengembalikan list dari semua day yang ada di tabel attendanceDay, bertujuan untuk mengisi dropdown filter
