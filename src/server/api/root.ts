@@ -11,7 +11,7 @@ import { attendanceRouter } from "./routers/attendance";
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
   storage: storageRouter,
-  adminGetAttendance: attendanceRouter
+  attendance: attendanceRouter
 });
 
 // export type definition of API
