@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
-import { createTRPCRouter, adminProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, adminProcedure, publicProcedure } from '~/server/api/trpc';
 
 export const adminAssignmentRouter = createTRPCRouter({
   getAssignment: adminProcedure.query(async ({ ctx }) => {
@@ -13,8 +13,8 @@ export const adminAssignmentRouter = createTRPCRouter({
         title: z.string(),
         filePath: z.string(),
         description: z.string(),
-        startTime: z.date(),
-        endTime: z.date()
+        startTime: z.string().datetime(),
+        endTime: z.string().datetime()
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -32,12 +32,12 @@ export const adminAssignmentRouter = createTRPCRouter({
   editAssignment: adminProcedure
     .input(
       z.object({
-        assignmentId: z.string(), // assignmentId is required
+        assignmentId: z.string().uuid(), // assignmentId is required
         title: z.string().optional(),
         filePath: z.string().optional(),
         description: z.string().optional(),
-        startTime: z.date().optional(),
-        endTime: z.date().optional()
+        startTime: z.string().datetime().optional(),
+        endTime: z.string().datetime().optional()
       })
     )
     .mutation(async ({ ctx, input }) => {
