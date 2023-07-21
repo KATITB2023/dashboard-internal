@@ -7,12 +7,16 @@ import {
 
 export const attendanceRouter = createTRPCRouter({
   adminGetAllAttendance: adminProcedure
-  .query(async ({ ctx }) => {
+  .input(z.object({
+    currentPage: z.number(),
+    limitPerPage: z.number(),
+  }))
+  .query(async ({ ctx, input }) => {
     // Fungsi menerima parameter currentPage. Cari semua baris dari tabel Attendance. Limit pengambilan 10 per halaman, dan lakukan offset data sesuai dengan currentPage.
     // Rumus offset adalah (currentPage - 1) * limitPerPage
     // Ingat PRISMA undefined untuk filter filter diatas
-    const currentPage = 1; // 1 sebagai default
-    const limitPerPage = 10;
+    const currentPage = input.currentPage;
+    const limitPerPage = input.limitPerPage;
     const offset = (currentPage - 1) * limitPerPage;
 
     return await ctx.prisma.attendanceRecord.findMany({
