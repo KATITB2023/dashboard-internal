@@ -1,0 +1,10 @@
+addReviewers: true
+addAssignees: true
+
+numberOfReviewers: 0
+reviewers:
+  - YakobusIP
+  - jasonk19
+
+assignees:
+  - author

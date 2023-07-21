@@ -1,0 +1,9 @@
+addReviewers: true
+addAssignees: true
+
+numberOfReviewers: 0
+reviewers:
+  - msyahrulsp
+
+assignees:
+  - author
