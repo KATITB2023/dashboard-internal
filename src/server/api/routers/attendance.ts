@@ -6,16 +6,15 @@ import {
 } from "~/server/api/trpc";
 
 export const attendanceRouter = createTRPCRouter({
-  // 1. Add new attendance day
-  addNewAttendanceDay: adminProcedure
+  addAttendanceDay: adminProcedure
     .input(
       z.object({
         name: z.string(),
-        time: z.string()
+        time: z.coerce.date()
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const newDay = await ctx.prisma.attendanceDay.create({
+      const attendanceDay = await ctx.prisma.attendanceDay.create({
         data: {
           name: input.name,
           time: input.time
@@ -23,88 +22,100 @@ export const attendanceRouter = createTRPCRouter({
       });
 
       return {
-        message: "New attendance day added",
-        day: newDay
+        message: "Attendance day added successfully",
+        attendanceDay
       };
     }),
 
-  // 2. Add new attendance event
-  addNewAttendanceEvent: adminProcedure
+  addAttendanceEvent: adminProcedure
     .input(
       z.object({
         dayId: z.string().uuid(),
         title: z.string(),
-        startTime: z.string(),
-        endTime: z.string()
+        startTime: z.coerce.date(),
+        endTime: z.coerce.date()
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const day = await ctx.prisma.attendanceDay.findUnique({
+      const attendanceDay = await ctx.prisma.attendanceDay.findUnique({
         where: {
           id: input.dayId
         }
       });
 
-      if (!day) {
+      if (!attendanceDay) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Attendance day not found"
         });
       }
 
-      const newEvent = await ctx.prisma.attendanceEvent.create({
+      const attendanceEvent = await ctx.prisma.attendanceEvent.create({
         data: {
-          dayId: input.dayId,
+          day: {
+            connect: {
+              id: attendanceDay.id
+            }
+          },
           title: input.title,
-          startTime: input.startTime,
-          endTime: input.endTime
+          startTime: new Date(input.startTime),
+          endTime: new Date(input.endTime)
         }
       });
 
       return {
-        message: "New attendance event added",
-        event: newEvent
+        message: "Attendance event added successfully",
+        attendanceEvent
       };
     }),
 
-  // 3. Edit attendance event
   editAttendanceEvent: adminProcedure
     .input(
       z.object({
         eventId: z.string().uuid(),
         title: z.string().optional(),
-        startTime: z.string().optional(),
-        endTime: z.string().optional()
+        startTime: z.coerce.date().optional(),
+        endTime: z.coerce.date().optional()
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const event = await ctx.prisma.attendanceEvent.findUnique({
+      const attendanceEvent = await ctx.prisma.attendanceEvent.findUnique({
         where: {
           id: input.eventId
         }
       });
 
-      if (!event) {
+      if (!attendanceEvent) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Attendance event not found"
         });
       }
 
-      const updatedEvent = await ctx.prisma.attendanceEvent.update({
+      const dataToUpdate: any = {};
+
+      if (input.title) {
+        dataToUpdate.title = input.title;
+      }
+
+      if (input.startTime) {
+        dataToUpdate.startTime = new Date(input.startTime);
+      }
+
+      if (input.endTime) {
+        dataToUpdate.endTime = new Date(input.endTime);
+      }
+
+      const updatedAttendanceEvent = await ctx.prisma.attendanceEvent.update({
         where: {
           id: input.eventId
         },
-        data: {
-          title: input.title || event.title,
-          startTime: input.startTime || event.startTime,
-          endTime: input.endTime || event.endTime
-        }
+        data: dataToUpdate
       });
 
       return {
-        message: "Attendance event updated",
-        event: updatedEvent
+        message: "Attendance event updated successfully",
+        attendanceEvent: updatedAttendanceEvent
       };
     })
 });
