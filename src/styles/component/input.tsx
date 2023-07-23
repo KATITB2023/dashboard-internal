@@ -21,6 +21,23 @@ const variantDark: SystemStyleFunction = () => {
   };
 };
 
+const variantLight: SystemStyleFunction = () => {
+  return {
+    field: {
+      bg: 'rgba(74, 88, 246, 0.5)',
+      _hover: {
+        bg: 'rgba(74, 88, 246, 0.75)'
+      },
+      _invalid: {
+        borderColor: 'oranye'
+      },
+      _focusVisible: {
+        boxShadow: '0 0 16px rgba(255,252,131,0.4)'
+      }
+    }
+  };
+};
+
 const variantUnstyled: SystemStyleFunction = () => {
   return {
     field: {
@@ -34,6 +51,7 @@ const variantUnstyled: SystemStyleFunction = () => {
 export const Input: ComponentStyleConfig = {
   variants: {
     filledDark: variantDark,
+    filledLight: variantLight,
     unstyled: variantUnstyled
   },
   defaultProps: {
