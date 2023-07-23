@@ -8,7 +8,7 @@ const defaultButton: SystemStyleFunction = () => {
     bg: `yellow.5`,
     _hover: {
       bg: 'yellow.5',
-      shadow: '0 12px 16px rgba(255,200,4,0.35)',
+      shadow: '0 0 24px rgba(255,200,4,0.6)',
       _disabled: {
         bg: 'gray.400',
         shadow: 'none'
@@ -34,7 +34,7 @@ const outlineButton: SystemStyleFunction = () => {
     borderRadius: '12',
     _hover: {
       bg: 'gray.600',
-      shadow: '0 12px 16px rgba(255,200,4,0.35)',
+      shadow: '0 0 24px rgba(255,200,4,0.6)',
       _disabled: {
         bg: 'transparent',
         shadow: 'none'

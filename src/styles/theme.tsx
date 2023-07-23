@@ -12,7 +12,7 @@ const theme = extendTheme({
     global: {
       body: {
         bg: 'black',
-        color: 'oranye'
+        color: 'black'
       },
       '*': {
         '&::-webkit-scrollbar': {
@@ -20,10 +20,12 @@ const theme = extendTheme({
           h: '1.5'
         },
         '&::-webkit-scrollbar-track': {
-          backgroundColor: 'transparent'
+          backgroundColor: 'black',
+          boxShadow: 'inset 0 0 7px white'
         },
         '&::-webkit-scrollbar-thumb': {
-          backgroundColor: 'purple.1',
+          backgroundColor: 'yellow.1',
+          boxShadow: 'inset 0 0 2px black',
           borderRadius: '4'
         }
       }
