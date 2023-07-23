@@ -16,7 +16,7 @@ import {
 import { prisma } from '~/server/db';
 
 export const eventRouter = createTRPCRouter({
-  getEventList: publicProcedure.query(async ({ ctx }) => {
+  getEventList: mentorProcedure.query(async ({ ctx }) => {
     try {
       const attendanceDaysWithEvents = await ctx.prisma.attendanceDay.findMany({
         include: {
@@ -31,7 +31,7 @@ export const eventRouter = createTRPCRouter({
       });
     }
   }),
-  editAttendance: publicProcedure
+  editAttendance: mentorProcedure
   .input(
     z.object({
       attendanceId: z.string().uuid(),
