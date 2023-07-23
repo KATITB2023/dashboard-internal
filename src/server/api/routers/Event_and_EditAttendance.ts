@@ -14,7 +14,7 @@ import {
 } from '~/server/api/trpc';
 import { prisma } from '~/server/db';
 
-export const attendanceRouter = createTRPCRouter({
+export const eventRouter = createTRPCRouter({
   getEventList: mentorProcedure.query(async ({ ctx }) => {
     try {
       const attendanceDaysWithEvents = await ctx.prisma.attendanceDay.findMany({
