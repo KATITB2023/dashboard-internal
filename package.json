@@ -5,12 +5,21 @@
   "scripts": {
     "preinstall": "npx only-allow yarn",
     "prepare": "husky install",
-    "build": "next build",
-    "dev": "next dev",
-    "postinstall": "prisma generate",
+    "prebuild": "yarn generate && yarn migrate-deploy",
+    "build:1-next": "cross-env NODE_ENV=production next build",
+    "build:2-server": "rm -rf build && tsc --project tsconfig.server.json && tsc-alias -p tsconfig.server.json",
+    "build": "run-s build:*",
+    "dev:next": "next dev",
+    "dev": "yarn migrate-dev && env-cmd run-p dev:*",
     "lint": "next lint",
-    "start": "next start",
-    "migrate-dev": "prisma migrate dev"
+    "generate": "prisma generate",
+    "seed-dev": "prisma db seed -- --environment development",
+    "seed-prod": "prisma db seed -- --environment production",
+    "migrate-dev": "prisma migrate dev",
+    "migrate-deploy": "prisma migrate deploy",
+    "start": "cross-env NODE_ENV=production node dist/server/prod-server.js",
+    "studio": "prisma studio",
+    "postinstall": "yarn generate"
   },
   "prisma": {
     "schema": "./node_modules/@katitb2023/database/schema.prisma"
