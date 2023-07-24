@@ -1,7 +1,7 @@
 import { exampleRouter } from '~/server/api/routers/example';
 import { storageRouter } from '~/server/api/routers/storage';
 import { createTRPCRouter } from '~/server/api/trpc';
-import { eventRouter } from './routers/Event_and_EditAttendance';
+import { attendanceRouter } from './routers/attendance';
 /**
  * This is the primary router for your server.
  *
@@ -10,7 +10,7 @@ import { eventRouter } from './routers/Event_and_EditAttendance';
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
   storage: storageRouter,
-  Event_and_EditAttendance: eventRouter
+  attendance: attendanceRouter,
 });
 
 // export type definition of API

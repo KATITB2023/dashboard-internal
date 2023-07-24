@@ -15,7 +15,7 @@ import {
 } from '~/server/api/trpc';
 import { prisma } from '~/server/db';
 
-export const eventRouter = createTRPCRouter({
+export const attendanceRouter = createTRPCRouter({
   getEventList: mentorProcedure.query(async ({ ctx }) => {
     try {
       const attendanceDaysWithEvents = await ctx.prisma.attendanceDay.findMany({
@@ -40,15 +40,6 @@ export const eventRouter = createTRPCRouter({
     })
   )
   .mutation(async ({ ctx, input }) => {
-    const attendance = await ctx.prisma.attendanceRecord.update({
-      where: {
-        id: input.attendanceId
-      },
-      data: {
-        status: input.kehadiran
-      }
-    });
-
     if (input.kehadiran !== Status.HADIR && !input.reason) {
       throw new TRPCError({
         code: "BAD_REQUEST",
