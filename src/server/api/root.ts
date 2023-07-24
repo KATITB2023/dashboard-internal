@@ -1,5 +1,6 @@
 import { exampleRouter } from "~/server/api/routers/example";
 import { storageRouter } from "~/server/api/routers/storage";
+import { assignmentRouter } from "~/server/api/routers/assignment";
 import { createTRPCRouter } from "~/server/api/trpc";
 import { adminAssignmentRouter } from "~/server/api/routers/adminAssignment";
 
@@ -11,7 +12,7 @@ import { adminAssignmentRouter } from "~/server/api/routers/adminAssignment";
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
   storage: storageRouter,
-  adminAssignment: adminAssignmentRouter,
+  assignment: assignmentRouter,
 });
 
 // export type definition of API
