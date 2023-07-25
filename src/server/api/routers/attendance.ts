@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
   createTRPCRouter,
-  adminProcedure
+  adminProcedure,
 } from "~/server/api/trpc";
 
 export const attendanceRouter = createTRPCRouter({
@@ -10,7 +10,7 @@ export const attendanceRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
-        time: z.coerce.date()
+        time: z.coerce.string()
       })
     )
     .mutation(async ({ ctx, input }) => {
