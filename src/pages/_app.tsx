@@ -5,6 +5,7 @@ import { api } from '~/utils/api';
 import '~/styles/globals.css';
 import theme from '~/styles/theme';
 import { ChakraProvider } from '@chakra-ui/react';
+import Fonts from '~/styles/fonts';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -12,6 +13,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
+      <Fonts />
       <ChakraProvider theme={theme}>
         <Component {...pageProps} />
       </ChakraProvider>
