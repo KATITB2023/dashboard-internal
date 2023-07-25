@@ -1,18 +1,16 @@
-import { exampleRouter } from "~/server/api/routers/example";
 import { storageRouter } from "~/server/api/routers/storage";
 import { assignmentRouter } from "~/server/api/routers/assignment";
 import { createTRPCRouter } from "~/server/api/trpc";
-import { adminAssignmentRouter } from "~/server/api/routers/adminAssignment";
-
+import { attendanceRouter } from "./routers/attendance";
 /**
  * This is the primary router for your server.
  *
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  example: exampleRouter,
   storage: storageRouter,
   assignment: assignmentRouter,
+  attendance: attendanceRouter,
 });
 
 // export type definition of API
