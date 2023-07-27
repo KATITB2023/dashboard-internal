@@ -1,7 +1,7 @@
 import { storageRouter } from "~/server/api/routers/storage";
 import { assignmentRouter } from "~/server/api/routers/assignment";
 import { createTRPCRouter } from "~/server/api/trpc";
-import { attendanceRouter } from "./routers/attendance";
+import { attendanceRouter } from "~/server/api/routers/attendance";
 /**
  * This is the primary router for your server.
  *
