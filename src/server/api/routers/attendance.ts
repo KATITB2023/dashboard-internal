@@ -10,7 +10,7 @@ import {
 } from '~/server/api/trpc';
 
 export const attendanceRouter = createTRPCRouter({
-  addAttendanceDay: adminProcedure
+  addAttendanceDayAdm: adminProcedure
   .input(
     z.object({
       name: z.string(),
@@ -31,7 +31,7 @@ export const attendanceRouter = createTRPCRouter({
     };
   }),
 
-addAttendanceEvent: adminProcedure
+addAttendanceEventAdm: adminProcedure
   .input(
     z.object({
       dayId: z.string().uuid(),
@@ -73,7 +73,7 @@ addAttendanceEvent: adminProcedure
     };
   }),
 
-editAttendanceEvent: adminProcedure
+editAttendanceEventAdm: adminProcedure
   .input(
     z.object({
       eventId: z.string().uuid(),
