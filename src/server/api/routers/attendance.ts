@@ -10,7 +10,7 @@ export const attendanceRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
-        time: z.coerce.string()
+        time: z.coerce.date()
       })
     )
     .mutation(async ({ ctx, input }) => {
