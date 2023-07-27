@@ -118,4 +118,4 @@ export const attendanceRouter = createTRPCRouter({
         attendanceEvent: updatedAttendanceEvent
       };
     })
-})    
+});    
