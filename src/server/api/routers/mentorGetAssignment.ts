@@ -58,7 +58,8 @@ export const mentorGetAssigmentRouter = createTRPCRouter({
           case 'Tugas':
             where = {
               task: {
-                contains: input.searchQuery
+                contains: input.searchQuery,
+                mode: 'insensitive'
               }
             };
             break;
