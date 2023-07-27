@@ -15,6 +15,7 @@ import {
   Tr
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import { RouterInputs, RouterOutputs, api } from '~/utils/api';
 
 const DUMMY_EVENTS: {
   id: string;
@@ -39,7 +40,17 @@ const DUMMY_EVENTS: {
   }
 ];
 
+type eventQueryInput =
+  RouterInputs['attendance']['adminGetAttendanceBaseOnDayId'];
+
+type eventListType = RouterOutputs['attendance']['getEventList'];
+
 export const EventList = () => {
+  const eventListQuery = api.attendance.getEventList.useQuery();
+
+  const eventList = eventListQuery.data;
+  console.log(eventList);
+
   const [JumpInput, setJumpInput] = useState<string>('1');
   const jumpChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setJumpInput(e.target.value);
