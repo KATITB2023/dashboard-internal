@@ -3,7 +3,7 @@ import { Box, Flex, Stack, Button } from '@chakra-ui/react';
 import Links from './Links';
 import Image from 'next/image';
 import { IconFromImage } from '~/component/icon-from-image';
-import { SidebarProps } from '~/component/sidebar/component/Links';
+import { SidebarProps } from '~/component/sidebar/Links';
 
 export function SidebarContent(props: SidebarProps) {
   const { routes } = props;
@@ -15,26 +15,18 @@ export function SidebarContent(props: SidebarProps) {
         flexDirection='column'
         marginStart={30}
         marginTop={50}
-        marginBottom={25}
+        marginBottom={50}
       >
         <Image
           src='/img/sidebar/logo.svg'
           width={223}
           height={97}
           alt='logo oskm'
+          draggable='false'
+          loading='lazy'
         />
       </Flex>
-      <Flex
-        alignItems='center'
-        justifyContent='center'
-        flexDirection='column'
-        my={8}
-      >
-        <Button colorScheme='#ABB3C2' variant='solid'>
-          Profile
-        </Button>
-      </Flex>
-      <Stack direction='column' mt='8px' mb='auto'>
+      <Stack direction='column' mb='auto'>
         <Box ps='20px'>
           <Links routes={routes} />
         </Box>

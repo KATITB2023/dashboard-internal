@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@chakra-ui/react';
-import { SidebarContent } from '~/component/sidebar/component/Content';
-import { SidebarProps } from '~/component/sidebar/component/Links';
+import { SidebarContent } from '~/component/sidebar/Content';
+import { SidebarProps } from '~/component/sidebar/Links';
 
 export function Sidebar(props: SidebarProps) {
   const { routes } = props;

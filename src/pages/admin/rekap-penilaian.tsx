@@ -1,10 +1,5 @@
-import { DummyContent } from '~/component/dummy-content';
-import { ContentLayout } from '~/layout/index';
+import Layout from '~/layout/index';
 
 export default function RekapPenilaian() {
-  return (
-    <ContentLayout type='admin' title='Rekap Penilaian'>
-      <DummyContent title='Rekap Penilaian' />
-    </ContentLayout>
-  );
+  return <Layout type='admin' title='Rekap Penilaian'></Layout>;
 }

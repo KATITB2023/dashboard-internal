@@ -1,10 +1,5 @@
-import { DummyContent } from '~/component/dummy-content';
-import { ContentLayout } from '~/layout/index';
+import Layout from '~/layout/index';
 
 export default function RekapAbsensi() {
-  return (
-    <ContentLayout type='admin' title='Rekap Absensi'>
-      <DummyContent title='Rekap Absensi' />
-    </ContentLayout>
-  );
+  return <Layout type='admin' title='Rekap Absensi'></Layout>;
 }

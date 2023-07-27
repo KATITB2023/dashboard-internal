@@ -13,7 +13,14 @@ export function IconFromImage(props: Props) {
   const { imagePath, alt, size, ...rest } = props;
   return (
     <Box {...rest}>
-      <Image src={imagePath} alt={alt} width={size} height={size} />
+      <Image
+        src={imagePath}
+        alt={alt}
+        width={size}
+        height={size}
+        draggable='false'
+        loading='lazy'
+      />
     </Box>
   );
 }

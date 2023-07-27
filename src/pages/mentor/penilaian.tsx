@@ -1,10 +1,5 @@
-import { DummyContent } from '~/component/dummy-content';
-import { ContentLayout } from '~/layout/index';
+import Layout from '~/layout/index';
 
 export default function Penilaian() {
-  return (
-    <ContentLayout type='mentor' title='Penilaian'>
-      <DummyContent title='Penilaian' />
-    </ContentLayout>
-  );
+  return <Layout type='mentor' title='Penilaian'></Layout>;
 }

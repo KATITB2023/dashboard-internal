@@ -7,7 +7,7 @@ import Absensi from '../pages/mentor/absensi';
 import GroupManagement from '../pages/mentor/group-management';
 import Penilaian from '../pages/mentor/penilaian';
 
-import { SidebarRoute } from '~/component/sidebar/component/Links';
+import { SidebarRoute } from '~/component/sidebar/Links';
 
 export const adminRoutes: SidebarRoute[] = [
   {

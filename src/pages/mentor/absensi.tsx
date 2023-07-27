@@ -1,10 +1,5 @@
-import { DummyContent } from '~/component/dummy-content';
-import { ContentLayout } from '~/layout/index';
+import Layout from '~/layout/index';
 
 export default function Absensi() {
-  return (
-    <ContentLayout type='mentor' title='Absensi'>
-      <DummyContent title='Absensi' />
-    </ContentLayout>
-  );
+  return <Layout type='mentor' title='Absensi'></Layout>;
 }
