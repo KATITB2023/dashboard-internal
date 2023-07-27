@@ -34,7 +34,7 @@ export const assignmentRouter = createTRPCRouter({
   setAssignmentScore: mentorProcedure
     .input(
       z.object({
-        submissionId: z.string(),
+        submissionId: z.string().uuid(),
         score: z.number()
       })
     )
