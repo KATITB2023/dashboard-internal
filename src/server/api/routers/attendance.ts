@@ -96,25 +96,15 @@ editAttendanceEventAdm: adminProcedure
       });
     }
 
-    const dataToUpdate: any = {};
-
-    if (input.title) {
-      dataToUpdate.title = input.title;
-    }
-
-    if (input.startTime) {
-      dataToUpdate.startTime = input.startTime;
-    }
-
-    if (input.endTime) {
-      dataToUpdate.endTime = input.endTime;
-    }
-
     const updatedAttendanceEvent = await ctx.prisma.attendanceEvent.update({
       where: {
         id: input.eventId
       },
-      data: dataToUpdate
+      data: {
+        title: input.title,
+        startTime: input.startTime,
+        endTime: input.endTime
+      }
     });
 
     return {
