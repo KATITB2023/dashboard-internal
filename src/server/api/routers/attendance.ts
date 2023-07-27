@@ -58,8 +58,8 @@ export const attendanceRouter = createTRPCRouter({
             }
           },
           title: input.title,
-          startTime: new Date(input.startTime),
-          endTime: new Date(input.endTime)
+          startTime: input.startTime,
+          endTime: input.endTime
         }
       });
 
@@ -99,11 +99,11 @@ export const attendanceRouter = createTRPCRouter({
       }
 
       if (input.startTime) {
-        dataToUpdate.startTime = new Date(input.startTime);
+        dataToUpdate.startTime = input.startTime;
       }
 
       if (input.endTime) {
-        dataToUpdate.endTime = new Date(input.endTime);
+        dataToUpdate.endTime = input.endTime;
       }
 
       const updatedAttendanceEvent = await ctx.prisma.attendanceEvent.update({
