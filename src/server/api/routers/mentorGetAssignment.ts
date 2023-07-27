@@ -76,7 +76,8 @@ export const mentorGetAssigmentRouter = createTRPCRouter({
             where = {
               student: {
                 name: {
-                  contains: input.searchQuery
+                  contains: input.searchQuery,
+                  mode: 'insensitive'
                 }
               }
             };
