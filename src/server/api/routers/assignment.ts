@@ -94,10 +94,12 @@ export const assignmentRouter = createTRPCRouter({
 
       await Promise.all(
         users.map(async (user) => {
-          // await ctx.prisma.assignmentSubmission.create({
-          //   data: {
-          //   }
-          // })
+          await ctx.prisma.assignmentSubmission.create({
+            data: {
+              studentId: user.id,
+              assignmentId: assignment.id
+            }
+          });
         })
       );
     }),
@@ -130,19 +132,16 @@ export const assignmentRouter = createTRPCRouter({
       }
 
       // Prepare the update data with only defined properties (skip undefined)
-      const updateData = {
-        title: title !== undefined ? title : assignment.title,
-        filePath: filePath !== undefined ? filePath : assignment.filePath,
-        description:
-          description !== undefined ? description : assignment.description,
-        startTime: startTime !== undefined ? startTime : assignment.startTime,
-        endTime: endTime !== undefined ? endTime : assignment.endTime
-      };
-
       // Update the assignment in the database
       const updatedAssignment = await ctx.prisma.assignment.update({
         where: { id: assignmentId },
-        data: updateData
+        data: {
+          title: title,
+          filePath: filePath,
+          description: description,
+          startTime: startTime,
+          endTime: endTime
+        }
       });
 
       return updatedAssignment;
