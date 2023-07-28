@@ -1,3 +1,4 @@
+import { AssignmentType } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import {
@@ -67,6 +68,7 @@ export const assignmentRouter = createTRPCRouter({
     .input(
       z.object({
         title: z.string(),
+        type: z.nativeEnum(AssignmentType),
         filePath: z.string(),
         description: z.string(),
         startTime: z.string().datetime(),
@@ -78,6 +80,7 @@ export const assignmentRouter = createTRPCRouter({
         ctx.prisma.assignment.create({
           data: {
             title: input.title,
+            type: input.type,
             filePath: input.filePath,
             description: input.description,
             startTime: input.startTime,
