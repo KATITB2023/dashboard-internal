@@ -1,6 +1,8 @@
-import { assignmentRouter } from '~/server/api/routers/assignment';
 import { createTRPCRouter } from '~/server/api/trpc';
+import { assignmentRouter } from '~/server/api/routers/assignment';
 import { attendanceRouter } from '~/server/api/routers/attendance';
+import { groupRouter } from '~/server/api/routers/group';
+import { leaderboardRouter } from '~/server/api/routers/leaderboard';
 /**
  * This is the primary router for your server.
  *
@@ -8,7 +10,9 @@ import { attendanceRouter } from '~/server/api/routers/attendance';
  */
 export const appRouter = createTRPCRouter({
   assignment: assignmentRouter,
-  attendance: attendanceRouter
+  attendance: attendanceRouter,
+  group: groupRouter,
+  leaderboard: leaderboardRouter
 });
 
 // export type definition of API

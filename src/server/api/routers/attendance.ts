@@ -8,7 +8,7 @@ import {
 } from '~/server/api/trpc';
 
 export const attendanceRouter = createTRPCRouter({
-  addAttendanceDayAdm: adminProcedure
+  adminAddAttendanceDay: adminProcedure
     .input(
       z.object({
         name: z.string(),
@@ -29,7 +29,7 @@ export const attendanceRouter = createTRPCRouter({
       };
     }),
 
-  addAttendanceEventAdm: adminProcedure
+  adminAddAttendanceEvent: adminProcedure
     .input(
       z.object({
         dayId: z.string().uuid(),
@@ -90,7 +90,7 @@ export const attendanceRouter = createTRPCRouter({
       };
     }),
 
-  editAttendanceEventAdm: adminProcedure
+  adminEditAttendanceEvent: adminProcedure
     .input(
       z.object({
         eventId: z.string().uuid(),
@@ -126,52 +126,7 @@ export const attendanceRouter = createTRPCRouter({
 
       return {
         message: 'Attendance event updated successfully',
-        attendanceEvent: updatedAttendanceEvent
-      };
-    }),
-
-  getEventList: mentorProcedure.query(async ({ ctx }) => {
-    try {
-      const attendanceDaysWithEvents = await ctx.prisma.attendanceDay.findMany({
-        include: {
-          event: true
-        }
-      });
-      return attendanceDaysWithEvents;
-    } catch (error) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Failed to get event list.'
-      });
-    }
-  }),
-  editAttendance: mentorProcedure
-    .input(
-      z.object({
-        attendanceId: z.string().uuid(),
-        kehadiran: z.nativeEnum(Status),
-        reason: z.string().optional()
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      if (input.kehadiran !== Status.HADIR && !input.reason) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Please provide a reason'
-        });
-      }
-
-      await ctx.prisma.attendanceRecord.update({
-        where: {
-          id: input.attendanceId
-        },
-        data: {
-          status: input.kehadiran,
-          reason: input.kehadiran !== Status.HADIR ? input.reason : undefined
-        }
-      });
-      return {
-        message: 'Edit attendance successful'
+        updatedAttendanceEvent
       };
     }),
 
@@ -219,5 +174,51 @@ export const attendanceRouter = createTRPCRouter({
     // Get attendance day list
     // Fungsi mengembalikan list dari semua day yang ada di tabel attendanceDay, bertujuan untuk mengisi dropdown filter
     return await ctx.prisma.attendanceDay.findMany();
-  })
+  }),
+
+  mentorGetEventList: mentorProcedure.query(async ({ ctx }) => {
+    try {
+      const attendanceDaysWithEvents = await ctx.prisma.attendanceDay.findMany({
+        include: {
+          event: true
+        }
+      });
+      return attendanceDaysWithEvents;
+    } catch (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to get event list.'
+      });
+    }
+  }),
+
+  mentorEditAttendanceRecord: mentorProcedure
+    .input(
+      z.object({
+        attendanceId: z.string().uuid(),
+        kehadiran: z.nativeEnum(Status),
+        reason: z.string().optional()
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (input.kehadiran !== Status.HADIR && !input.reason) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Please provide a reason'
+        });
+      }
+
+      await ctx.prisma.attendanceRecord.update({
+        where: {
+          id: input.attendanceId
+        },
+        data: {
+          status: input.kehadiran,
+          reason: input.kehadiran !== Status.HADIR ? input.reason : undefined
+        }
+      });
+      return {
+        message: 'Edit attendance successful'
+      };
+    })
 });
