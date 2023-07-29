@@ -4,6 +4,8 @@ const black = '#0B0A0A';
 
 const oranye = '#E85535';
 
+const blue = '#2D3648';
+
 const gray = {
   200: '#F9F9F9',
   300: '#BFBFBF',
@@ -61,5 +63,6 @@ export const colors = {
   pink,
   yellow,
   green,
-  purple
+  purple,
+  blue
 };
