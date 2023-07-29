@@ -122,10 +122,14 @@ export default function ArticleManagement() {
             <Flex justifyContent='flex-end'>
               {!isPreviewMode ? (
                 <>
-                  <Button variant={'outline'} marginRight='10px' type='submit'>
+                  <Button
+                    variant={'outlineBlue'}
+                    marginRight='10px'
+                    type='submit'
+                  >
                     Confirm
                   </Button>
-                  <Button>Cancel</Button>
+                  <Button variant={'solidBlue'}>Cancel</Button>
                 </>
               ) : (
                 <Button onClick={handlePreviewMode}>Back</Button>
