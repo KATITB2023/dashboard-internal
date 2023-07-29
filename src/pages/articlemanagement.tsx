@@ -6,10 +6,12 @@ import {
   Textarea,
   Input,
   Spacer,
-  Button
+  Button,
+  FormErrorMessage,
+  FormControl
 } from '@chakra-ui/react';
 import { type BaseSyntheticEvent, useState } from 'react';
-import { type SubmitHandler, useForm, Controller } from 'react-hook-form';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 
 interface FormValue {
   headline: string;
@@ -21,16 +23,15 @@ interface FormValue {
 export default function ArticleManagement() {
   const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
 
-  const { control, register, formState, setValue, getValues, handleSubmit } =
-    useForm<FormValue>({
-      mode: 'onSubmit',
-      defaultValues: {
-        headline: '',
-        keyword: '',
-        article: '',
-        imageUrl: ''
-      }
-    });
+  const { register, formState, getValues, handleSubmit } = useForm<FormValue>({
+    mode: 'onSubmit',
+    defaultValues: {
+      headline: '',
+      keyword: '',
+      article: '',
+      imageUrl: ''
+    }
+  });
 
   const handlePreviewMode: React.MouseEventHandler<HTMLButtonElement> = () =>
     setIsPreviewMode(!isPreviewMode);
@@ -80,12 +81,25 @@ export default function ArticleManagement() {
                   >
                     Headline:
                   </Text>
-                  <Input
-                    isDisabled={isPreviewMode}
-                    borderColor='gray.300'
-                    borderWidth='2px'
-                    {...register('headline')}
-                  />
+                  <FormControl isInvalid={!!formState.errors.headline}>
+                    <Input
+                      isDisabled={isPreviewMode}
+                      borderColor='gray.300'
+                      borderWidth='2px'
+                      {...register('headline', {
+                        required: {
+                          value: true,
+                          message: 'Headline tidak boleh kosong'
+                        }
+                      })}
+                    />
+                    {formState.errors.headline && (
+                      <FormErrorMessage>
+                        {' '}
+                        {formState.errors.headline.message as string}{' '}
+                      </FormErrorMessage>
+                    )}
+                  </FormControl>
                 </>
               )}
             </Flex>
@@ -98,28 +112,54 @@ export default function ArticleManagement() {
                 >
                   Keyword:
                 </Text>
-                <Input
-                  isDisabled={isPreviewMode}
-                  borderColor='gray.300'
-                  borderWidth='2px'
-                  {...register('keyword')}
-                />
+                <FormControl isInvalid={!!formState.errors.keyword}>
+                  <Input
+                    isDisabled={isPreviewMode}
+                    borderColor='gray.300'
+                    borderWidth='2px'
+                    {...register('keyword', {
+                      required: {
+                        value: true,
+                        message: 'Keyword tidak boleh kosong'
+                      }
+                    })}
+                  />
+                  {formState.errors.keyword && (
+                    <FormErrorMessage>
+                      {' '}
+                      {formState.errors.keyword.message as string}{' '}
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
               </Flex>
               <Spacer />
               {!isPreviewMode && (
                 <Button onClick={handlePreviewMode}>Preview</Button>
               )}
             </Flex>
-            <Textarea
-              isDisabled={isPreviewMode}
-              placeholder='Lorem ipsum dolor sit amet, consectetur adipiscing elit...'
-              marginY='8'
-              height='300px'
-              borderColor='gray.300'
-              borderWidth='2px'
-              {...register('article')}
-            />
-            <Flex justifyContent='flex-end'>
+            <FormControl isInvalid={!!formState.errors.article}>
+              <Textarea
+                isDisabled={isPreviewMode}
+                placeholder='Lorem ipsum dolor sit amet, consectetur adipiscing elit...'
+                marginTop='4'
+                height='300px'
+                borderColor='gray.300'
+                borderWidth='2px'
+                {...register('article', {
+                  required: {
+                    value: true,
+                    message: 'Artikel tidak boleh kosong'
+                  }
+                })}
+              />
+              {formState.errors.article && (
+                <FormErrorMessage>
+                  {' '}
+                  {formState.errors.article.message as string}{' '}
+                </FormErrorMessage>
+              )}
+            </FormControl>
+            <Flex justifyContent='flex-end' marginY='8'>
               {!isPreviewMode ? (
                 <>
                   <Button
