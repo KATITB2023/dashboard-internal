@@ -4,8 +4,7 @@ import { z } from 'zod';
 import {
   createTRPCRouter,
   adminProcedure,
-  mentorProcedure,
-  publicProcedure
+  mentorProcedure
 } from '~/server/api/trpc';
 
 export const assignmentRouter = createTRPCRouter({
@@ -130,7 +129,7 @@ export const assignmentRouter = createTRPCRouter({
     // TODO: isi logic disini
   }),
 
-  mentorSetAssignmentScore: publicProcedure
+  mentorSetAssignmentScore: mentorProcedure
     .input(
       z.object({
         submissionId: z.string().uuid(),
