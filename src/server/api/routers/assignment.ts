@@ -4,7 +4,8 @@ import { z } from 'zod';
 import {
   createTRPCRouter,
   adminProcedure,
-  mentorProcedure
+  mentorProcedure,
+  publicProcedure
 } from '~/server/api/trpc';
 
 export const assignmentRouter = createTRPCRouter({
@@ -157,6 +158,15 @@ export const assignmentRouter = createTRPCRouter({
         });
       });
 
-      return updatedSubmission;
+      const updatePoint = await ctx.prisma.$transaction(async (tx) => {
+        return await tx.profile.update({
+          where: { userId: submission.studentId },
+          data: { point: { increment: score } }
+        });
+      });
+
+      return {
+        message: 'Score updated successfully'
+      };
     })
 });
