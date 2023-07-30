@@ -24,34 +24,41 @@ export const assignmentRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const [assignment, users] = await Promise.all([
-        ctx.prisma.assignment.create({
-          data: {
-            title: input.title,
-            type: input.type,
-            filePath: input.filePath,
-            description: input.description,
-            startTime: input.startTime,
-            endTime: input.endTime
-          }
-        }),
-        ctx.prisma.user.findMany({
-          select: {
-            id: true
-          }
-        })
-      ]);
-
-      await Promise.all(
-        users.map(async (user) => {
-          await ctx.prisma.assignmentSubmission.create({
+      try {
+        const [assignment, users] = await Promise.all([
+          ctx.prisma.assignment.create({
             data: {
-              studentId: user.id,
-              assignmentId: assignment.id
+              title: input.title,
+              type: input.type,
+              filePath: input.filePath,
+              description: input.description,
+              startTime: input.startTime,
+              endTime: input.endTime
             }
-          });
-        })
-      );
+          }),
+          ctx.prisma.user.findMany({
+            select: {
+              id: true
+            }
+          })
+        ]);
+
+        await Promise.all(
+          users.map(async (user) => {
+            await ctx.prisma.assignmentSubmission.create({
+              data: {
+                studentId: user.id,
+                assignmentId: assignment.id
+              }
+            });
+          })
+        );
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to create a new assignment'
+        });
+      }
     }),
 
   adminEditAssignment: adminProcedure
@@ -69,32 +76,53 @@ export const assignmentRouter = createTRPCRouter({
       const { assignmentId, title, filePath, description, startTime, endTime } =
         input;
 
-      // Check if the assignment exists in the database
-      const assignment = await ctx.prisma.assignment.findUnique({
-        where: { id: assignmentId }
-      });
+      try {
+        // Prepare the update data with only defined properties (skip undefined)
+        // Update the assignment in the database
+        const updatedAssignment = await ctx.prisma.assignment.update({
+          where: { id: assignmentId },
+          data: {
+            title: title,
+            filePath: filePath,
+            description: description,
+            startTime: startTime,
+            endTime: endTime
+          }
+        });
 
-      if (!assignment) {
+        return {
+          message: 'Assignment updated successfully',
+          updatedAssignment
+        };
+      } catch (error) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Assignment not found'
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to edit the assignment'
         });
       }
+    }),
 
-      // Prepare the update data with only defined properties (skip undefined)
-      // Update the assignment in the database
-      const updatedAssignment = await ctx.prisma.assignment.update({
-        where: { id: assignmentId },
-        data: {
-          title: title,
-          filePath: filePath,
-          description: description,
-          startTime: startTime,
-          endTime: endTime
-        }
-      });
+  adminDeleteAssignment: adminProcedure
+    .input(
+      z.object({
+        assignmentId: z.string().uuid()
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.assignment.delete({
+          where: { id: input.assignmentId }
+        });
 
-      return updatedAssignment;
+        return {
+          message: 'Assignment deleted successfully'
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to delete the assignment'
+        });
+      }
     }),
 
   mentorGetAssignmentTitleList: mentorProcedure.query(async ({ ctx }) => {
