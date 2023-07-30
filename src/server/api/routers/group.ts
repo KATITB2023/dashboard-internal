@@ -22,7 +22,26 @@ export const groupRouter = createTRPCRouter({
 
   mentorEditGroupName: mentorProcedure
     .input(z.object({ name: z.string() }))
-    .mutation(async ({ ctx }) => {
-      // TODO: isi logic disini
+    .mutation(async ({ ctx, input }) => {
+      const groupRelation = await ctx.prisma.groupRelation.findFirst({
+        where: {
+          userId: ctx.session.user.id
+        }
+      });
+
+      if (!groupRelation || !groupRelation.groupId) {
+        return undefined;
+      }
+
+      const updatedGroupName = await ctx.prisma.group.update({
+        where: {
+          id: groupRelation.groupId
+        },
+        data: {
+          name: input.name
+        }
+      });
+      return updatedGroupName;
     })
+
 });
