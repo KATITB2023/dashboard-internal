@@ -46,7 +46,6 @@ export default function Layout({ title, children, type, fullBg }: Props) {
             px='50px'
             py={fullBg ? '40px' : '30px'}
           >
-            <Heading color='#340C8F'>{title}</Heading>
             {children}
           </Box>
           {process.env.NODE_ENV !== 'production' && (
