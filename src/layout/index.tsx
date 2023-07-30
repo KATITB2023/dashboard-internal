@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { motion } from 'framer-motion';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { Box } from '@chakra-ui/react';
+import { Box, Heading, Text } from '@chakra-ui/react';
 import Sidebar from '~/component/sidebar/Sidebar';
 import { adminRoutes, mentorRoutes } from '~/utils/routes';
 
@@ -9,9 +9,10 @@ interface Props {
   title: string;
   children?: React.ReactNode;
   type: 'mentor' | 'admin';
+  fullBg: boolean;
 }
 
-export default function Layout({ title, children, type }: Props) {
+export default function Layout({ title, children, type, fullBg }: Props) {
   return (
     <>
       <Head>
@@ -25,24 +26,34 @@ export default function Layout({ title, children, type }: Props) {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <Box>
+        <Box
+          float='right'
+          minHeight='100vh'
+          height='100%'
+          overflow='auto'
+          position='relative'
+          maxHeight='100%'
+          w='calc( 100% - 298px )'
+          maxWidth='calc( 100% - 290px )'
+        >
           <Box
-            float='right'
-            minHeight='100vh'
-            height='100%'
-            overflow='auto'
-            position='relative'
-            maxHeight='100%'
-            w='calc( 100% - 298px )'
-            maxWidth='calc( 100% - 290px )'
+            mr={fullBg ? 0 : 6}
+            my={fullBg ? 0 : 6}
+            bg='#F9F9F9'
+            borderLeftRadius={25}
+            borderRightRadius={fullBg ? 0 : 25}
+            height={fullBg ? '100vh' : '94vh'}
+            px='50px'
+            py={fullBg ? '40px' : '30px'}
           >
+            <Heading color='#340C8F'>{title}</Heading>
             {children}
-            {process.env.NODE_ENV !== 'production' && (
-              <Box>
-                <ReactQueryDevtools initialIsOpen={false} />
-              </Box>
-            )}
           </Box>
+          {process.env.NODE_ENV !== 'production' && (
+            <Box>
+              <ReactQueryDevtools initialIsOpen={false} />
+            </Box>
+          )}
         </Box>
       </motion.div>
       {/* TODO: Add footer */}
