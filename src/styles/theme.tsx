@@ -1,6 +1,7 @@
 import { extendTheme } from '@chakra-ui/react';
 import { colors } from './component/colors';
 import { Button } from './component/button';
+import { Input } from './component/input';
 
 const theme = extendTheme({
   fonts: {
@@ -32,7 +33,8 @@ const theme = extendTheme({
     }
   },
   components: {
-    Button
+    Button,
+    Input
   }
 });
 
