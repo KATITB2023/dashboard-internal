@@ -130,7 +130,7 @@ export const assignmentRouter = createTRPCRouter({
     // TODO: isi logic disini
   }),
 
-  mentorSetAssignmentScore: mentorProcedure
+  mentorSetAssignmentScore: publicProcedure
     .input(
       z.object({
         submissionId: z.string().uuid(),
@@ -140,33 +140,29 @@ export const assignmentRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { submissionId, score } = input;
 
-      const submission = await ctx.prisma.assignmentSubmission.findUnique({
-        where: { id: submissionId }
-      });
+      try {
+        const updatedSubmission = await ctx.prisma.$transaction(async (tx) => {
+          return await tx.assignmentSubmission.update({
+            where: { id: submissionId },
+            data: { score }
+          });
+        });
 
-      if (!submission) {
+        const updatePoint = await ctx.prisma.$transaction(async (tx) => {
+          return await tx.profile.update({
+            where: { userId: updatedSubmission.studentId },
+            data: { point: { increment: score } }
+          });
+        });
+
+        return {
+          message: 'Score updated successfully'
+        };
+      } catch (error) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Submission not found'
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update the score'
         });
       }
-
-      const updatedSubmission = await ctx.prisma.$transaction(async (tx) => {
-        return await tx.assignmentSubmission.update({
-          where: { id: submissionId },
-          data: { score }
-        });
-      });
-
-      const updatePoint = await ctx.prisma.$transaction(async (tx) => {
-        return await tx.profile.update({
-          where: { userId: submission.studentId },
-          data: { point: { increment: score } }
-        });
-      });
-
-      return {
-        message: 'Score updated successfully'
-      };
     })
 });
