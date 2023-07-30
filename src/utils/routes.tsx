@@ -6,6 +6,7 @@ import RekapPenilaian from '~/pages/rekap-penilaian';
 import Absensi from '../pages/absensi';
 import GroupManagement from '~/pages/group-management';
 import Penilaian from '~/pages/penilaian';
+import TambahPoin from '~/pages/tambah-poin';
 
 import { SidebarRoute } from '~/component/sidebar/Links';
 
@@ -182,6 +183,23 @@ const ArticleCMSIcon = (
   </svg>
 );
 
+const TambahPoinIcon = (
+  <svg
+    width='27'
+    height='27'
+    viewBox='0 0 27 27'
+    fill='none'
+    xmlns='http://www.w3.org/2000/svg'
+  >
+    <path
+      fill-rule='evenodd'
+      clip-rule='evenodd'
+      d='M3.09998 0.600006C1.71924 0.600006 0.599976 1.7193 0.599976 3.10001V24.1C0.599976 25.4807 1.71924 26.6 3.09998 26.6H24.1C25.4807 26.6 26.6 25.4807 26.6 24.1V3.10001C26.6 1.7193 25.4807 0.600006 24.1 0.600006H3.09998ZM13.9756 3.96353C13.8258 3.50287 13.1742 3.50287 13.0244 3.96353L11.1426 9.75531C11.0757 9.96133 10.8837 10.1008 10.6671 10.1008H4.57727C4.0929 10.1008 3.89148 10.7206 4.28333 11.0053L9.21008 14.5848C9.38538 14.7122 9.45874 14.9379 9.39172 15.1439L7.50989 20.9357C7.36023 21.3963 7.88745 21.7794 8.2793 21.4947L13.2061 17.9152C13.3813 17.7878 13.6187 17.7878 13.7939 17.9152L18.7207 21.4947C19.1125 21.7794 19.6398 21.3963 19.4901 20.9357L17.6083 15.1439C17.5413 14.9379 17.6146 14.7122 17.7899 14.5848L22.7167 11.0053C23.1085 10.7206 22.9071 10.1008 22.4227 10.1008H16.3329C16.1163 10.1008 15.9243 9.96133 15.8574 9.75531L13.9756 3.96353Z'
+      fill='currentColor'
+    />
+  </svg>
+);
+
 export const adminRoutes: SidebarRoute[] = [
   {
     name: 'Rekap Penilaian',
@@ -227,5 +245,11 @@ export const mentorRoutes: SidebarRoute[] = [
     path: '/absensi',
     icon: AbsensiIcon,
     component: <Absensi />
+  },
+  {
+    name: 'Tambah Poin',
+    path: '/tambah-poin',
+    icon: TambahPoinIcon,
+    component: <TambahPoin />
   }
 ];
