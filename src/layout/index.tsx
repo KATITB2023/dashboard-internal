@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { motion } from 'framer-motion';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { Box, Heading, Text } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import Sidebar from '~/component/sidebar/Sidebar';
 import { adminRoutes, mentorRoutes } from '~/utils/routes';
 
@@ -38,11 +38,11 @@ export default function Layout({ title, children, type, fullBg }: Props) {
         >
           <Box
             mr={fullBg ? 0 : 6}
-            my={fullBg ? 0 : 6}
+            my={fullBg ? 0 : '2vh'}
             bg='#F9F9F9'
             borderLeftRadius={25}
             borderRightRadius={fullBg ? 0 : 25}
-            height={fullBg ? '100vh' : '94vh'}
+            height={fullBg ? '100vh' : '96vh'}
             px='50px'
             py={fullBg ? '40px' : '30px'}
           >

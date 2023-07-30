@@ -1,12 +1,11 @@
-import { Box, Flex, HStack, Text, Link, VStack } from '@chakra-ui/react';
+import { Box, Flex, HStack, Text, Link, VStack, Icon } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { IconFromImage } from '~/component/icon-from-image';
 
 export interface SidebarRoute {
   name: string;
   path: string;
-  component: any;
-  iconPath: string;
+  component: React.ReactNode;
+  icon: React.ReactNode;
 }
 
 export interface SidebarProps {
@@ -17,7 +16,6 @@ export function SidebarLinks(props: SidebarProps) {
   const { routes } = props;
   const router = useRouter();
   const purple = '#340C8F';
-  const gray = '#363636';
   const white = '#F9F9F9';
 
   const activeRoute = (routeName: string) => {
@@ -26,7 +24,7 @@ export function SidebarLinks(props: SidebarProps) {
 
   const createLinks = (routes: SidebarRoute[]) => {
     return (
-      <VStack spacing={2} alignItems={'start'}>
+      <VStack spacing={1} alignItems={'start'}>
         {routes.map((route, index: number) => {
           return (
             <Link
@@ -41,10 +39,10 @@ export function SidebarLinks(props: SidebarProps) {
                 }
                 borderLeftRadius={25}
                 pl={2}
-                _hover={{
-                  bg: activeRoute(route.path.toLowerCase()) ? white : gray
-                }}
+                color={activeRoute(route.path.toLowerCase()) ? purple : white}
+                _hover={{ bg: white, color: purple }}
                 py={1}
+                role='group'
               >
                 <HStack
                   spacing={
@@ -55,23 +53,17 @@ export function SidebarLinks(props: SidebarProps) {
                 >
                   <Flex w='100%' alignItems='center' justifyContent='center'>
                     <Box me='18px'>
-                      <IconFromImage
-                        imagePath={
-                          activeRoute(route.path.toLowerCase())
-                            ? route.iconPath + 'purple.svg'
-                            : route.iconPath + 'white.svg'
+                      <Icon
+                        viewBox='0 0 33 33'
+                        color={
+                          activeRoute(route.path.toLowerCase()) ? purple : white
                         }
-                        size={20}
-                        alt={route.name}
-                      />
+                        _groupHover={{ color: purple }}
+                      >
+                        {route.icon}
+                      </Icon>
                     </Box>
-                    <Text
-                      me='auto'
-                      color={
-                        activeRoute(route.path.toLowerCase()) ? purple : 'white'
-                      }
-                      fontWeight='bold'
-                    >
+                    <Text me='auto' fontWeight='bold'>
                       {route.name}
                     </Text>
                   </Flex>

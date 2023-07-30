@@ -2,7 +2,6 @@
 import { Box, Flex, Stack, Button } from '@chakra-ui/react';
 import Links from './Links';
 import Image from 'next/image';
-import { IconFromImage } from '~/component/icon-from-image';
 import { SidebarProps } from '~/component/sidebar/Links';
 
 export function SidebarContent(props: SidebarProps) {
@@ -38,12 +37,16 @@ export function SidebarContent(props: SidebarProps) {
         my={20}
       >
         <Button>
-          <IconFromImage
-            mr={2}
-            imagePath='/img/sidebar/exit-icon.svg'
-            size={20}
-            alt='exit icon'
-          />
+          <Box mr={2}>
+            <Image
+              src='/img/sidebar/exit-icon.svg'
+              alt='exit icon'
+              width={20}
+              height={20}
+              draggable='false'
+              loading='lazy'
+            />
+          </Box>
           Keluar
         </Button>
       </Flex>
