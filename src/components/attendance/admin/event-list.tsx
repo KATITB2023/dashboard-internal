@@ -40,16 +40,21 @@ const DUMMY_EVENTS: {
   }
 ];
 
+interface EventListProps {
+  dayId: string;
+}
+
 type eventQueryInput =
   RouterInputs['attendance']['adminGetAttendanceBaseOnDayId'];
 
 type eventListType = RouterOutputs['attendance']['getEventList'];
 
-export const EventList = () => {
-  const eventListQuery = api.attendance.getEventList.useQuery();
+export const EventList = ({ dayId }: EventListProps) => {
+  const eventListQuery = api.attendance.adminGetAttendanceBaseOnDayId.useQuery({
+    dayId: dayId
+  });
 
   const eventList = eventListQuery.data;
-  console.log(eventList);
 
   const [JumpInput, setJumpInput] = useState<string>('1');
   const jumpChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +93,7 @@ export const EventList = () => {
           borderLeft='1px solid'
           borderColor='gray.400'
         >
-          <Table w='100%'>
+          <Table w='100%' variant='black'>
             <Thead>
               <Td w='10%'>No.</Td>
               <Td w='30%'>Keterangan</Td>

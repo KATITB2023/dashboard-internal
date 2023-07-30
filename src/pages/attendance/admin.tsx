@@ -16,38 +16,31 @@ import {
   useTab
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import { AddDayModal } from '~/components/attendance/admin/add-day-modal';
 import { EventList } from '~/components/attendance/admin/event-list';
 import { Recap } from '~/components/attendance/admin/recap';
 import Layout from '~/layout';
-
-const DUMMY_DAYS: {
-  id: string;
-  name: string;
-}[] = [
-  {
-    id: '1',
-    name: 'Day 1'
-  },
-  {
-    id: '2',
-    name: 'Day 2'
-  },
-  {
-    id: '3',
-    name: 'Day 3'
-  },
-  {
-    id: '4',
-    name: 'Day 4'
-  },
-  {
-    id: '5',
-    name: 'Day 5'
-  }
-];
+import { api } from '~/utils/api';
 
 export default function AttendancePageAdmin() {
-  const dayId = useState<string>();
+  const dayListQuery = api.attendance.getEventList.useQuery(); //proc ini ngereturn entri dari table attendanceDay
+  const dayList = dayListQuery.data;
+
+  const addDayMutation = () => {}; //func buat mutate, proc ini belum ada di backend
+
+  const [dayId, setDayId] = useState<string>();
+  const dayChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setDayId(e.target.value);
+  };
+
+  const [isAddingDay, setIsAddingDay] = useState<boolean>(false);
+  const addDayClickHandler = () => {
+    setIsAddingDay(!isAddingDay);
+  };
+
+  if (!dayList) {
+    return <div>Loading...</div>;
+  }
 
   // function for custom tab
   const Tab = React.forwardRef((props: TabProps) => {
@@ -106,25 +99,33 @@ export default function AttendancePageAdmin() {
               borderRadius='md'
               bg='black'
               w='10em'
+              onChange={dayChangeHandler}
             >
-              {DUMMY_DAYS.map((day) => (
-                <option value={day.id} color='black'>
-                  {day.id}
+              {dayList.map((day) => (
+                <option value={day.name}>
+                  <Text bg='black'>{day.name}</Text>
                 </option>
               ))}
             </Select>
-            <Button variant='mono-gray' ml='1em'>
+            <Button variant='mono-gray' ml='1em' onClick={addDayClickHandler}>
               Add Day
             </Button>
+            <AddDayModal isOpen={isAddingDay} onClose={addDayClickHandler} />
           </Flex>
-          <TabPanels mt='2em'>
-            <TabPanel>
-              <EventList />
-            </TabPanel>
-            <TabPanel>
-              <Recap />
-            </TabPanel>
-          </TabPanels>
+          {dayId ? (
+            <Box minH='30em'>
+              <TabPanels mt='2em'>
+                <TabPanel>
+                  <EventList dayId={dayId} />
+                </TabPanel>
+                <TabPanel>
+                  <Recap />
+                </TabPanel>
+              </TabPanels>
+            </Box>
+          ) : (
+            <Box h='30em' />
+          )}
         </Tabs>
       </Box>
     </Layout>

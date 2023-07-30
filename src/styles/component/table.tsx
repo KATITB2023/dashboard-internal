@@ -1,6 +1,6 @@
 import { ComponentStyleConfig, SystemStyleFunction } from '@chakra-ui/react';
 
-const defaultTableStyle: SystemStyleFunction = () => {
+const blackTableStyle: SystemStyleFunction = () => {
   return {
     table: {
       width: '100%',
@@ -33,7 +33,7 @@ const defaultTableStyle: SystemStyleFunction = () => {
 
 export const Table: ComponentStyleConfig = {
   variants: {
-    default: defaultTableStyle
+    black: blackTableStyle
   },
   defaultProps: {
     variant: 'default'
