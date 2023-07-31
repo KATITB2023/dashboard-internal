@@ -19,7 +19,6 @@ const Login = ({
       </Head>
       <Flex
         position='absolute'
-        // paddingTop='6rem'
         top='0'
         left='0'
         width='100%'
@@ -37,6 +36,7 @@ const Login = ({
           <LoginForm csrfToken={csrfToken} />
         </Flex>
       </Flex>
+    </>
   );
 };
 
