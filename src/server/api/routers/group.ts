@@ -22,8 +22,8 @@ export const groupRouter = createTRPCRouter({
         include: {
           user: {
             select: {
-              id: true,
               nim: true,
+              role: true,
               profile: {
                 select: {
                   name: true,
@@ -76,8 +76,8 @@ export const groupRouter = createTRPCRouter({
       include: {
         user: {
           select: {
-            id: true,
             nim: true,
+            role: true,
             profile: {
               select: {
                 name: true,
