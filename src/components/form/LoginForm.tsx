@@ -19,7 +19,7 @@ import { useRouter } from 'next/router';
 import { UserRole } from '@prisma/client';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
-import { type getServerSideProps } from '~/pages/login';
+import { type getServerSideProps } from '~/pages';
 import { colors } from '~/styles/component/colors';
 
 interface FormValues {
@@ -63,7 +63,9 @@ const LoginForm = ({
 
   const handleRedirect = () => {
     const role = session?.user.role;
-    role === UserRole.MENTOR ? void router.push('/') : void router.push('/');
+    role === UserRole.MENTOR
+      ? void router.push('/attendance')
+      : void router.push('/live');
   };
 
   const handleError = (message: string) => {
@@ -97,7 +99,7 @@ const LoginForm = ({
     reset();
   };
 
-  if (session) handleRedirect();
+  // if (session) handleRedirect();
 
   return (
     <Flex

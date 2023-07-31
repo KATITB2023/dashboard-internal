@@ -1,14 +1,48 @@
-import { type NextPage } from 'next';
+import { Flex } from '@chakra-ui/react';
+import {
+  type InferGetServerSidePropsType,
+  type GetServerSidePropsContext
+} from 'next';
+import { getCsrfToken } from 'next-auth/react';
+import LoginBackground from '~/components/background/LoginBackground';
+import LoginForm from '~/components/form/LoginForm';
 import Layout from '~/layout';
-import { Button } from "@chakra-ui/react";
-import { signIn } from "next-auth/react";
 
-const Home: NextPage = () => {
-  return <Layout title='Home'>
-    Ini Home
-    <Button onClick={() => void signIn()}>Sign in</Button>
-  </Layout>;
-  
+const Login = ({
+  csrfToken
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  return (
+    <Layout title='Login'>
+      <Flex
+        position='absolute'
+        // paddingTop='6rem'
+        top='0'
+        left='0'
+        width='100%'
+        backgroundColor='gray.600'
+        zIndex='-100'
+        minHeight='100vh'
+      >
+        <Flex
+          justifyContent={{ base: 'center', md: 'end' }}
+          alignItems='center'
+          paddingInline={{ base: '0', md: '8rem' }}
+          width='100%'
+        >
+          <LoginBackground />
+          <LoginForm csrfToken={csrfToken} />
+        </Flex>
+      </Flex>
+    </Layout>
+  );
 };
 
-export default Home;
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const csrfToken = await getCsrfToken(context);
+  return {
+    props: { csrfToken }
+  };
+};
+export default Login;
