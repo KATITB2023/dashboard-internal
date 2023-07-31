@@ -83,7 +83,7 @@ const ForgotPasswordForm = () => {
             <Text>Password</Text>
           </VStack>
         </Heading>
-        <Text>Tenang saja, Voyagers!</Text>
+        <Text>Tenang saja, Spacefarers!</Text>
       </Box>
       <form onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
         <VStack spacing={12}>
