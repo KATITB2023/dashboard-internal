@@ -34,14 +34,25 @@ export const groupRouter = createTRPCRouter({
               submission: {
                 select: {
                   id: true,
-                  filePath: true
+                  filePath: true,
+                  assignment: {
+                    select: {
+                      type: true,
+                      title: true
+                    }
+                  }
                 }
               },
               attendance: {
                 select: {
                   id: true,
                   date: true,
-                  status: true
+                  status: true,
+                  event: {
+                    select: {
+                      title: true
+                    }
+                  }
                 }
               }
             }
@@ -88,14 +99,25 @@ export const groupRouter = createTRPCRouter({
             submission: {
               select: {
                 id: true,
-                filePath: true
+                filePath: true,
+                assignment: {
+                  select: {
+                    type: true,
+                    title: true
+                  }
+                }
               }
             },
             attendance: {
               select: {
                 id: true,
                 date: true,
-                status: true
+                status: true,
+                event: {
+                  select: {
+                    title: true
+                  }
+                }
               }
             }
           }
