@@ -23,10 +23,12 @@ import Layout from '~/layout';
 import { api } from '~/utils/api';
 
 export default function AttendancePageAdmin() {
-  const dayListQuery = api.attendance.getEventList.useQuery(); //proc ini ngereturn entri dari table attendanceDay
+  const dayListQuery = api.attendance.adminGetAttendanceDayList.useQuery();
   const dayList = dayListQuery.data;
 
-  const addDayMutation = () => {}; //func buat mutate, proc ini belum ada di backend
+  const addDayMutation = api.attendance.adminAddAttendanceDay.useMutation();
+  const removeDayMutation =
+    api.attendance.adminDeleteAttendanceDay.useMutation();
 
   const [dayId, setDayId] = useState<string>();
   const dayChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {

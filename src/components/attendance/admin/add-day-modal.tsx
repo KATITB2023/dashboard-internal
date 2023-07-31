@@ -1,10 +1,12 @@
 import {
+  Button,
   Flex,
   Input,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Table,
@@ -14,6 +16,7 @@ import {
   Tr
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import { api } from '~/utils/api';
 
 interface AddDayModalProps {
   isOpen: boolean;
@@ -21,6 +24,8 @@ interface AddDayModalProps {
 }
 
 export const AddDayModal = ({ isOpen, onClose }: AddDayModalProps) => {
+  const addDayMutation = api.attendance.adminAddAttendanceDay.useMutation();
+
   const [dayNameInput, setDayNameInput] = useState<string>();
   const [dayDateInput, setDayDateInput] = useState<Date>();
 
@@ -30,6 +35,17 @@ export const AddDayModal = ({ isOpen, onClose }: AddDayModalProps) => {
 
   const dayDateChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDayDateInput(new Date(e.target.value));
+  };
+
+  const addDayClickHandler = () => {
+    if (!dayNameInput || !dayDateInput) {
+      return;
+    }
+
+    addDayMutation.mutate({
+      name: dayNameInput,
+      time: new Date(dayDateInput)
+    });
   };
 
   console.log(isOpen);

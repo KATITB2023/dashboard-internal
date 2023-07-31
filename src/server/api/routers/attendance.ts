@@ -4,12 +4,11 @@ import { z } from 'zod';
 import {
   createTRPCRouter,
   mentorProcedure,
-  adminProcedure,
-  protectedProcedure
+  publicProcedure
 } from '~/server/api/trpc';
 
 export const attendanceRouter = createTRPCRouter({
-  adminAddAttendanceDay: adminProcedure
+  adminAddAttendanceDay: publicProcedure
     .input(
       z.object({
         name: z.string(),
@@ -37,7 +36,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminEditAttendanceDay: adminProcedure
+  adminEditAttendanceDay: publicProcedure
     .input(
       z.object({
         dayId: z.string().uuid(),
@@ -69,7 +68,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminDeleteAttendanceDay: adminProcedure
+  adminDeleteAttendanceDay: publicProcedure
     .input(
       z.object({
         dayId: z.string().uuid()
@@ -94,7 +93,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminAddAttendanceEvent: adminProcedure
+  adminAddAttendanceEvent: publicProcedure
     .input(
       z.object({
         dayId: z.string().uuid(),
@@ -172,7 +171,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminEditAttendanceEvent: adminProcedure
+  adminEditAttendanceEvent: publicProcedure
     .input(
       z.object({
         eventId: z.string().uuid(),
@@ -206,7 +205,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminDeleteAttendanceEvent: adminProcedure
+  adminDeleteAttendanceEvent: publicProcedure
     .input(
       z.object({
         eventId: z.string().uuid()
@@ -232,7 +231,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminGetAttendanceRecord: adminProcedure
+  adminGetAttendanceRecord: publicProcedure
     .input(
       z.object({
         dayId: z.string().uuid().optional(),
@@ -283,7 +282,7 @@ export const attendanceRouter = createTRPCRouter({
       });
     }),
 
-  adminGetAttendanceBaseOnDayId: adminProcedure
+  adminGetAttendanceBaseOnDayId: publicProcedure
     .input(z.object({ dayId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const dayId = input.dayId;
@@ -300,11 +299,11 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminGetAttendanceDayList: adminProcedure.query(async ({ ctx }) => {
+  adminGetAttendanceDayList: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.attendanceDay.findMany();
   }),
 
-  adminGetAttendanceEventList: adminProcedure
+  adminGetAttendanceEventList: publicProcedure
     .input(z.object({ dayId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.attendanceEvent.findMany({
@@ -312,7 +311,7 @@ export const attendanceRouter = createTRPCRouter({
       });
     }),
 
-  mentorGetEventList: mentorProcedure.query(async ({ ctx }) => {
+  mentorGetEventList: publicProcedure.query(async ({ ctx }) => {
     try {
       const attendanceDaysWithEvents = await ctx.prisma.attendanceDay.findMany({
         include: {
@@ -328,7 +327,7 @@ export const attendanceRouter = createTRPCRouter({
     }
   }),
 
-  editAttendanceRecord: protectedProcedure
+  editAttendanceRecord: publicProcedure
     .input(
       z.object({
         attendanceId: z.string().uuid(),

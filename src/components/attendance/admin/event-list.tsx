@@ -44,11 +44,6 @@ interface EventListProps {
   dayId: string;
 }
 
-type eventQueryInput =
-  RouterInputs['attendance']['adminGetAttendanceBaseOnDayId'];
-
-type eventListType = RouterOutputs['attendance']['getEventList'];
-
 export const EventList = ({ dayId }: EventListProps) => {
   const eventListQuery = api.attendance.adminGetAttendanceBaseOnDayId.useQuery({
     dayId: dayId
