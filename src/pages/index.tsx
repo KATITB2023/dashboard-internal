@@ -45,4 +45,5 @@ export const getServerSideProps = async (
     props: { csrfToken }
   };
 };
+
 export default Login;
