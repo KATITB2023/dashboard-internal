@@ -4,15 +4,18 @@ import {
   type GetServerSidePropsContext
 } from 'next';
 import { getCsrfToken } from 'next-auth/react';
+import Head from 'next/head';
 import LoginBackground from '~/components/background/LoginBackground';
 import LoginForm from '~/components/form/LoginForm';
-import Layout from '~/layout';
 
 const Login = ({
   csrfToken
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
-    <Layout title='Login'>
+    <>
+      <Head>
+        <title>Login - KAT ITB 2023</title>
+      </Head>
       <Flex
         position='absolute'
         // paddingTop='6rem'
@@ -33,7 +36,7 @@ const Login = ({
           <LoginForm csrfToken={csrfToken} />
         </Flex>
       </Flex>
-    </Layout>
+    </>
   );
 };
 
