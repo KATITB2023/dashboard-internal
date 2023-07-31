@@ -1,18 +1,11 @@
 import { Flex } from '@chakra-ui/react';
-import {
-  type InferGetServerSidePropsType,
-  type GetServerSidePropsContext
-} from 'next';
-import { getCsrfToken } from 'next-auth/react';
 import LoginBackground from '~/components/background/LoginBackground';
-import LoginForm from '~/components/form/LoginForm';
+import ForgotPasswordForm from '~/components/form/ForgetPasswordForm';
 import Layout from '~/layout';
 
-const Login = ({
-  csrfToken
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const ForgetPassword = () => {
   return (
-    <Layout title='Login'>
+    <Layout title='Forget Password'>
       <Flex
         position='absolute'
         // paddingTop='6rem'
@@ -30,19 +23,11 @@ const Login = ({
           width='100%'
         >
           <LoginBackground />
-          <LoginForm csrfToken={csrfToken} />
+          <ForgotPasswordForm />
         </Flex>
       </Flex>
     </Layout>
   );
 };
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
-  const csrfToken = await getCsrfToken(context);
-  return {
-    props: { csrfToken }
-  };
-};
-export default Login;
+export default ForgetPassword;
