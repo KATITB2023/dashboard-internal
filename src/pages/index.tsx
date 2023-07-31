@@ -15,6 +15,7 @@ const Login = ({
     <>
       <Head>
         <title>Login - KAT ITB 2023</title>
+        <link rel='icon' href='/favicon.ico' />
       </Head>
       <Flex
         position='absolute'
