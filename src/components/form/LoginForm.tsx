@@ -188,7 +188,7 @@ const LoginForm = ({
             Login
           </Button>
           <Link
-            href='/forget-password'
+            href='/forgot-password'
             fontSize={{ base: 'xs', md: 'sm' }}
             zIndex='2'
           >
