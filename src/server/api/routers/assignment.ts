@@ -225,7 +225,14 @@ export const assignmentRouter = createTRPCRouter({
     }),
 
   mentorGetAssignmentTitleList: mentorProcedure.query(async ({ ctx }) => {
-    // TODO: isi logic disini
+    const assignments = await ctx.prisma.assignment.findMany({
+      select: {
+        id: true,
+        title: true
+      },
+    });
+
+    return assignments;
   }),
 
   mentorSetAssignmentScore: mentorProcedure
