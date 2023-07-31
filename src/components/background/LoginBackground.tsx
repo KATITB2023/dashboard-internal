@@ -97,32 +97,33 @@ const LoginBackground = () => {
     >
       <Image
         src='/images/login/moon-bg.png'
-        height={{ base: 'auto', md: '90%' }}
-        width={{ base: '90%', md: 'auto' }}
+        height={{ base: 'auto', md: '110%' }}
+        width={{ base: '110%', md: 'auto' }}
+        maxWidth='110%'
         alt=''
-        top={{ base: '95%', md: '50%' }}
-        left={{ base: '50%', md: '5%' }}
+        top={{ base: '100%', md: '50%' }}
+        left={{ base: '50%', md: '0' }}
         brightness='0.6'
         animation={`${rotating} infinite 90s linear`}
       />
       <Image
         src='/images/login/stars-bg.png'
-        height={{ base: 'auto', md: '150%' }}
-        width={{ base: '150%', md: 'auto' }}
-        maxWidth='150%'
+        height={{ base: 'auto', md: '165%' }}
+        width={{ base: '165%', md: 'auto' }}
+        maxWidth='165%'
         alt=''
-        top={{ base: '95%', md: '50%' }}
-        left={{ base: '50%', md: '5%' }}
+        top={{ base: '100%', md: '50%' }}
+        left={{ base: '50%', md: '0' }}
         animation={`${rotating} infinite 120s linear`}
       />
       <Image
         src='/images/login/asteroids-bg.png'
-        height={{ base: 'auto', md: '150%' }}
-        width={{ base: '150%', md: 'auto' }}
-        maxWidth='150%'
+        height={{ base: 'auto', md: '165%' }}
+        width={{ base: '165%', md: 'auto' }}
+        maxWidth='165%'
         alt=''
-        top={{ base: '95%', md: '50%' }}
-        left={{ base: '50%', md: '5%' }}
+        top={{ base: '100%', md: '50%' }}
+        left={{ base: '50%', md: '0' }}
         animation={`${rotating} infinite 140s linear`}
       />
       <Image
