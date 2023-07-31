@@ -37,7 +37,6 @@ const Login = ({
           <LoginForm csrfToken={csrfToken} />
         </Flex>
       </Flex>
-    </>
   );
 };
 
@@ -49,4 +48,5 @@ export const getServerSideProps = async (
     props: { csrfToken }
   };
 };
+
 export default Login;
