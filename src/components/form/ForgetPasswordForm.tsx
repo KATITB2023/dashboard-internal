@@ -112,6 +112,7 @@ const ForgotPasswordForm = () => {
           <Button
             type='submit'
             width='8rem'
+            size={{ base: 'sm', md: 'md' }}
             isDisabled={!isDirty || !isValid}
             isLoading={isSubmitting}
             loadingText='Loading'
