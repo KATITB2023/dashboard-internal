@@ -68,18 +68,9 @@ const ForgotPasswordForm = () => {
       direction='column'
       justifyContent='center'
       alignItems='center'
-      height='fit-content'
-      padding={{ base: '3rem 2rem', md: '6rem 4rem' }}
-      gap='2.5rem'
+      gap='3rem'
       position='relative'
-      overflow='hidden'
       zIndex='1'
-      boxShadow={{ base: 'none', md: '0px 0px 10px 0px #117584' }}
-      borderRadius='1rem'
-      backgroundImage={{ base: 'none', md: 'url("/images/login/form_bg.png")' }}
-      backgroundSize='cover'
-      backgroundRepeat='no-repeat'
-      backgroundPosition='center'
     >
       <Box textAlign='center' lineHeight='2em'>
         <Heading
@@ -95,7 +86,7 @@ const ForgotPasswordForm = () => {
         <Text>Tenang saja, Voyagers!</Text>
       </Box>
       <form onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
-        <VStack spacing={10}>
+        <VStack spacing={12}>
           <FormControl isInvalid={!!errors.email}>
             <Input
               type='email'

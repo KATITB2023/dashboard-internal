@@ -4,7 +4,6 @@ import {
   FormControl,
   FormErrorMessage,
   Heading,
-  Image,
   Input,
   InputGroup,
   InputRightElement,
@@ -107,18 +106,9 @@ const LoginForm = ({
       direction='column'
       justifyContent='center'
       alignItems='center'
-      height='fit-content'
-      padding={{ base: '3rem 2rem', md: '6rem 4rem' }}
-      gap='2.5rem'
+      gap='3rem'
       position='relative'
-      overflow='hidden'
       zIndex='1'
-      boxShadow={{ base: 'none', md: '0px 0px 10px 0px #117584' }}
-      borderRadius='1rem'
-      backgroundImage={{ base: 'none', md: 'url("/images/login/form_bg.png")' }}
-      backgroundSize='cover'
-      backgroundRepeat='no-repeat'
-      backgroundPosition='center'
     >
       <Heading
         size={{ base: 'xl', md: '3xl' }}
@@ -175,7 +165,7 @@ const LoginForm = ({
           direction='column'
           justifyContent='center'
           alignItems='center'
-          marginTop='2.5rem'
+          marginTop='3rem'
           gap='.5rem'
         >
           <Button
@@ -198,28 +188,6 @@ const LoginForm = ({
           </Link>
         </Flex>
       </form>
-      <Image
-        display={{ base: 'none', md: 'block' }}
-        src='/images/login/planet_ijo.png'
-        alt=''
-        position='absolute'
-        left='0'
-        bottom='0'
-        height='40%'
-        draggable='false'
-        loading='lazy'
-      />
-      <Image
-        display={{ base: 'none', md: 'block' }}
-        src='/images/login/planet_biru.png'
-        alt=''
-        position='absolute'
-        right='0'
-        bottom='0'
-        height='30%'
-        draggable='false'
-        loading='lazy'
-      />
     </Flex>
   );
 };
