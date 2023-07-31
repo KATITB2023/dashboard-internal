@@ -1104,7 +1104,7 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@katitb2023/database@git+https://github.com/KATITB2023/database.git#7f9edecaf4c66866e0a753a7031bb60faf7de2c":
+"@katitb2023/database@git+https://github.com/KATITB2023/database.git#7f9edecaf4c66866e0a753a7031bb60faf7de2c4":
   version "1.0.0"
   resolved "git+https://github.com/KATITB2023/database.git#7f9edecaf4c66866e0a753a7031bb60faf7de2c4"
   dependencies:

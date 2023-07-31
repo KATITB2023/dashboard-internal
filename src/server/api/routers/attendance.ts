@@ -260,6 +260,19 @@ export const attendanceRouter = createTRPCRouter({
           student: {
             select: {
               nim: true,
+              mentor: {
+                select: {
+                  mentor: {
+                    select: {
+                      profile: {
+                        select: {
+                          name: true
+                        }
+                      }
+                    }
+                  }
+                }
+              },
               groupRelation: {
                 select: {
                   group: {

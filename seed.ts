@@ -219,8 +219,7 @@ async function main() {
     groups.map(async (group) => {
       return await prisma.group.create({
         data: {
-          group: group.group,
-          zoomLink: group.zoomLink
+          group: group.group
         }
       });
     })
@@ -329,6 +328,129 @@ async function main() {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           groupId: groupsData[getRandomInt(3)]!.id
         }
+      });
+    })
+  );
+
+  const studentGroup1 = await prisma.groupRelation.findMany({
+    where: {
+      group: {
+        group: 1
+      },
+      user: {
+        role: 'STUDENT'
+      }
+    },
+    select: {
+      userId: true
+    }
+  });
+
+  const mentorGroup1 = await prisma.groupRelation.findMany({
+    where: {
+      group: {
+        group: 1
+      },
+      user: {
+        role: 'MENTOR'
+      }
+    },
+    select: {
+      userId: true
+    }
+  });
+
+  await Promise.all(
+    studentGroup1.map((student) => {
+      return mentorGroup1.map(async (mentor) => {
+        return await prisma.studentMentor.create({
+          data: {
+            studentId: student.userId,
+            mentorId: mentor.userId
+          }
+        });
+      });
+    })
+  );
+
+  const studentGroup2 = await prisma.groupRelation.findMany({
+    where: {
+      group: {
+        group: 2
+      },
+      user: {
+        role: 'STUDENT'
+      }
+    },
+    select: {
+      userId: true
+    }
+  });
+
+  const mentorGroup2 = await prisma.groupRelation.findMany({
+    where: {
+      group: {
+        group: 2
+      },
+      user: {
+        role: 'MENTOR'
+      }
+    },
+    select: {
+      userId: true
+    }
+  });
+
+  await Promise.all(
+    studentGroup2.map((student) => {
+      return mentorGroup2.map(async (mentor) => {
+        return await prisma.studentMentor.create({
+          data: {
+            studentId: student.userId,
+            mentorId: mentor.userId
+          }
+        });
+      });
+    })
+  );
+
+  const studentGroup3 = await prisma.groupRelation.findMany({
+    where: {
+      group: {
+        group: 3
+      },
+      user: {
+        role: 'STUDENT'
+      }
+    },
+    select: {
+      userId: true
+    }
+  });
+
+  const mentorGroup3 = await prisma.groupRelation.findMany({
+    where: {
+      group: {
+        group: 3
+      },
+      user: {
+        role: 'MENTOR'
+      }
+    },
+    select: {
+      userId: true
+    }
+  });
+
+  await Promise.all(
+    studentGroup3.map((student) => {
+      return mentorGroup3.map(async (mentor) => {
+        return await prisma.studentMentor.create({
+          data: {
+            studentId: student.userId,
+            mentorId: mentor.userId
+          }
+        });
       });
     })
   );

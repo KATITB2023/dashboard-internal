@@ -18,11 +18,5 @@ export const groupRouter = createTRPCRouter({
 
   mentorGetGroupData: mentorProcedure.query(async ({ ctx }) => {
     // TODO: isi logic disini
-  }),
-
-  mentorEditGroupName: mentorProcedure
-    .input(z.object({ name: z.string() }))
-    .mutation(async ({ ctx }) => {
-      // TODO: isi logic disini
-    })
+  })
 });
