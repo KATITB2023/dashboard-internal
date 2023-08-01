@@ -13,7 +13,7 @@ import {
 import React, { useState } from 'react';
 import type { ReactNode } from 'react';
 import Tooltip from './Tooltip';
-import type { Member } from '~/dummy_data/dummyData';
+import type { Member } from '~/component/group-information-management/dummyData';
 
 interface CellIdentifier {
   rowIndex: number;

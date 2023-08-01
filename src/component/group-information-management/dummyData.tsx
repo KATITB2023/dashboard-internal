@@ -1,4 +1,3 @@
-// dummyData.ts
 export interface Member {
   id: number;
   nim: string;
