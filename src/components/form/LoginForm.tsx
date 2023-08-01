@@ -126,7 +126,7 @@ const LoginForm = ({
               placeholder='NIM'
               {...register('nim', { required: 'NIM tidak boleh kosong' })}
               size={{ base: 'sm', md: 'md' }}
-              width={{ base: '15rem', md: '20rem' }}
+              width={{ base: '17.5rem', md: '25rem' }}
             />
             <FormErrorMessage>{errors.nim?.message}</FormErrorMessage>
           </FormControl>

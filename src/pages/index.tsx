@@ -29,7 +29,7 @@ const Login = ({
         <Flex
           justifyContent={{ base: 'center', md: 'end' }}
           alignItems='center'
-          paddingInline={{ base: '0', md: '10rem' }}
+          paddingInline={{ base: '0', md: '15vw' }}
           width='100%'
         >
           <LoginBackground />

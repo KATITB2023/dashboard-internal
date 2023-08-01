@@ -95,7 +95,7 @@ const ForgotPasswordForm = () => {
                 required: 'Email tidak boleh kosong',
                 validate: (value) => value.includes('@') || 'Email tidak valid'
               })}
-              width={{ base: '15rem', md: '20rem' }}
+              width={{ base: '17.5rem', md: '25rem' }}
               size={{ base: 'sm', md: 'md' }}
             />
             <FormErrorMessage>{errors.email?.message}</FormErrorMessage>

@@ -16,7 +16,7 @@ const ForgetPassword = () => {
       <Flex
         justifyContent={{ base: 'center', md: 'end' }}
         alignItems='center'
-        paddingInline={{ base: '0', md: '8rem' }}
+        paddingInline={{ base: '0', md: '15vw' }}
         width='100%'
       >
         <LoginBackground />
