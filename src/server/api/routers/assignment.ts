@@ -229,7 +229,7 @@ export const assignmentRouter = createTRPCRouter({
       select: {
         id: true,
         title: true
-      },
+      }
     });
 
     return assignments;
