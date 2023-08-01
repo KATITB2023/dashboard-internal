@@ -126,11 +126,5 @@ export const groupRouter = createTRPCRouter({
     });
 
     return group;
-  }),
-
-  mentorEditGroupName: mentorProcedure
-    .input(z.object({ name: z.string() }))
-    .mutation(async ({ ctx }) => {
-      // TODO: isi logic disini
-    })
+  })
 });
