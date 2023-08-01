@@ -7,16 +7,15 @@
  * need to use are documented accordingly near the end.
  */
 
-import { UserRole } from "@prisma/client";
-import { initTRPC, TRPCError } from "@trpc/server";
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { type Session } from "next-auth";
-import superjson from "superjson";
-import { ZodError } from "zod";
-import { getServerAuthSession } from "~/server/auth";
-import { prisma } from "~/server/db";
-import { tracer } from "~/server/tracing";
-import { bucket } from "~/server/bucket";
+import { UserRole } from '@prisma/client';
+import { initTRPC, TRPCError } from '@trpc/server';
+import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
+import { type Session } from 'next-auth';
+import superjson from 'superjson';
+import { ZodError } from 'zod';
+import { getServerAuthSession } from '~/server/auth';
+import { prisma } from '~/server/db';
+import { tracer } from '~/server/tracing';
 
 /**
  * 1. CONTEXT
@@ -44,8 +43,7 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     prisma,
-    tracer,
-    bucket,
+    tracer
   };
 };
 
@@ -62,7 +60,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const session = await getServerAuthSession({ req, res });
 
   return createInnerTRPCContext({
-    session,
+    session
   });
 };
 
@@ -81,11 +79,10 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       ...shape,
       data: {
         ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
+        zodError: error.cause instanceof ZodError ? error.cause.flatten() : null
+      }
     };
-  },
+  }
 });
 
 /**
@@ -117,13 +114,13 @@ export const publicProcedure = t.procedure;
  */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
   return next({
     ctx: {
       // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
-    },
+      session: { ...ctx.session, user: ctx.session.user }
+    }
   });
 });
 
@@ -135,7 +132,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  */
 const isAdmin = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
   if (ctx.session.user.role !== UserRole.ADMIN) {
-    throw new TRPCError({ code: "FORBIDDEN" });
+    throw new TRPCError({ code: 'FORBIDDEN' });
   }
   return next();
 });
@@ -148,7 +145,20 @@ const isAdmin = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
  */
 const isMentor = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
   if (ctx.session.user.role !== UserRole.MENTOR) {
-    throw new TRPCError({ code: "FORBIDDEN" });
+    throw new TRPCError({ code: 'FORBIDDEN' });
+  }
+  return next();
+});
+
+/** Reusable middleware that enforces users have user role before running the procedure.
+ *
+ * It is safe to use despite the `unstable` prefix.
+ *
+ * @see https://trpc.io/docs/middleware
+ */
+const isEO = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
+  if (ctx.session.user.role !== UserRole.EO) {
+    throw new TRPCError({ code: 'FORBIDDEN' });
   }
   return next();
 });
@@ -182,3 +192,13 @@ export const adminProcedure = t.procedure.use(isAdmin);
  * @see https://trpc.io/docs/procedures
  */
 export const mentorProcedure = t.procedure.use(isMentor);
+
+/**
+ * Protected (user) procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to user role users, use this. It verifies
+ * the session is valid dan guarantees that the role is user.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const eoProcedure = t.procedure.use(isEO);
