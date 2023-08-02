@@ -50,7 +50,16 @@ export const assignmentRouter = createTRPCRouter({
           }
         },
         skip: (input.currentPage - 1) * input.limitPerPage,
-        take: input.limitPerPage
+        take: input.limitPerPage,
+        include: {
+          assignment: {
+            select: {
+              id: true,
+              type: true,
+              title: true
+            }
+          }
+        }
       });
 
       // Step 3: Apabila filterBy dan searchQuery ada, lakukan filter nomor 4 sesuai dengan filter dan query yang diminta. Kolom yang mungkin untuk di filter adalah Tugas, NIM, Nama.
@@ -101,14 +110,52 @@ export const assignmentRouter = createTRPCRouter({
             ]
           },
           skip: (input.currentPage - 1) * input.limitPerPage,
-          take: input.limitPerPage
+          take: input.limitPerPage,
+          include: {
+            assignment: {
+              select: {
+                id: true,
+                type: true,
+                title: true
+              }
+            }
+          }
         });
       }
-      return assignments;
+      return {
+        data: assignments,
+        metadata: {
+          total: assignments.length,
+          page: input.currentPage,
+          lastPage: Math.ceil(assignments.length / input.limitPerPage)
+        }
+      };
     }),
 
   adminGetAssignment: adminProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.assignment.findMany();
+    return await ctx.prisma.assignment.findMany({
+      include: {
+        submission: {
+          select: {
+            id: true,
+            filePath: true,
+            score: true,
+            student: {
+              select: {
+                nim: true,
+                profile: {
+                  select: {
+                    name: true,
+                    faculty: true,
+                    campus: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
   }),
 
   adminAddNewAssignment: adminProcedure
@@ -118,8 +165,8 @@ export const assignmentRouter = createTRPCRouter({
         type: z.nativeEnum(AssignmentType),
         filePath: z.string(),
         description: z.string(),
-        startTime: z.string().datetime(),
-        endTime: z.string().datetime()
+        startTime: z.coerce.date(),
+        endTime: z.coerce.date()
       })
     )
     .mutation(async ({ ctx, input }) => {

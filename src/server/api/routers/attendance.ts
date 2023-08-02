@@ -247,11 +247,39 @@ export const attendanceRouter = createTRPCRouter({
       const limitPerPage = input.limitPerPage;
       const offset = (currentPage - 1) * limitPerPage;
 
-      return await ctx.prisma.attendanceRecord.findMany({
+      const data = await ctx.prisma.attendanceRecord.findMany({
         where: {
           event: {
             dayId: input.dayId
-          }
+          },
+          student: {
+            nim: {
+              contains: input.filterBy === 'nim' ? input.searchQuery : '',
+              mode: 'insensitive'
+            },
+            profile: {
+              name: {
+                contains: input.filterBy === 'name' ? input.searchQuery : '',
+                mode: 'insensitive'
+              }
+            },
+            groupRelation: {
+              every: {
+                group: {
+                  group:
+                    input.filterBy === 'group'
+                      ? input.searchQuery
+                        ? parseInt(input.searchQuery)
+                        : undefined
+                      : undefined
+                }
+              }
+            }
+          },
+          status:
+            input.filterBy === 'status'
+              ? (input.searchQuery as unknown as Status)
+              : undefined
         },
         select: {
           id: true,
@@ -294,6 +322,15 @@ export const attendanceRouter = createTRPCRouter({
         take: limitPerPage,
         skip: offset
       });
+
+      return {
+        data: data,
+        metadata: {
+          total: data.length,
+          page: currentPage,
+          lastPage: Math.ceil(data.length / limitPerPage)
+        }
+      };
     }),
 
   adminGetAttendanceBaseOnDayId: adminProcedure
