@@ -62,6 +62,15 @@ export const leaderboardRouter = createTRPCRouter({
   mentorUpdateLeaderboardScore: mentorProcedure
     .input(z.object({ userId: z.string().uuid(), point: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      // TODO: isi logic disini
+      // TODO: mencari user berdasarkan userid yang diberikan
+      // Lakukan update kolom point pada tabel profile sesuai dengan input
+      return await ctx.prisma.profile.update({
+        where: {
+          userId: input.userId
+        },
+        data: {
+          point: input.point
+        }
+      });
     })
 });
