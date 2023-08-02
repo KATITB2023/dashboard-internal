@@ -122,7 +122,14 @@ export const assignmentRouter = createTRPCRouter({
           }
         });
       }
-      return assignments;
+      return {
+        data: assignments,
+        metadata: {
+          total: assignments.length,
+          page: input.currentPage,
+          lastPage: Math.ceil(assignments.length / input.limitPerPage)
+        }
+      };
     }),
 
   adminGetAssignment: adminProcedure.query(async ({ ctx }) => {
@@ -158,8 +165,8 @@ export const assignmentRouter = createTRPCRouter({
         type: z.nativeEnum(AssignmentType),
         filePath: z.string(),
         description: z.string(),
-        startTime: z.string().datetime(),
-        endTime: z.string().datetime()
+        startTime: z.coerce.date(),
+        endTime: z.coerce.date()
       })
     )
     .mutation(async ({ ctx, input }) => {
