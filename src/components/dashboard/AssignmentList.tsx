@@ -1,7 +1,7 @@
 import { Flex, Input, Image, Select, Box, IconButton } from '@chakra-ui/react';
 import { type ChangeEvent, useState } from 'react';
 import { FiArrowLeft, FiArrowRight } from 'react-icons/fi';
-import AssignmentListTable from './AssignmentListTable';
+import AssignmentListTable from '../../component/assignment-list/AssignmentListTable';
 
 // type for table data
 export interface AssignmentListProps {
