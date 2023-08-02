@@ -28,7 +28,8 @@ export const groupRouter = createTRPCRouter({
                 select: {
                   name: true,
                   faculty: true,
-                  campus: true
+                  campus: true,
+                  image: true
                 }
               },
               submission: {
@@ -93,7 +94,8 @@ export const groupRouter = createTRPCRouter({
               select: {
                 name: true,
                 faculty: true,
-                campus: true
+                campus: true,
+                image: true
               }
             },
             submission: {
