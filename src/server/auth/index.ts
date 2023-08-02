@@ -1,5 +1,7 @@
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { type GetServerSidePropsContext } from 'next';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { type GetServerSidePropsContext } from 'next';
 import {
   getServerSession,
   type NextAuthOptions,
@@ -124,6 +126,7 @@ export const authOptions: NextAuthOptions = {
           });
         }
         console.log('user:', user);
+        console.log('user:', user);
 
         const isValid = await compare(password, user.passwordHash);
         if (!isValid) {
@@ -141,7 +144,7 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   pages: {
-    // signIn: '/auth/signin',
+    signIn: '/'
   }
 };
 
