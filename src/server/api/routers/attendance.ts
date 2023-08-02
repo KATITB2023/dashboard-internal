@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { profile } from "console";
 import { z } from "zod";
 import {
   createTRPCRouter, adminProcedure, mentorProcedure
@@ -74,6 +75,30 @@ export const attendanceRouter = createTRPCRouter({
       })
       // mencari kehadiran dari anak didik mentor dan secara default menugurutkan berdasarkan 
       return await ctx.prisma.attendanceRecord.findMany({
+          select:{
+            student:{
+              select:{
+                groupRelation:{
+                  select:{
+                    group:{
+                      select:{
+                        group:true
+                      }
+                    }
+                  }
+                },
+                nim:true,
+                profile:{
+                  select:{
+                    name:true,
+                  }
+                }
+              }
+            },
+            date:true,
+            status:true,
+            reason:true,
+          },
           where: {
               student:{
                   groupRelation:{
@@ -100,8 +125,13 @@ export const attendanceRouter = createTRPCRouter({
           take: input.limitPerPage,
           orderBy:{
             student:{
-              "nim" : "asc",
+              nim: 'asc',
+              profile:{
+                name: input.sortBy === 'name'? 'asc':undefined,
+              }
             }, 
+            date: input.sortBy === 'date'? 'asc':undefined,
+            status: input.sortBy === 'status'? 'asc':undefined,
           }
       });
   }),
