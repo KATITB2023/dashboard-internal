@@ -52,10 +52,40 @@ const outlineButton: SystemStyleFunction = () => {
   };
 };
 
+const defaultBlueButton: SystemStyleFunction = () => {
+  return {
+    color: '#ffffff',
+    borderRadius: '12',
+    bg: '#2D3648',
+    _disabled: {
+      color: 'white',
+      bg: 'gray.400'
+    }
+  };
+};
+
+const outlineBlueButton: SystemStyleFunction = () => {
+  return {
+    color: '#2D3648',
+    borderWidth: '2px',
+    borderColor: '#2D3648',
+    bg: `#ffffff`,
+    borderRadius: '12',
+    _disabled: {
+      color: 'gray.500',
+      bg: 'transparent',
+      borderColor: 'gray.400'
+    }
+  };
+};
+``;
+
 export const Button: ComponentStyleConfig = {
   variants: {
     solid: defaultButton,
-    outline: outlineButton
+    outline: outlineButton,
+    solidBlue: defaultBlueButton,
+    outlineBlue: outlineBlueButton
   },
   defaultProps: {
     variant: 'solid'

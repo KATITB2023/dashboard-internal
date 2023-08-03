@@ -2,6 +2,7 @@ import ArticleCMS from '../pages/article-cms';
 import GroupInformation from '~/pages/group-information';
 import RekapAbsensi from '~/pages/rekap-absensi';
 import RekapPenilaian from '~/pages/rekap-penilaian';
+import Feeds from '~/pages/feeds';
 
 import Absensi from '../pages/absensi';
 import GroupManagement from '~/pages/group-management';
@@ -224,6 +225,12 @@ export const adminRoutes: SidebarRoute[] = [
     path: '/article-cms',
     icon: ArticleCMSIcon,
     component: <ArticleCMS />
+  },
+  {
+    name: 'Feeds',
+    path: '/feeds',
+    icon: GroupIcon,
+    component: <Feeds />
   }
 ];
 
@@ -251,5 +258,5 @@ export const mentorRoutes: SidebarRoute[] = [
     path: '/tambah-poin',
     icon: TambahPoinIcon,
     component: <TambahPoin />
-  }
+  },
 ];
