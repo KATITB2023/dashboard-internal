@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { type User, type Prisma } from "@prisma/client";
+import { type User, type Prisma } from '@prisma/client';
 
 export const softDeleteChangeFind: Prisma.Middleware<User> = async (
   params,
@@ -10,19 +10,19 @@ export const softDeleteChangeFind: Prisma.Middleware<User> = async (
   }
 
   if (
-    params.action === "findUnique" ||
-    params.action === "findFirst" ||
-    params.action === "findMany"
+    params.action === 'findUnique' ||
+    params.action === 'findFirst' ||
+    params.action === 'findMany'
   ) {
     // Add 'isDeleted' filter
     // ID filter maintained
     if (params.args.where !== undefined) {
       if (params.args.where.isDeleted === undefined) {
         // Exclude isDeleted records if they have not been explicitly requested
-        params.args.where["isDeleted"] = false;
+        params.args.where['isDeleted'] = false;
       }
     } else {
-      params.args["where"] = { isDeleted: false };
+      params.args['where'] = { isDeleted: false };
     }
   }
 
@@ -38,16 +38,16 @@ export const softDeleteChangeUpdate: Prisma.Middleware<User> = async (
   }
 
   if (
-    params.action === "update" ||
-    params.action === "updateMany" ||
-    params.action === "upsert"
+    params.action === 'update' ||
+    params.action === 'updateMany' ||
+    params.action === 'upsert'
   ) {
     // Add 'isDeleted' filter
     // ID filter maintained
     if (params.args.where !== undefined) {
-      params.args.where["isDeleted"] = false;
+      params.args.where['isDeleted'] = false;
     } else {
-      params.args["where"] = { isDeleted: false };
+      params.args['where'] = { isDeleted: false };
     }
   }
 
@@ -62,29 +62,29 @@ export const softDeleteChangeDelete: Prisma.Middleware<User> = async (
     params.args = {};
   }
 
-  if (params.action === "delete" || params.action === "deleteMany") {
-    if (params.action === "delete") {
+  if (params.action === 'delete' || params.action === 'deleteMany') {
+    if (params.action === 'delete') {
       // Change to updateMany - you cannot filter
       // by anything except ID / unique with findUnique
-      params.action = "update";
+      params.action = 'update';
     } else {
       // Delete many queries
-      params.action = "updateMany";
+      params.action = 'updateMany';
     }
 
     // Add 'isDeleted' filter
     // ID filter maintained
     if (params.args.where !== undefined) {
-      params.args.where["isDeleted"] = false;
+      params.args.where['isDeleted'] = false;
     } else {
-      params.args["where"] = { isDeleted: false };
+      params.args['where'] = { isDeleted: false };
     }
 
     // Set isDeleted to true
     if (params.args.data !== undefined) {
-      params.args.data["isDeleted"] = true;
+      params.args.data['isDeleted'] = true;
     } else {
-      params.args["data"] = { isDeleted: true };
+      params.args['data'] = { isDeleted: true };
     }
   }
 
@@ -100,15 +100,15 @@ export const versioningChangeUpdate: Prisma.Middleware<User> = async (
   }
 
   if (
-    params.action === "update" ||
-    params.action === "updateMany" ||
-    params.action === "upsert"
+    params.action === 'update' ||
+    params.action === 'updateMany' ||
+    params.action === 'upsert'
   ) {
     // Increment version
     if (params.args.data !== undefined) {
-      params.args.data["version"] = { increment: 1 };
+      params.args.data['version'] = { increment: 1 };
     } else {
-      params.args["data"] = { version: { increment: 1 } };
+      params.args['data'] = { version: { increment: 1 } };
     }
   }
 

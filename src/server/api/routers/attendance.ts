@@ -354,6 +354,90 @@ export const attendanceRouter = createTRPCRouter({
     return await ctx.prisma.attendanceDay.findMany();
   }),
 
+  mentorGetAttendace: mentorProcedure
+    .input(
+      z.object({
+        eventId: z.string().uuid().optional(),
+        filterBy: z.string().optional(),
+        searchQuery: z.string().optional(),
+        currentPage: z.number(),
+        limitPerPage: z.number(),
+        sortBy: z.string().optional()
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      //mencari groupId dari mentor
+      const groupId = await ctx.prisma.groupRelation.findFirst({
+        select: {
+          groupId: true
+        },
+        where: {
+          userId: ctx.session.user.id
+        }
+      });
+      // mencari kehadiran dari anak didik mentor dan secara default menugurutkan berdasarkan
+      return await ctx.prisma.attendanceRecord.findMany({
+        select: {
+          student: {
+            select: {
+              groupRelation: {
+                select: {
+                  group: {
+                    select: {
+                      group: true
+                    }
+                  }
+                }
+              },
+              nim: true,
+              profile: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          },
+          date: true,
+          status: true,
+          reason: true
+        },
+        where: {
+          student: {
+            groupRelation: {
+              some: {
+                groupId: groupId?.groupId
+                // group:{
+                //     groupRelation:{
+                //         some:{
+                //             userId:ctx.session.user.id
+                //         }
+                //     }
+                // }
+              }
+            },
+            nim: input.filterBy === 'nim' ? input.searchQuery : undefined,
+            profile: {
+              name: input.filterBy === 'name' ? input.searchQuery : undefined
+            }
+          },
+          eventId: input.eventId,
+          date: input.filterBy === 'date' ? input.searchQuery : undefined
+        },
+        skip: (input.currentPage - 1) * input.limitPerPage,
+        take: input.limitPerPage,
+        orderBy: {
+          student: {
+            nim: 'asc',
+            profile: {
+              name: input.sortBy === 'name' ? 'asc' : undefined
+            }
+          },
+          date: input.sortBy === 'date' ? 'asc' : undefined,
+          status: input.sortBy === 'status' ? 'asc' : undefined
+        }
+      });
+    }),
+
   adminGetAttendanceEventList: adminProcedure
     .input(z.object({ dayId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
