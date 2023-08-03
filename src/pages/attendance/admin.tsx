@@ -20,7 +20,7 @@ import React, { useState } from 'react';
 import { AddDayModal } from '~/components/attendance/admin/day-management/AddDayModal';
 import { DayManagementModal } from '~/components/attendance/admin/day-management/DayManagementModal';
 import { EventList } from '~/components/attendance/admin/event-management/EventList';
-import { Recap } from '~/components/attendance/admin/Recap';
+import { Recap } from '~/components/attendance/admin/recap/Recap';
 import Layout from '~/layout';
 import { api } from '~/utils/api';
 
