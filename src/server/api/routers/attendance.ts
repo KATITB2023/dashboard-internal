@@ -354,7 +354,7 @@ export const attendanceRouter = createTRPCRouter({
     return await ctx.prisma.attendanceDay.findMany();
   }),
 
-  mentorGetAttendace: mentorProcedure
+  mentorGetAttendance: mentorProcedure
     .input(
       z.object({
         eventId: z.string().uuid().optional(),
