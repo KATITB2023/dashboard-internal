@@ -376,7 +376,7 @@ export const attendanceRouter = createTRPCRouter({
         }
       });
       // mencari kehadiran dari anak didik mentor dan secara default menugurutkan berdasarkan
-      return await ctx.prisma.attendanceRecord.findMany({
+      const data = await ctx.prisma.attendanceRecord.findMany({
         select: {
           student: {
             select: {
@@ -415,9 +415,13 @@ export const attendanceRouter = createTRPCRouter({
                 // }
               }
             },
-            nim: input.filterBy === 'nim' ? input.searchQuery : undefined,
+            nim: {
+              contains: input.filterBy === 'nim' ? input.searchQuery : ''
+            },
             profile: {
-              name: input.filterBy === 'name' ? input.searchQuery : undefined
+              name: {
+                contains: input.filterBy === 'name' ? input.searchQuery : ''
+              }
             }
           },
           eventId: input.eventId,
@@ -427,7 +431,6 @@ export const attendanceRouter = createTRPCRouter({
         take: input.limitPerPage,
         orderBy: {
           student: {
-            nim: 'asc',
             profile: {
               name: input.sortBy === 'name' ? 'asc' : undefined
             }
@@ -436,6 +439,15 @@ export const attendanceRouter = createTRPCRouter({
           status: input.sortBy === 'status' ? 'asc' : undefined
         }
       });
+
+      return {
+        data: data,
+        metadata: {
+          total: data.length,
+          page: input.currentPage,
+          lastPage: Math.ceil(data.length / input.limitPerPage)
+        }
+      };
     }),
 
   adminGetAttendanceEventList: adminProcedure
