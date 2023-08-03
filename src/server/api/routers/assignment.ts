@@ -132,7 +132,19 @@ export const assignmentRouter = createTRPCRouter({
               select: {
                 id: true,
                 type: true,
-                title: true
+                title: true,
+                endTime: true
+              }
+            },
+            student: {
+              select: {
+                id: true,
+                nim: true,
+                profile: {
+                  select: {
+                    name: true
+                  }
+                }
               }
             }
           }
