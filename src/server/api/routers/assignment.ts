@@ -22,18 +22,22 @@ export const assignmentRouter = createTRPCRouter({
 
       // 1. Cari userId student yang punya userId mentor
       // Cari GroupRelation si mentorId
-      const groupRelationId = await ctx.prisma.groupRelation.findFirst({
+      const groupId = await ctx.prisma.groupRelation.findFirst({
         where: {
           userId: mentorId
         },
         select: {
-          id: true
+          groupId: true
         }
       });
 
+      if (!groupId) {
+        return undefined;
+      }
+
       const students = await ctx.prisma.groupRelation.findMany({
         where: {
-          groupId: groupRelationId?.id
+          groupId: groupId.groupId
         },
         select: {
           userId: true
@@ -56,7 +60,19 @@ export const assignmentRouter = createTRPCRouter({
             select: {
               id: true,
               type: true,
-              title: true
+              title: true,
+              endTime: true
+            }
+          },
+          student: {
+            select: {
+              id: true,
+              nim: true,
+              profile: {
+                select: {
+                  name: true
+                }
+              }
             }
           }
         }
