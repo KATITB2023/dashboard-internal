@@ -246,11 +246,39 @@ export const attendanceRouter = createTRPCRouter({
       const limitPerPage = input.limitPerPage;
       const offset = (currentPage - 1) * limitPerPage;
 
-      return await ctx.prisma.attendanceRecord.findMany({
+      const data = await ctx.prisma.attendanceRecord.findMany({
         where: {
           event: {
             dayId: input.dayId
-          }
+          },
+          student: {
+            nim: {
+              contains: input.filterBy === 'nim' ? input.searchQuery : '',
+              mode: 'insensitive'
+            },
+            profile: {
+              name: {
+                contains: input.filterBy === 'name' ? input.searchQuery : '',
+                mode: 'insensitive'
+              }
+            },
+            groupRelation: {
+              every: {
+                group: {
+                  group:
+                    input.filterBy === 'group'
+                      ? input.searchQuery
+                        ? parseInt(input.searchQuery)
+                        : undefined
+                      : undefined
+                }
+              }
+            }
+          },
+          status:
+            input.filterBy === 'status'
+              ? (input.searchQuery as unknown as Status)
+              : undefined
         },
         select: {
           id: true,
@@ -293,6 +321,15 @@ export const attendanceRouter = createTRPCRouter({
         take: limitPerPage,
         skip: offset
       });
+
+      return {
+        data: data,
+        metadata: {
+          total: data.length,
+          page: currentPage,
+          lastPage: Math.ceil(data.length / limitPerPage)
+        }
+      };
     }),
 
   adminGetAttendanceBaseOnDayId: publicProcedure
@@ -316,7 +353,91 @@ export const attendanceRouter = createTRPCRouter({
     return await ctx.prisma.attendanceDay.findMany();
   }),
 
-  adminGetAttendanceEventList: publicProcedure
+  mentorGetAttendace: mentorProcedure
+    .input(
+      z.object({
+        eventId: z.string().uuid().optional(),
+        filterBy: z.string().optional(),
+        searchQuery: z.string().optional(),
+        currentPage: z.number(),
+        limitPerPage: z.number(),
+        sortBy: z.string().optional()
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      //mencari groupId dari mentor
+      const groupId = await ctx.prisma.groupRelation.findFirst({
+        select: {
+          groupId: true
+        },
+        where: {
+          userId: ctx.session.user.id
+        }
+      });
+      // mencari kehadiran dari anak didik mentor dan secara default menugurutkan berdasarkan
+      return await ctx.prisma.attendanceRecord.findMany({
+        select: {
+          student: {
+            select: {
+              groupRelation: {
+                select: {
+                  group: {
+                    select: {
+                      group: true
+                    }
+                  }
+                }
+              },
+              nim: true,
+              profile: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          },
+          date: true,
+          status: true,
+          reason: true
+        },
+        where: {
+          student: {
+            groupRelation: {
+              some: {
+                groupId: groupId?.groupId
+                // group:{
+                //     groupRelation:{
+                //         some:{
+                //             userId:ctx.session.user.id
+                //         }
+                //     }
+                // }
+              }
+            },
+            nim: input.filterBy === 'nim' ? input.searchQuery : undefined,
+            profile: {
+              name: input.filterBy === 'name' ? input.searchQuery : undefined
+            }
+          },
+          eventId: input.eventId,
+          date: input.filterBy === 'date' ? input.searchQuery : undefined
+        },
+        skip: (input.currentPage - 1) * input.limitPerPage,
+        take: input.limitPerPage,
+        orderBy: {
+          student: {
+            nim: 'asc',
+            profile: {
+              name: input.sortBy === 'name' ? 'asc' : undefined
+            }
+          },
+          date: input.sortBy === 'date' ? 'asc' : undefined,
+          status: input.sortBy === 'status' ? 'asc' : undefined
+        }
+      });
+    }),
+
+  adminGetAttendanceEventList: adminProcedure
     .input(z.object({ dayId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.attendanceEvent.findMany({
