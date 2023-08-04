@@ -17,7 +17,6 @@ import {
   useToast
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { AddDayModal } from '~/components/attendance/admin/day-management/AddDayModal';
 import { DayManagementModal } from '~/components/attendance/admin/day-management/DayManagementModal';
 import { EventList } from '~/components/attendance/admin/event-management/EventList';
 import { Recap } from '~/components/attendance/admin/recap/Recap';
@@ -28,7 +27,7 @@ export default function AttendancePageAdmin() {
   const toast = useToast();
 
   const dayListQuery = api.attendance.adminGetAttendanceDayList.useQuery();
-  const dayList = dayListQuery.data;
+  const dayList = dayListQuery.data || [];
 
   const addDayMutation = api.attendance.adminAddAttendanceDay.useMutation();
   const editDayMutation = api.attendance.adminEditAttendanceDay.useMutation();
@@ -54,6 +53,8 @@ export default function AttendancePageAdmin() {
       name: dayName,
       time: dayDate
     });
+
+    dayListQuery.refetch();
   };
 
   const editDay = async (id: string, name: string, date: Date) => {
@@ -101,11 +102,9 @@ export default function AttendancePageAdmin() {
       status: 'success',
       duration: 2000
     });
-  };
 
-  if (!dayList) {
-    return <div>Loading...</div>;
-  }
+    dayListQuery.refetch();
+  };
 
   // function for custom tab
   const Tab = React.forwardRef((props: TabProps, ref) => {

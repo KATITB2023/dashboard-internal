@@ -40,11 +40,7 @@ export const EventList = ({ day, dayList }: EventListProps) => {
     dayId: day.id
   });
 
-  let eventList = eventListQuery.data; // ini eventlist kalo undefined kenapa bjir
-
-  if (!eventList) {
-    eventList = [];
-  }
+  const eventList = eventListQuery.data || [];
 
   const addEventMutation = api.attendance.adminAddAttendanceEvent.useMutation();
   const editEventMutation =
