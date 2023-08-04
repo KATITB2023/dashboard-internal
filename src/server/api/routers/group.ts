@@ -9,6 +9,13 @@ import {
 export const groupRouter = createTRPCRouter({
   adminGetGroupList: adminProcedure.query(async ({ ctx }) => {
     // TODO: isi logic disini
+    const groups = await ctx.prisma.group.findMany({
+      select: {
+        id: true,
+        group: true
+      }
+    });
+    return groups;
   }),
 
   adminGetGroupData: adminProcedure
