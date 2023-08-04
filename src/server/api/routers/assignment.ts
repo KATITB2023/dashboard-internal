@@ -22,15 +22,6 @@ export const assignmentRouter = createTRPCRouter({
       const limitPerPage = input.limitPerPage;
       const offset = (currentPage - 1) * limitPerPage;
 
-      const studentIds = await ctx.prisma.studentMentor.findMany({
-        where: {
-          mentorId: ctx.session.user.id
-        },
-        select: {
-          studentId: true
-        }
-      });
-
       if (input.filterBy && input.searchQuery) {
         let where = {};
 
@@ -75,8 +66,12 @@ export const assignmentRouter = createTRPCRouter({
           where: {
             AND: [
               {
-                studentId: {
-                  in: studentIds.map((student) => student.studentId)
+                student: {
+                  student: {
+                    some: {
+                      mentorId: ctx.session.user.id
+                    }
+                  }
                 }
               },
               where
@@ -119,8 +114,12 @@ export const assignmentRouter = createTRPCRouter({
 
       const data = await ctx.prisma.assignmentSubmission.findMany({
         where: {
-          studentId: {
-            in: studentIds.map((student) => student.studentId)
+          student: {
+            student: {
+              some: {
+                mentorId: ctx.session.user.id
+              }
+            }
           }
         },
         skip: offset,
