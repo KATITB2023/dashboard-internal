@@ -323,12 +323,48 @@ export const attendanceRouter = createTRPCRouter({
         skip: offset
       });
 
+      const total = await ctx.prisma.attendanceRecord.count({
+        where: {
+          event: {
+            dayId: input.dayId
+          },
+          student: {
+            nim: {
+              contains: input.filterBy === 'nim' ? input.searchQuery : '',
+              mode: 'insensitive'
+            },
+            profile: {
+              name: {
+                contains: input.filterBy === 'name' ? input.searchQuery : '',
+                mode: 'insensitive'
+              }
+            },
+            groupRelation: {
+              every: {
+                group: {
+                  group:
+                    input.filterBy === 'group'
+                      ? input.searchQuery
+                        ? parseInt(input.searchQuery)
+                        : undefined
+                      : undefined
+                }
+              }
+            }
+          },
+          status:
+            input.filterBy === 'status'
+              ? (input.searchQuery as unknown as Status)
+              : undefined
+        }
+      });
+
       return {
         data: data,
         metadata: {
-          total: data.length,
+          total: total,
           page: currentPage,
-          lastPage: Math.ceil(data.length / limitPerPage)
+          lastPage: Math.ceil(total / limitPerPage)
         }
       };
     }),
@@ -375,6 +411,11 @@ export const attendanceRouter = createTRPCRouter({
           userId: ctx.session.user.id
         }
       });
+
+      if (!groupId) {
+        return undefined;
+      }
+
       // mencari kehadiran dari anak didik mentor dan secara default menugurutkan berdasarkan
       const data = await ctx.prisma.attendanceRecord.findMany({
         select: {
@@ -405,14 +446,7 @@ export const attendanceRouter = createTRPCRouter({
           student: {
             groupRelation: {
               some: {
-                groupId: groupId?.groupId
-                // group:{
-                //     groupRelation:{
-                //         some:{
-                //             userId:ctx.session.user.id
-                //         }
-                //     }
-                // }
+                groupId: groupId.groupId
               }
             },
             nim: {
@@ -440,12 +474,34 @@ export const attendanceRouter = createTRPCRouter({
         }
       });
 
+      const total = await ctx.prisma.attendanceRecord.count({
+        where: {
+          student: {
+            groupRelation: {
+              some: {
+                groupId: groupId.groupId
+              }
+            },
+            nim: {
+              contains: input.filterBy === 'nim' ? input.searchQuery : ''
+            },
+            profile: {
+              name: {
+                contains: input.filterBy === 'name' ? input.searchQuery : ''
+              }
+            }
+          },
+          eventId: input.eventId,
+          date: input.filterBy === 'date' ? input.searchQuery : undefined
+        }
+      });
+
       return {
         data: data,
         metadata: {
-          total: data.length,
+          total: total,
           page: input.currentPage,
-          lastPage: Math.ceil(data.length / input.limitPerPage)
+          lastPage: Math.ceil(total / input.limitPerPage)
         }
       };
     }),

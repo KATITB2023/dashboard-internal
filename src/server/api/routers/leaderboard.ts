@@ -1,9 +1,5 @@
 import { z } from 'zod';
-import {
-  adminProcedure,
-  createTRPCRouter,
-  mentorProcedure
-} from '~/server/api/trpc';
+import { createTRPCRouter, mentorProcedure } from '~/server/api/trpc';
 
 export const leaderboardRouter = createTRPCRouter({
   mentorGetLeaderboardData: mentorProcedure
@@ -27,7 +23,7 @@ export const leaderboardRouter = createTRPCRouter({
         return undefined;
       }
 
-      return await ctx.prisma.user.findMany({
+      const data = await ctx.prisma.user.findMany({
         where: {
           role: 'STUDENT',
           groupRelation: {
@@ -57,6 +53,34 @@ export const leaderboardRouter = createTRPCRouter({
         take: input.limitPerPage,
         skip: offset
       });
+
+      const total = await ctx.prisma.user.count({
+        where: {
+          role: 'STUDENT',
+          groupRelation: {
+            every: {
+              groupId: groupRelation.groupId
+            }
+          },
+          nim: {
+            contains: input.filterBy === 'nim' ? input.searchQuery : ''
+          },
+          profile: {
+            name: {
+              contains: input.filterBy === 'name' ? input.searchQuery : ''
+            }
+          }
+        }
+      });
+
+      return {
+        data: data,
+        metadata: {
+          total: total,
+          page: input.currentPage,
+          lastPage: Math.ceil(total / input.limitPerPage)
+        }
+      };
     }),
 
   mentorUpdateLeaderboardScore: mentorProcedure

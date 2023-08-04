@@ -328,7 +328,7 @@ export const assignmentRouter = createTRPCRouter({
           });
         });
 
-        const updatePoint = await ctx.prisma.$transaction(async (tx) => {
+        await ctx.prisma.$transaction(async (tx) => {
           return await tx.profile.update({
             where: { userId: updatedSubmission.studentId },
             data: { point: { increment: score } }
