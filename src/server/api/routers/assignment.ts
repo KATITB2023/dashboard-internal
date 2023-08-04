@@ -102,12 +102,29 @@ export const assignmentRouter = createTRPCRouter({
           }
         });
 
+        const total = await ctx.prisma.assignmentSubmission.count({
+          where: {
+            AND: [
+              {
+                student: {
+                  student: {
+                    some: {
+                      mentorId: ctx.session.user.id
+                    }
+                  }
+                }
+              },
+              where
+            ]
+          }
+        });
+
         return {
           data: filteredData,
           metadata: {
-            total: filteredData.length,
+            total: total,
             page: input.currentPage,
-            lastPage: Math.ceil(filteredData.length / input.limitPerPage)
+            lastPage: Math.ceil(total / input.limitPerPage)
           }
         };
       }
@@ -147,12 +164,24 @@ export const assignmentRouter = createTRPCRouter({
         }
       });
 
+      const total = await ctx.prisma.assignmentSubmission.count({
+        where: {
+          student: {
+            student: {
+              some: {
+                mentorId: ctx.session.user.id
+              }
+            }
+          }
+        }
+      });
+
       return {
         data: data,
         metadata: {
-          total: data.length,
+          total: total,
           page: input.currentPage,
-          lastPage: Math.ceil(data.length / input.limitPerPage)
+          lastPage: Math.ceil(total / input.limitPerPage)
         }
       };
     }),
