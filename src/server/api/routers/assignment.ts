@@ -18,43 +18,112 @@ export const assignmentRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const mentorId = ctx.session.user.id;
+      const currentPage = input.currentPage;
+      const limitPerPage = input.limitPerPage;
+      const offset = (currentPage - 1) * limitPerPage;
 
-      // 1. Cari userId student yang punya userId mentor
-      // Cari GroupRelation si mentorId
-      const groupId = await ctx.prisma.groupRelation.findFirst({
-        where: {
-          userId: mentorId
-        },
-        select: {
-          groupId: true
+      if (input.filterBy && input.searchQuery) {
+        let where = {};
+
+        switch (input.filterBy) {
+          case 'Tugas':
+            where = {
+              assignment: {
+                title: {
+                  contains: input.filterBy === 'Tugas' ? input.searchQuery : '',
+                  mode: 'insensitive'
+                }
+              }
+            };
+            break;
+          case 'NIM':
+            where = {
+              student: {
+                nim: {
+                  contains: input.filterBy === 'NIM' ? input.searchQuery : ''
+                }
+              }
+            };
+            break;
+          case 'Nama':
+            where = {
+              student: {
+                profile: {
+                  name: {
+                    contains:
+                      input.filterBy === 'Nama' ? input.searchQuery : '',
+                    mode: 'insensitive'
+                  }
+                }
+              }
+            };
+            break;
+          default:
+            break;
         }
-      });
 
-      if (!groupId) {
-        return undefined;
+        const filteredData = await ctx.prisma.assignmentSubmission.findMany({
+          where: {
+            AND: [
+              {
+                student: {
+                  student: {
+                    some: {
+                      mentorId: ctx.session.user.id
+                    }
+                  }
+                }
+              },
+              where
+            ]
+          },
+          skip: offset,
+          take: limitPerPage,
+          include: {
+            assignment: {
+              select: {
+                id: true,
+                type: true,
+                title: true,
+                endTime: true
+              }
+            },
+            student: {
+              select: {
+                id: true,
+                nim: true,
+                profile: {
+                  select: {
+                    name: true
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        return {
+          data: filteredData,
+          metadata: {
+            total: filteredData.length,
+            page: input.currentPage,
+            lastPage: Math.ceil(filteredData.length / input.limitPerPage)
+          }
+        };
       }
 
-      const students = await ctx.prisma.groupRelation.findMany({
+      const data = await ctx.prisma.assignmentSubmission.findMany({
         where: {
-          groupId: groupId.groupId
-        },
-        select: {
-          userId: true
-        }
-      });
-
-      const studentIds = students.map((student) => student.userId);
-
-      // Step 2: Cari semua baris dari tabel AssignmentSubmission dengan userId student yang didapatkan. Limit pengambilan sesuai limitPerPage, dan lakukan offset data sesuai dengan currentPage. Rumus offset adalah (currentPage - 1) * limitPerPage
-      let assignments = await ctx.prisma.assignmentSubmission.findMany({
-        where: {
-          studentId: {
-            in: studentIds
+          student: {
+            student: {
+              some: {
+                mentorId: ctx.session.user.id
+              }
+            }
           }
         },
-        skip: (input.currentPage - 1) * input.limitPerPage,
-        take: input.limitPerPage,
+        skip: offset,
+        take: limitPerPage,
         include: {
           assignment: {
             select: {
@@ -78,84 +147,12 @@ export const assignmentRouter = createTRPCRouter({
         }
       });
 
-      // Step 3: Apabila filterBy dan searchQuery ada, lakukan filter nomor 4 sesuai dengan filter dan query yang diminta. Kolom yang mungkin untuk di filter adalah Tugas, NIM, Nama.
-      if (input.filterBy && input.searchQuery) {
-        let where = {};
-
-        switch (input.filterBy) {
-          case 'Tugas':
-            where = {
-              task: {
-                contains: input.searchQuery,
-                mode: 'insensitive'
-              }
-            };
-            break;
-          case 'NIM':
-            where = {
-              student: {
-                nim: {
-                  contains: input.searchQuery
-                }
-              }
-            };
-            break;
-          case 'Nama':
-            where = {
-              student: {
-                name: {
-                  contains: input.searchQuery,
-                  mode: 'insensitive'
-                }
-              }
-            };
-            break;
-          default:
-            break;
-        }
-
-        assignments = await ctx.prisma.assignmentSubmission.findMany({
-          where: {
-            AND: [
-              {
-                studentId: {
-                  in: studentIds
-                }
-              },
-              where
-            ]
-          },
-          skip: (input.currentPage - 1) * input.limitPerPage,
-          take: input.limitPerPage,
-          include: {
-            assignment: {
-              select: {
-                id: true,
-                type: true,
-                title: true,
-                endTime: true
-              }
-            },
-            student: {
-              select: {
-                id: true,
-                nim: true,
-                profile: {
-                  select: {
-                    name: true
-                  }
-                }
-              }
-            }
-          }
-        });
-      }
       return {
-        data: assignments,
+        data: data,
         metadata: {
-          total: assignments.length,
+          total: data.length,
           page: input.currentPage,
-          lastPage: Math.ceil(assignments.length / input.limitPerPage)
+          lastPage: Math.ceil(data.length / input.limitPerPage)
         }
       };
     }),
