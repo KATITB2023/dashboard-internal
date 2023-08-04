@@ -12,6 +12,7 @@ export const groupRouter = createTRPCRouter({
     const groups = await ctx.prisma.group.findMany({
       select: {
         id: true,
+        group: true
       }
     });
     return groups;
