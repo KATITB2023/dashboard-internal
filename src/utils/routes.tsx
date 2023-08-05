@@ -8,7 +8,7 @@ import GroupManagement from '~/pages/group-management';
 import Penilaian from '~/pages/penilaian';
 import TambahPoin from '~/pages/tambah-poin';
 
-import { SidebarRoute } from '~/component/sidebar/Links';
+import { type SidebarRoute } from '~/components/sidebar/Links';
 
 const PenilaianIcon = (
   <svg

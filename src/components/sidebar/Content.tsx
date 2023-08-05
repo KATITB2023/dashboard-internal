@@ -2,7 +2,7 @@
 import { Box, Flex, Stack, Button } from '@chakra-ui/react';
 import Links from './Links';
 import Image from 'next/image';
-import { SidebarProps } from '~/component/sidebar/Links';
+import { type SidebarProps } from '~/components/sidebar/Links';
 
 export function SidebarContent(props: SidebarProps) {
   const { routes } = props;
@@ -17,7 +17,7 @@ export function SidebarContent(props: SidebarProps) {
         marginBottom={50}
       >
         <Image
-          src='/img/sidebar/logo.svg'
+          src='/images/sidebar/logo.svg'
           width={223}
           height={97}
           alt='logo oskm'
@@ -39,7 +39,7 @@ export function SidebarContent(props: SidebarProps) {
         <Button>
           <Box mr={2}>
             <Image
-              src='/img/sidebar/exit-icon.svg'
+              src='/images/sidebar/exit-icon.svg'
               alt='exit icon'
               width={20}
               height={20}

@@ -9,6 +9,13 @@ import {
 export const groupRouter = createTRPCRouter({
   adminGetGroupList: adminProcedure.query(async ({ ctx }) => {
     // TODO: isi logic disini
+    const groups = await ctx.prisma.group.findMany({
+      select: {
+        id: true,
+        group: true
+      }
+    });
+    return groups;
   }),
 
   adminGetGroupData: adminProcedure
@@ -28,7 +35,8 @@ export const groupRouter = createTRPCRouter({
                 select: {
                   name: true,
                   faculty: true,
-                  campus: true
+                  campus: true,
+                  image: true
                 }
               },
               submission: {
@@ -93,7 +101,8 @@ export const groupRouter = createTRPCRouter({
               select: {
                 name: true,
                 faculty: true,
-                campus: true
+                campus: true,
+                image: true
               }
             },
             submission: {
