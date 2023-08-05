@@ -237,6 +237,9 @@ export const assignmentRouter = createTRPCRouter({
             }
           }),
           ctx.prisma.user.findMany({
+            where: {
+              role: 'STUDENT'
+            },
             select: {
               id: true
             }
