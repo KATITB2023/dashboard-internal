@@ -25,11 +25,18 @@ import { api } from '~/utils/api';
 const AssignmentListTable = ({
   filteredData,
   recordPerPage,
-  page
+  page,
+  sortParams,
+  setSortParams
 }: {
   filteredData: AssignmentListProps[];
   recordPerPage: number;
   page: number;
+  sortParams: { params: 'title' | 'status'; order: number };
+  setSortParams: (params: {
+    params: 'title' | 'status';
+    order: number;
+  }) => void;
 }) => {
   const scoreRef = useRef<HTMLInputElement[]>([]);
   const tableRef = useRef<HTMLDivElement>(null);
@@ -111,8 +118,32 @@ const AssignmentListTable = ({
                       alignItems='center'
                       justifyContent='center'
                       cursor='pointer'
+                      onClick={() => {
+                        if (sortParams.params === 'title') {
+                          setSortParams({
+                            params: 'title',
+                            order: sortParams.order === 1 ? -1 : 1
+                          });
+                          return;
+                        }
+                        setSortParams({
+                          params: 'title',
+                          order: 1
+                        });
+                      }}
                     >
-                      Tugas <Icon as={FiChevronDown} marginLeft='.5rem' />
+                      Tugas{' '}
+                      <Icon
+                        as={FiChevronDown}
+                        marginLeft='.5rem'
+                        transform={
+                          sortParams.params === 'title' &&
+                          sortParams.order === -1
+                            ? 'rotate(180deg)'
+                            : 'rotate(0deg)'
+                        }
+                        transitionDuration='.2s'
+                      />
                     </Flex>
                   </Td>
                   <Td width='12%'>NIM</Td>
@@ -123,8 +154,26 @@ const AssignmentListTable = ({
                       alignItems='center'
                       justifyContent='center'
                       cursor='pointer'
+                      onClick={() => {
+                        if (sortParams.params === 'status') {
+                          setSortParams({
+                            params: 'status',
+                            order: sortParams.order === 1 ? -1 : 1
+                          });
+                          return;
+                        }
+                        setSortParams({
+                          params: 'status',
+                          order: 1
+                        });
+                      }}
                     >
-                      Status <Icon as={FiChevronDown} marginLeft='.5rem' />
+                      Status{' '}
+                      <Icon
+                        as={FiChevronDown}
+                        marginLeft='.5rem'
+                        transitionDuration='.2s'
+                      />
                     </Flex>
                   </Td>
                   <Td width='11%'>Nilai</Td>
@@ -177,7 +226,7 @@ const AssignmentListTable = ({
                         item.time.toLocaleTimeString('id')}
                     </Td>
                     <Td width='12%' textAlign='center'>
-                      {item.time > item.deadline ? 'Terlambat' : 'Tepat Waktu'}
+                      {item.status}
                     </Td>
                     <Td width='11%' textAlign='center'>
                       <Flex

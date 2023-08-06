@@ -34,7 +34,7 @@ export interface AssignmentListProps {
   name: string | undefined;
   score: number | null;
   time: Date;
-  deadline: Date;
+  status: 'Terlambat' | 'Tepat Waktu';
   filePath: string | null;
   title: string;
   type: string;
@@ -46,6 +46,10 @@ export default function Penilaian() {
   const [search, setSearch] = useState(''); // serach bar value
   const [filterBy, setFilterBy] = useState(''); // filter by value
   const [filterTugas, setFilterTugas] = useState(''); // filter tugas value
+  const [sortParams, setSortParams] = useState<{
+    params: 'title' | 'status';
+    order: number;
+  }>({ params: 'title', order: 0 }); // sort params asc, desc
   const searchValue = useDebounce(search); // debounced search value
 
   const [recordsPerPage, setRecordsPerPage] = useState(1000); // records per page
@@ -71,11 +75,24 @@ export default function Penilaian() {
       name: item.student.profile?.name,
       score: item.score,
       time: item.createdAt,
-      deadline: item.assignment.endTime,
+      status:
+        item.createdAt > item.assignment.endTime ? 'Terlambat' : 'Tepat Waktu',
       filePath: item.filePath,
       title: item.assignment.title,
       type: item.assignment.type
     })) || [];
+
+  const sortedDataList = dataList.sort((a, b) => {
+    const { params, order } = sortParams;
+    const rawReturnValue = () => {
+      if (params === 'title') {
+        return a.title.localeCompare(b.title);
+      }
+      return a.status.localeCompare(b.status);
+    };
+
+    return rawReturnValue() * order;
+  });
 
   return (
     <Layout type='mentor' title='Penilaian' fullBg={false}>
@@ -99,7 +116,7 @@ export default function Penilaian() {
                     setPage(1);
                   }}
                 >
-                  {totalData > 0 ? (
+                  {dataList.length > 0 ? (
                     <>
                       <option value={totalData}>All</option>
                       {Array(totalData)
@@ -190,9 +207,11 @@ export default function Penilaian() {
           </Flex>
         ) : dataList.length > 0 ? (
           <AssignmentListTable
-            filteredData={dataList}
+            filteredData={sortedDataList}
             recordPerPage={recordsPerPage}
             page={page}
+            sortParams={sortParams}
+            setSortParams={setSortParams}
           />
         ) : (
           <Box marginInline='auto'>Tidak ada data yang sesuai</Box>
