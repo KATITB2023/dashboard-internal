@@ -237,7 +237,7 @@ const AssignmentListTable = ({
                               ) {
                                 toast({
                                   title:
-                                    'Nilai harus berada diantara 0 dan 100',
+                                    'Nilai harus berada di antara 0 dan 100',
                                   status: 'warning',
                                   duration: 2000,
                                   isClosable: true,
