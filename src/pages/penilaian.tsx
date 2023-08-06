@@ -1,157 +1,90 @@
 import Layout from '~/layout/index';
-import { Flex, Input, Select, Box, IconButton } from '@chakra-ui/react';
+import {
+  Flex,
+  Input,
+  Select,
+  Box,
+  IconButton,
+  Spinner
+} from '@chakra-ui/react';
 import { type ChangeEvent, useState, useEffect } from 'react';
 import { FiArrowLeft, FiArrowRight } from 'react-icons/fi';
-import AssignmentListTable from '~/component/assignment-list/AssignmentListTable';
+import AssignmentListTable from '~/components/assignment-list/AssignmentListTable';
 import { api } from '~/utils/api';
-import { type AssignmentSubmission } from '@prisma/client';
+import { Header } from '~/components/Header';
+
+export function useDebounce<T>(value: T, delay?: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay || 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 export interface AssignmentListProps {
-  title: string;
+  id: string;
+  studentId: string;
   nim: string;
-  name: string;
-  timestamp: string;
-  status: string;
-  grade: string | null;
-  filePath?: string;
+  name: string | undefined;
+  score: number | null;
+  time: Date;
+  deadline: Date;
+  filePath: string | null;
+  title: string;
+  type: string;
 }
 
 export default function Penilaian() {
   // dummy data
-  const tableData: AssignmentListProps[] = [
-    {
-      title: 'Tentang Bangsa Indonesia',
-      nim: '123456789',
-      name: 'Anu',
-      timestamp: '2021-09-09',
-      status: 'Terlambat',
-      grade: '100'
-    },
-    {
-      title: 'Tentang Kita',
-      nim: '123456789',
-      name: 'Ani',
-      timestamp: '2021-09-09',
-      status: 'Tepat waktu',
-      grade: '92'
-    },
-    {
-      title: 'Tentang Bangsa Indonesia',
-      nim: '123456789',
-      name: 'Ana',
-      timestamp: '2021-09-09',
-      status: 'Terlambat',
-      grade: '90'
-    },
-    {
-      title: 'Wawancara',
-      nim: '123456789',
-      name: 'Anu',
-      timestamp: '2021-09-09',
-      status: 'Tepat waktu',
-      grade: null
-    },
-    {
-      title: 'Cari Jodoh',
-      nim: '123456789',
-      name: 'Ani',
-      timestamp: '2021-09-09',
-      status: 'Tepat waktu',
-      grade: '100'
-    },
-    {
-      title: 'Cari Jodoh',
-      nim: '123456789',
-      name: 'Ana',
-      timestamp: '2021-09-09',
-      status: 'Tepat waktu',
-      grade: null
-    },
-    {
-      title: 'Tentang Bangsa Indonesia',
-      nim: '123456789',
-      name: 'Anu',
-      timestamp: '2021-09-09',
-      status: 'Tepat waktu',
-      grade: '87'
-    },
-    {
-      title: 'Tentang Kita',
-      nim: '123456789',
-      name: 'Ani',
-      timestamp: '2021-09-09',
-      status: 'Terlambat',
-      grade: '70'
-    },
-    {
-      title: 'Cari Jodoh',
-      nim: '123456789',
-      name: 'Ana',
-      timestamp: '2021-09-09',
-      status: 'Tepat waktu',
-      grade: '86'
-    }
-  ];
 
-  const tugasList =
-    api.assignment.mentorGetAssignmentTitleList.useQuery().data || [];
-
-  const [seacrh, setSearch] = useState(''); // serach bar value
+  const [search, setSearch] = useState(''); // serach bar value
   const [filterBy, setFilterBy] = useState(''); // filter by value
   const [filterTugas, setFilterTugas] = useState(''); // filter tugas value
+  const searchValue = useDebounce(search); // debounced search value
 
-  const filteredData: AssignmentListProps[] = tableData.filter(
-    // filter data by type and search
-    (item: AssignmentListProps) => {
-      if (filterBy === 'Tugas') {
-        return item.title.toLowerCase().includes(filterTugas.toLowerCase());
-      } else if (filterBy === 'NIM') {
-        return item.nim.toLowerCase().includes(seacrh.toLowerCase());
-      } else if (filterBy === 'Nama') {
-        return item.name.toLowerCase().includes(seacrh.toLowerCase());
-      }
-      return true;
-    }
-  );
-
-  const [recordsPerPage, setRecordsPerPage] = useState(() =>
-    filteredData.length > 5 ? 5 : filteredData.length
-  ); // records per page
+  const [recordsPerPage, setRecordsPerPage] = useState(1000); // records per page
   const [page, setPage] = useState(1); // page number
 
   const data =
     api.assignment.mentorGetAssignment.useQuery({
       currentPage: page,
-      limitPerPage: recordsPerPage
-    }).data || [];
+      limitPerPage: recordsPerPage,
+      filterBy: filterBy,
+      searchQuery: filterBy === 'Tugas' ? filterTugas : searchValue
+    }) || [];
 
-  const dataList = data.map((item: AssignmentSubmission) => ({
-    id: item.id,
-    studentId: item.studentId,
-    score: item.score,
-    time: item.createdAt,
-    filePath: item.filePath,
-    title: item.assignmentId
-  }));
+  const tugasList =
+    api.assignment.mentorGetAssignmentTitleList.useQuery().data || [];
+  const totalData = data.data?.metadata.total || 0;
 
-  useEffect(() => {
-    if (dataList) {
-      console.log(dataList);
-    }
-  });
+  const dataList: AssignmentListProps[] =
+    data.data?.data.map((item) => ({
+      id: item.id,
+      studentId: item.studentId,
+      nim: item.student.nim,
+      name: item.student.profile?.name,
+      score: item.score,
+      time: item.createdAt,
+      deadline: item.assignment.endTime,
+      filePath: item.filePath,
+      title: item.assignment.title,
+      type: item.assignment.type
+    })) || [];
 
   return (
     <Layout type='mentor' title='Penilaian' fullBg={false}>
-      <Flex
-        backgroundColor='gray.200'
-        color='black'
-        padding='2rem 3rem'
-        gap='1.5rem'
-        direction='column'
-        borderRadius='2rem'
-        height='100%'
-      >
+      {/* wrapper */}
+
+      <Flex color='black' gap='1.75rem' direction='column' height='100%'>
+        <Header title='Penilaian' />
         <Flex justifyContent='space-between' alignItems='end'>
+          {/* records perpage select element */}
           <Flex>
             <label>
               <Flex alignItems='center' gap='.5rem'>
@@ -166,14 +99,17 @@ export default function Penilaian() {
                     setPage(1);
                   }}
                 >
-                  {filteredData.length > 0 ? (
-                    Array(filteredData.length)
-                      .fill(1)
-                      .map((_, index: number) => (
-                        <option key={index} value={index + 1}>
-                          {index + 1}
-                        </option>
-                      ))
+                  {totalData > 0 ? (
+                    <>
+                      <option value={totalData}>All</option>
+                      {Array(totalData)
+                        .fill(1)
+                        .map((_, index: number) => (
+                          <option key={index} value={index + 1}>
+                            {index + 1}
+                          </option>
+                        ))}
+                    </>
                   ) : (
                     <option value={0}>-</option>
                   )}
@@ -182,6 +118,7 @@ export default function Penilaian() {
               </Flex>
             </label>
           </Flex>
+          {/* filter select element */}
           <Flex gap='.5rem'>
             <label>
               <Select
@@ -191,9 +128,12 @@ export default function Penilaian() {
                 border='2px'
                 borderColor='gray.300'
                 cursor='pointer'
-                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                  setFilterBy(e.target.value)
-                }
+                onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                  setFilterBy(e.target.value);
+                  setSearch('');
+                  setFilterTugas('');
+                  setRecordsPerPage(totalData);
+                }}
               >
                 {['Tugas', 'NIM', 'Nama'].map((item: string) => (
                   <option key={item} value={item}>
@@ -207,10 +147,11 @@ export default function Penilaian() {
                 type='search'
                 placeholder='Search'
                 width='15rem'
-                value={seacrh}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setSearch(e.target.value)
-                }
+                value={search}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  setSearch(e.target.value);
+                  setRecordsPerPage(totalData);
+                }}
                 variant='outline'
                 border='2px'
                 borderColor='gray.300'
@@ -225,9 +166,10 @@ export default function Penilaian() {
                   borderColor='gray.300'
                   placeholder='Daftar Tugas'
                   cursor='pointer'
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                    setFilterTugas(e.target.value)
-                  }
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                    setFilterTugas(e.target.value);
+                    setRecordsPerPage(totalData);
+                  }}
                 >
                   {tugasList.map((item) => (
                     <option key={item.id} value={item.title}>
@@ -241,17 +183,23 @@ export default function Penilaian() {
         </Flex>
 
         {/* table */}
-        {filteredData.length > 0 ? (
+        {data.isLoading ? (
+          <Flex justifyContent='center'>
+            <Spinner />
+            <Box marginLeft='2rem'>Memuat data...</Box>
+          </Flex>
+        ) : dataList.length > 0 ? (
           <AssignmentListTable
-            filteredData={filteredData}
-            recordsPerPage={recordsPerPage}
+            filteredData={dataList}
+            recordPerPage={recordsPerPage}
             page={page}
           />
         ) : (
-          <Box marginInline='auto'> Tidak ada data yang sesuai </Box>
+          <Box marginInline='auto'>Tidak ada data yang sesuai</Box>
         )}
 
         <Flex alignItems='end' justifyContent='flex-end' gap='.5rem'>
+          {/* left arrow */}
           <IconButton
             variant='unstyled'
             display='flex'
@@ -267,6 +215,7 @@ export default function Penilaian() {
             }}
             visibility={page === 1 ? 'hidden' : 'visible'}
           />
+          {/* page select element */}
           <label>
             Halaman
             <Select
@@ -278,8 +227,8 @@ export default function Penilaian() {
                 setPage(parseInt(e.target.value))
               }
             >
-              {filteredData.length > 0 ? (
-                Array(Math.ceil(filteredData.length / recordsPerPage))
+              {totalData > 0 && recordsPerPage > 0 ? (
+                Array(Math.ceil(totalData / recordsPerPage))
                   .fill(1)
                   .map((_, index: number) => (
                     <option key={index} value={index + 1}>
@@ -291,6 +240,7 @@ export default function Penilaian() {
               )}
             </Select>
           </label>
+          {/* right arrow */}
           <IconButton
             variant='unstyled'
             display='flex'
@@ -305,8 +255,7 @@ export default function Penilaian() {
               setPage((prev) => prev + 1);
             }}
             visibility={
-              page === Math.ceil(filteredData.length / recordsPerPage) ||
-              filteredData.length === 0
+              page === Math.ceil(totalData / recordsPerPage) || totalData === 0
                 ? 'hidden'
                 : 'visible'
             }
