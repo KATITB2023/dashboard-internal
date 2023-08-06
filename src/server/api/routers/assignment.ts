@@ -8,8 +8,208 @@ import {
 } from '~/server/api/trpc';
 
 export const assignmentRouter = createTRPCRouter({
+  mentorGetAssignment: mentorProcedure
+    .input(
+      z.object({
+        filterBy: z.string().optional(),
+        searchQuery: z.string().optional(),
+        currentPage: z.number(),
+        limitPerPage: z.number()
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const currentPage = input.currentPage;
+      const limitPerPage = input.limitPerPage;
+      const offset = (currentPage - 1) * limitPerPage;
+
+      if (input.filterBy && input.searchQuery) {
+        let where = {};
+
+        switch (input.filterBy) {
+          case 'Tugas':
+            where = {
+              assignment: {
+                title: {
+                  contains: input.filterBy === 'Tugas' ? input.searchQuery : '',
+                  mode: 'insensitive'
+                }
+              }
+            };
+            break;
+          case 'NIM':
+            where = {
+              student: {
+                nim: {
+                  contains: input.filterBy === 'NIM' ? input.searchQuery : ''
+                }
+              }
+            };
+            break;
+          case 'Nama':
+            where = {
+              student: {
+                profile: {
+                  name: {
+                    contains:
+                      input.filterBy === 'Nama' ? input.searchQuery : '',
+                    mode: 'insensitive'
+                  }
+                }
+              }
+            };
+            break;
+          default:
+            break;
+        }
+
+        const filteredData = await ctx.prisma.assignmentSubmission.findMany({
+          where: {
+            AND: [
+              {
+                student: {
+                  student: {
+                    some: {
+                      mentorId: ctx.session.user.id
+                    }
+                  }
+                }
+              },
+              where
+            ]
+          },
+          skip: offset,
+          take: limitPerPage,
+          include: {
+            assignment: {
+              select: {
+                id: true,
+                type: true,
+                title: true,
+                endTime: true
+              }
+            },
+            student: {
+              select: {
+                id: true,
+                nim: true,
+                profile: {
+                  select: {
+                    name: true
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        const total = await ctx.prisma.assignmentSubmission.count({
+          where: {
+            AND: [
+              {
+                student: {
+                  student: {
+                    some: {
+                      mentorId: ctx.session.user.id
+                    }
+                  }
+                }
+              },
+              where
+            ]
+          }
+        });
+
+        return {
+          data: filteredData,
+          metadata: {
+            total: total,
+            page: input.currentPage,
+            lastPage: Math.ceil(total / input.limitPerPage)
+          }
+        };
+      }
+
+      const data = await ctx.prisma.assignmentSubmission.findMany({
+        where: {
+          student: {
+            student: {
+              some: {
+                mentorId: ctx.session.user.id
+              }
+            }
+          }
+        },
+        skip: offset,
+        take: limitPerPage,
+        include: {
+          assignment: {
+            select: {
+              id: true,
+              type: true,
+              title: true,
+              endTime: true
+            }
+          },
+          student: {
+            select: {
+              id: true,
+              nim: true,
+              profile: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
+        }
+      });
+
+      const total = await ctx.prisma.assignmentSubmission.count({
+        where: {
+          student: {
+            student: {
+              some: {
+                mentorId: ctx.session.user.id
+              }
+            }
+          }
+        }
+      });
+
+      return {
+        data: data,
+        metadata: {
+          total: total,
+          page: input.currentPage,
+          lastPage: Math.ceil(total / input.limitPerPage)
+        }
+      };
+    }),
+
   adminGetAssignment: adminProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.assignment.findMany();
+    return await ctx.prisma.assignment.findMany({
+      include: {
+        submission: {
+          select: {
+            id: true,
+            filePath: true,
+            score: true,
+            student: {
+              select: {
+                nim: true,
+                profile: {
+                  select: {
+                    name: true,
+                    faculty: true,
+                    campus: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
   }),
 
   adminAddNewAssignment: adminProcedure
@@ -19,8 +219,8 @@ export const assignmentRouter = createTRPCRouter({
         type: z.nativeEnum(AssignmentType),
         filePath: z.string(),
         description: z.string(),
-        startTime: z.string().datetime(),
-        endTime: z.string().datetime()
+        startTime: z.coerce.date(),
+        endTime: z.coerce.date()
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -126,7 +326,14 @@ export const assignmentRouter = createTRPCRouter({
     }),
 
   mentorGetAssignmentTitleList: mentorProcedure.query(async ({ ctx }) => {
-    // TODO: isi logic disini
+    const assignments = await ctx.prisma.assignment.findMany({
+      select: {
+        id: true,
+        title: true
+      }
+    });
+
+    return assignments;
   }),
 
   mentorSetAssignmentScore: mentorProcedure
@@ -139,24 +346,29 @@ export const assignmentRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { submissionId, score } = input;
 
-      const submission = await ctx.prisma.assignmentSubmission.findUnique({
-        where: { id: submissionId }
-      });
+      try {
+        const updatedSubmission = await ctx.prisma.$transaction(async (tx) => {
+          return await tx.assignmentSubmission.update({
+            where: { id: submissionId },
+            data: { score }
+          });
+        });
 
-      if (!submission) {
+        await ctx.prisma.$transaction(async (tx) => {
+          return await tx.profile.update({
+            where: { userId: updatedSubmission.studentId },
+            data: { point: { increment: score } }
+          });
+        });
+
+        return {
+          message: 'Score updated successfully'
+        };
+      } catch (error) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Submission not found'
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update the score'
         });
       }
-
-      const updatedSubmission = await ctx.prisma.$transaction(async (tx) => {
-        return await tx.assignmentSubmission.update({
-          where: { id: submissionId },
-          data: { score }
-        });
-      });
-
-      return updatedSubmission;
     })
 });

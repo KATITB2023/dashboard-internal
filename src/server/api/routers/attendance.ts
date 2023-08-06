@@ -4,12 +4,12 @@ import { z } from 'zod';
 import {
   createTRPCRouter,
   mentorProcedure,
-  adminProcedure,
-  protectedProcedure
+  publicProcedure,
+  adminProcedure
 } from '~/server/api/trpc';
 
 export const attendanceRouter = createTRPCRouter({
-  adminAddAttendanceDay: adminProcedure
+  adminAddAttendanceDay: publicProcedure
     .input(
       z.object({
         name: z.string(),
@@ -37,7 +37,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminEditAttendanceDay: adminProcedure
+  adminEditAttendanceDay: publicProcedure
     .input(
       z.object({
         dayId: z.string().uuid(),
@@ -69,7 +69,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminDeleteAttendanceDay: adminProcedure
+  adminDeleteAttendanceDay: publicProcedure
     .input(
       z.object({
         dayId: z.string().uuid()
@@ -94,7 +94,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminAddAttendanceEvent: adminProcedure
+  adminAddAttendanceEvent: publicProcedure
     .input(
       z.object({
         dayId: z.string().uuid(),
@@ -172,7 +172,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminEditAttendanceEvent: adminProcedure
+  adminEditAttendanceEvent: publicProcedure
     .input(
       z.object({
         eventId: z.string().uuid(),
@@ -206,7 +206,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminDeleteAttendanceEvent: adminProcedure
+  adminDeleteAttendanceEvent: publicProcedure
     .input(
       z.object({
         eventId: z.string().uuid()
@@ -232,7 +232,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminGetAttendanceRecord: adminProcedure
+  adminGetAttendanceRecord: publicProcedure
     .input(
       z.object({
         dayId: z.string().uuid().optional(),
@@ -247,11 +247,39 @@ export const attendanceRouter = createTRPCRouter({
       const limitPerPage = input.limitPerPage;
       const offset = (currentPage - 1) * limitPerPage;
 
-      return await ctx.prisma.attendanceRecord.findMany({
+      const data = await ctx.prisma.attendanceRecord.findMany({
         where: {
           event: {
             dayId: input.dayId
-          }
+          },
+          student: {
+            nim: {
+              contains: input.filterBy === 'nim' ? input.searchQuery : '',
+              mode: 'insensitive'
+            },
+            profile: {
+              name: {
+                contains: input.filterBy === 'name' ? input.searchQuery : '',
+                mode: 'insensitive'
+              }
+            },
+            groupRelation: {
+              every: {
+                group: {
+                  group:
+                    input.filterBy === 'group'
+                      ? input.searchQuery
+                        ? parseInt(input.searchQuery)
+                        : undefined
+                      : undefined
+                }
+              }
+            }
+          },
+          status:
+            input.filterBy === 'status'
+              ? (input.searchQuery as unknown as Status)
+              : undefined
         },
         select: {
           id: true,
@@ -261,6 +289,19 @@ export const attendanceRouter = createTRPCRouter({
           student: {
             select: {
               nim: true,
+              mentor: {
+                select: {
+                  mentor: {
+                    select: {
+                      profile: {
+                        select: {
+                          name: true
+                        }
+                      }
+                    }
+                  }
+                }
+              },
               groupRelation: {
                 select: {
                   group: {
@@ -281,9 +322,54 @@ export const attendanceRouter = createTRPCRouter({
         take: limitPerPage,
         skip: offset
       });
+
+      const total = await ctx.prisma.attendanceRecord.count({
+        where: {
+          event: {
+            dayId: input.dayId
+          },
+          student: {
+            nim: {
+              contains: input.filterBy === 'nim' ? input.searchQuery : '',
+              mode: 'insensitive'
+            },
+            profile: {
+              name: {
+                contains: input.filterBy === 'name' ? input.searchQuery : '',
+                mode: 'insensitive'
+              }
+            },
+            groupRelation: {
+              every: {
+                group: {
+                  group:
+                    input.filterBy === 'group'
+                      ? input.searchQuery
+                        ? parseInt(input.searchQuery)
+                        : undefined
+                      : undefined
+                }
+              }
+            }
+          },
+          status:
+            input.filterBy === 'status'
+              ? (input.searchQuery as unknown as Status)
+              : undefined
+        }
+      });
+
+      return {
+        data: data,
+        metadata: {
+          total: total,
+          page: currentPage,
+          lastPage: Math.ceil(total / limitPerPage)
+        }
+      };
     }),
 
-  adminGetAttendanceBaseOnDayId: adminProcedure
+  adminGetAttendanceBaseOnDayId: publicProcedure
     .input(z.object({ dayId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const dayId = input.dayId;
@@ -300,9 +386,125 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminGetAttendanceDayList: adminProcedure.query(async ({ ctx }) => {
+  adminGetAttendanceDayList: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.attendanceDay.findMany();
   }),
+
+  mentorGetAttendance: mentorProcedure
+    .input(
+      z.object({
+        eventId: z.string().uuid().optional(),
+        filterBy: z.string().optional(),
+        searchQuery: z.string().optional(),
+        currentPage: z.number(),
+        limitPerPage: z.number(),
+        sortBy: z.string().optional()
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      //mencari groupId dari mentor
+      const groupId = await ctx.prisma.groupRelation.findFirst({
+        select: {
+          groupId: true
+        },
+        where: {
+          userId: ctx.session.user.id
+        }
+      });
+
+      if (!groupId) {
+        return undefined;
+      }
+
+      // mencari kehadiran dari anak didik mentor dan secara default menugurutkan berdasarkan
+      const data = await ctx.prisma.attendanceRecord.findMany({
+        select: {
+          student: {
+            select: {
+              groupRelation: {
+                select: {
+                  group: {
+                    select: {
+                      group: true
+                    }
+                  }
+                }
+              },
+              nim: true,
+              profile: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          },
+          date: true,
+          status: true,
+          reason: true
+        },
+        where: {
+          student: {
+            groupRelation: {
+              some: {
+                groupId: groupId.groupId
+              }
+            },
+            nim: {
+              contains: input.filterBy === 'nim' ? input.searchQuery : ''
+            },
+            profile: {
+              name: {
+                contains: input.filterBy === 'name' ? input.searchQuery : ''
+              }
+            }
+          },
+          eventId: input.eventId,
+          date: input.filterBy === 'date' ? input.searchQuery : undefined
+        },
+        skip: (input.currentPage - 1) * input.limitPerPage,
+        take: input.limitPerPage,
+        orderBy: {
+          student: {
+            profile: {
+              name: input.sortBy === 'name' ? 'asc' : undefined
+            }
+          },
+          date: input.sortBy === 'date' ? 'asc' : undefined,
+          status: input.sortBy === 'status' ? 'asc' : undefined
+        }
+      });
+
+      const total = await ctx.prisma.attendanceRecord.count({
+        where: {
+          student: {
+            groupRelation: {
+              some: {
+                groupId: groupId.groupId
+              }
+            },
+            nim: {
+              contains: input.filterBy === 'nim' ? input.searchQuery : ''
+            },
+            profile: {
+              name: {
+                contains: input.filterBy === 'name' ? input.searchQuery : ''
+              }
+            }
+          },
+          eventId: input.eventId,
+          date: input.filterBy === 'date' ? input.searchQuery : undefined
+        }
+      });
+
+      return {
+        data: data,
+        metadata: {
+          total: total,
+          page: input.currentPage,
+          lastPage: Math.ceil(total / input.limitPerPage)
+        }
+      };
+    }),
 
   adminGetAttendanceEventList: adminProcedure
     .input(z.object({ dayId: z.string().uuid() }))
@@ -312,7 +514,7 @@ export const attendanceRouter = createTRPCRouter({
       });
     }),
 
-  mentorGetEventList: mentorProcedure.query(async ({ ctx }) => {
+  mentorGetEventList: publicProcedure.query(async ({ ctx }) => {
     try {
       const attendanceDaysWithEvents = await ctx.prisma.attendanceDay.findMany({
         include: {
@@ -328,7 +530,7 @@ export const attendanceRouter = createTRPCRouter({
     }
   }),
 
-  editAttendanceRecord: protectedProcedure
+  editAttendanceRecord: publicProcedure
     .input(
       z.object({
         attendanceId: z.string().uuid(),
