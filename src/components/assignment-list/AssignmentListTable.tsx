@@ -49,8 +49,7 @@ const AssignmentListTable = ({
   const mutation = api.assignment.mentorSetAssignmentScore.useMutation({
     onSuccess: () => {
       toast({
-        title:
-          'Nilai berhasil disimpan, refresh halaman untuk melihat perubahan',
+        title: 'Nilai berhasil disimpan',
         status: 'success',
         duration: 2000,
         isClosable: true,
@@ -252,6 +251,9 @@ const AssignmentListTable = ({
                                   score: Number(scoreRef.current[index]?.value),
                                   submissionId: item.id
                                 });
+                                item.score = Number(
+                                  scoreRef.current[index]?.value
+                                );
                               }
                             }}
                           />
