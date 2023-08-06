@@ -26,19 +26,17 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { RouterInputs, RouterOutputs, api } from '~/utils/api';
-import { RecapRow } from './RecapRow';
+import { MentorRecapRow } from './MentorRecapRow';
 import { Status } from '@prisma/client';
 
-type recordListQueryInputs =
-  RouterInputs['attendance']['adminGetAttendanceRecord'];
-type recordListQueryOutput =
-  RouterOutputs['attendance']['adminGetAttendanceRecord']['data'][0];
+type mentorGetAttendanceRecordOutput =
+  RouterOutputs['attendance']['mentorGetAttendance']['data'];
 
-interface RecapProps {
+interface MentorRecapProps {
   dayId: string;
 }
 
-export const Recap = ({ dayId }: RecapProps) => {
+export const MentorRecap = ({ dayId }: MentorRecapProps) => {
   const toast = useToast();
 
   const editRecordMutation = api.attendance.editAttendanceRecord.useMutation();
@@ -48,8 +46,8 @@ export const Recap = ({ dayId }: RecapProps) => {
   const [filterBy, setFilterBy] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const recordListQuery = api.attendance.adminGetAttendanceRecord.useQuery({
-    dayId: dayId,
+  const recordListQuery = api.attendance.mentorGetAttendance.useQuery({
+    /* dayId: dayId, */
     currentPage: page,
     limitPerPage: rowPerPage,
     filterBy: filterBy,
@@ -76,13 +74,10 @@ export const Recap = ({ dayId }: RecapProps) => {
   };
 
   const filterByChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (e.target.value !== 'status' && filterBy === 'status')
-      setSearchQuery('');
     setFilterBy(e.target.value);
   };
 
   const searchQueryChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (filterBy === '' || filterBy === 'Filter By') return;
     setSearchQuery(e.target.value);
   };
 
@@ -121,7 +116,7 @@ export const Recap = ({ dayId }: RecapProps) => {
   };
 
   const editRecord = (
-    record: recordListQueryOutput,
+    record: mentorGetAttendanceRecordOutput,
     { newStatus, newDesc }: { newStatus: Status; newDesc: string },
     successFn: () => void
   ) => {
@@ -223,7 +218,7 @@ export const Recap = ({ dayId }: RecapProps) => {
         </Flex>
       </Flex>
       {recordListQuery.isLoading ? (
-        <Text w='100%' fontStyle='italic'>
+        <Text w='100%' fontStyle='italic' textAlign='center'>
           Loading...
         </Text>
       ) : recordListQuery.isError ? (
@@ -231,9 +226,7 @@ export const Recap = ({ dayId }: RecapProps) => {
           Error
         </Text>
       ) : recordList.length < 1 ? (
-        <Text w='100%' fontStyle='italic'>
-          Tidak ada data
-        </Text>
+        <Text w='100%'>Tidak ada data</Text>
       ) : (
         <Box
           borderRadius='12px'
@@ -246,8 +239,6 @@ export const Recap = ({ dayId }: RecapProps) => {
           <Table w='100%' variant='black'>
             <Thead>
               <Td w='5%'>No.</Td>
-              <Td w='3%'>Kel.</Td>
-              <Td w='12%'>Mentor</Td>
               <Td w='10%'>NIM</Td>
               <Td w='15%'>Nama</Td>
               <Td w='10%'>Tanggal</Td>
@@ -257,7 +248,7 @@ export const Recap = ({ dayId }: RecapProps) => {
             </Thead>
             <Tbody>
               {recordList.map((record, index) => (
-                <RecapRow
+                <MentorRecapRow
                   key={index}
                   record={record}
                   num={rowPerPage * (page - 1) + index + 1}

@@ -1,8 +1,7 @@
-import { Button, Td, Tr, useDisclosure } from '@chakra-ui/react';
-import { AttendanceRecord, Status } from '@prisma/client';
-import { MdEdit } from 'react-icons/md';
-import { EditEventModal } from './EditRecordModal';
+import { Td, Tr } from '@chakra-ui/react';
+import { Status } from '@prisma/client';
 import { RouterOutputs, api } from '~/utils/api';
+import { StatusBox } from './StatusBox';
 
 type getAttendanceRecordOutput =
   RouterOutputs['attendance']['adminGetAttendanceRecord']['data'][0];
@@ -10,33 +9,14 @@ type getAttendanceRecordOutput =
 interface EventListRowProps {
   record: getAttendanceRecordOutput;
   num: number;
-  editRecordDesc: (recordId: string, newDesc: string) => void;
-  editRecordStatus: (recordId: string, newStatus: string) => void;
+  editRecord: (
+    record: getAttendanceRecordOutput,
+    { newStatus, newDesc }: { newStatus: Status; newDesc: string },
+    successFn: () => void
+  ) => void;
 }
 
-export const RecapRow = ({
-  record,
-  num,
-  editRecordDesc,
-  editRecordStatus
-}: EventListRowProps) => {
-  const StatusBox = (status: Status) => {
-    switch (status) {
-      case Status.HADIR:
-        return <Button variant='mono-outline'>Hadir</Button>;
-      case Status.TIDAK_HADIR:
-        return <Button variant='mono-outline'>Tidak Hadir</Button>;
-      case Status.IZIN_PENDING:
-        return <Button>Izin Pending</Button>;
-      case Status.IZIN_DITERIMA:
-        return <Button>Izin Diterima</Button>;
-      case Status.IZIN_DITOLAK:
-        return <Button>Izin Ditolak</Button>;
-      default:
-        return <Button>Unknown</Button>;
-    }
-  };
-
+export const RecapRow = ({ record, num, editRecord }: EventListRowProps) => {
   const groupNumber =
     record.student.groupRelation.length > 0 &&
     record.student.groupRelation[0]?.group.group;
@@ -56,7 +36,7 @@ export const RecapRow = ({
       <Td>{nama || '-'}</Td>
       <Td>{record.date.toLocaleDateString()}</Td>
       <Td>{record.date.toLocaleTimeString()}</Td>
-      <Td>{StatusBox(record.status)}</Td>
+      <Td>{<StatusBox record={record} editRecord={editRecord} />}</Td>
       <Td>{record.reason}</Td>
     </Tr>
   );

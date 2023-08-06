@@ -213,7 +213,7 @@ export default function AttendancePageAdmin() {
                   />
                 </TabPanel>
                 <TabPanel>
-                  <Recap />
+                  <Recap dayId={dayId} />
                 </TabPanel>
               </TabPanels>
             </Box>

@@ -3,6 +3,7 @@ import { Box, Flex, Stack, Button } from '@chakra-ui/react';
 import Links from './Links';
 import Image from 'next/image';
 import { SidebarProps } from '~/component/sidebar/Links';
+import { useSession } from 'next-auth/react';
 
 export function SidebarContent(props: SidebarProps) {
   const { routes } = props;
