@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { motion } from 'framer-motion';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Box } from '@chakra-ui/react';
-import Sidebar from '~/component/sidebar/Sidebar';
+import Sidebar from '~/components/sidebar/Sidebar';
 import { adminRoutes, mentorRoutes } from '~/utils/routes';
 
 interface Props {
@@ -55,7 +55,6 @@ export default function Layout({ title, children, type, fullBg }: Props) {
           )}
         </Box>
       </motion.div>
-      {/* TODO: Add footer */}
     </>
   );
 }

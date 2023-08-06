@@ -27,7 +27,7 @@ const instantiatePrisma = () => {
   // Add middleware to handle optimistic concurrency control
   // Comment this out to disable optimistic concurrency control
   // prisma.$use(versioningChangeUpdate);
-
+  console.log("Prisma instantiated to database: " + env.DATABASE_URL)
   return prisma;
 };
 
