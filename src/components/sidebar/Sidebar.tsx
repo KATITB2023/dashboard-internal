@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@chakra-ui/react';
-import { SidebarContent } from '~/component/sidebar/Content';
-import { SidebarProps } from '~/component/sidebar/Links';
+import { SidebarContent } from '~/components/sidebar/Content';
+import { type SidebarProps } from '~/components/sidebar/Links';
 
 export function Sidebar(props: SidebarProps) {
   const { routes } = props;
@@ -10,7 +10,7 @@ export function Sidebar(props: SidebarProps) {
     <Box display='block' position='fixed' minH='100%'>
       <Box
         bg='black'
-        bgImage="url('/img/sidebar/bg.png')"
+        bgImage="url('/images/sidebar/bg.png')"
         bgPosition='bottom'
         transition='0.2s linear'
         w='298px'

@@ -20,7 +20,10 @@ export const leaderboardRouter = createTRPCRouter({
       });
 
       if (!groupRelation) {
-        return undefined;
+        return {
+          data: [],
+          metadata: {}
+        };
       }
 
       const data = await ctx.prisma.user.findMany({
