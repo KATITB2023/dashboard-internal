@@ -1,4 +1,3 @@
-import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import {
   adminProcedure,
@@ -82,10 +81,7 @@ export const groupRouter = createTRPCRouter({
     });
 
     if (!groupRelation) {
-      throw new TRPCError({
-        code: 'NOT_FOUND',
-        message: 'Group not found'
-      });
+      return {};
     }
 
     const group = await ctx.prisma.groupRelation.findMany({
@@ -93,6 +89,11 @@ export const groupRouter = createTRPCRouter({
         groupId: groupRelation.groupId
       },
       include: {
+        group: {
+          select: {
+            group: true
+          }
+        },
         user: {
           select: {
             nim: true,
