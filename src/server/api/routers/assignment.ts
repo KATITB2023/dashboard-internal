@@ -18,51 +18,21 @@ export const assignmentRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const mentorId = ctx.session.user.id;
+      const currentPage = input.currentPage;
+      const limitPerPage = input.limitPerPage;
+      const offset = (currentPage - 1) * limitPerPage;
 
-      // 1. Cari userId student yang punya userId mentor
-      // Cari GroupRelation si mentorId
-      const groupRelationId = await ctx.prisma.groupRelation.findFirst({
-        where: {
-          userId: mentorId
-        },
-        select: {
-          id: true
-        }
-      });
-
-      const students = await ctx.prisma.groupRelation.findMany({
-        where: {
-          groupId: groupRelationId?.id
-        },
-        select: {
-          userId: true
-        }
-      });
-
-      const studentIds = students.map((student) => student.userId);
-
-      // Step 2: Cari semua baris dari tabel AssignmentSubmission dengan userId student yang didapatkan. Limit pengambilan sesuai limitPerPage, dan lakukan offset data sesuai dengan currentPage. Rumus offset adalah (currentPage - 1) * limitPerPage
-      let assignments = await ctx.prisma.assignmentSubmission.findMany({
-        where: {
-          studentId: {
-            in: studentIds
-          }
-        },
-        skip: (input.currentPage - 1) * input.limitPerPage,
-        take: input.limitPerPage
-      });
-
-      // Step 3: Apabila filterBy dan searchQuery ada, lakukan filter nomor 4 sesuai dengan filter dan query yang diminta. Kolom yang mungkin untuk di filter adalah Tugas, NIM, Nama.
       if (input.filterBy && input.searchQuery) {
         let where = {};
 
         switch (input.filterBy) {
           case 'Tugas':
             where = {
-              task: {
-                contains: input.searchQuery,
-                mode: 'insensitive'
+              assignment: {
+                title: {
+                  contains: input.filterBy === 'Tugas' ? input.searchQuery : '',
+                  mode: 'insensitive'
+                }
               }
             };
             break;
@@ -70,7 +40,7 @@ export const assignmentRouter = createTRPCRouter({
             where = {
               student: {
                 nim: {
-                  contains: input.searchQuery
+                  contains: input.filterBy === 'NIM' ? input.searchQuery : ''
                 }
               }
             };
@@ -78,9 +48,12 @@ export const assignmentRouter = createTRPCRouter({
           case 'Nama':
             where = {
               student: {
-                name: {
-                  contains: input.searchQuery,
-                  mode: 'insensitive'
+                profile: {
+                  name: {
+                    contains:
+                      input.filterBy === 'Nama' ? input.searchQuery : '',
+                    mode: 'insensitive'
+                  }
                 }
               }
             };
@@ -89,26 +62,154 @@ export const assignmentRouter = createTRPCRouter({
             break;
         }
 
-        assignments = await ctx.prisma.assignmentSubmission.findMany({
+        const filteredData = await ctx.prisma.assignmentSubmission.findMany({
           where: {
             AND: [
               {
-                studentId: {
-                  in: studentIds
+                student: {
+                  student: {
+                    some: {
+                      mentorId: ctx.session.user.id
+                    }
+                  }
                 }
               },
               where
             ]
           },
-          skip: (input.currentPage - 1) * input.limitPerPage,
-          take: input.limitPerPage
+          skip: offset,
+          take: limitPerPage,
+          include: {
+            assignment: {
+              select: {
+                id: true,
+                type: true,
+                title: true,
+                endTime: true
+              }
+            },
+            student: {
+              select: {
+                id: true,
+                nim: true,
+                profile: {
+                  select: {
+                    name: true
+                  }
+                }
+              }
+            }
+          }
         });
+
+        const total = await ctx.prisma.assignmentSubmission.count({
+          where: {
+            AND: [
+              {
+                student: {
+                  student: {
+                    some: {
+                      mentorId: ctx.session.user.id
+                    }
+                  }
+                }
+              },
+              where
+            ]
+          }
+        });
+
+        return {
+          data: filteredData,
+          metadata: {
+            total: total,
+            page: input.currentPage,
+            lastPage: Math.ceil(total / input.limitPerPage)
+          }
+        };
       }
-      return assignments;
+
+      const data = await ctx.prisma.assignmentSubmission.findMany({
+        where: {
+          student: {
+            student: {
+              some: {
+                mentorId: ctx.session.user.id
+              }
+            }
+          }
+        },
+        skip: offset,
+        take: limitPerPage,
+        include: {
+          assignment: {
+            select: {
+              id: true,
+              type: true,
+              title: true,
+              endTime: true
+            }
+          },
+          student: {
+            select: {
+              id: true,
+              nim: true,
+              profile: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
+        }
+      });
+
+      const total = await ctx.prisma.assignmentSubmission.count({
+        where: {
+          student: {
+            student: {
+              some: {
+                mentorId: ctx.session.user.id
+              }
+            }
+          }
+        }
+      });
+
+      return {
+        data: data,
+        metadata: {
+          total: total,
+          page: input.currentPage,
+          lastPage: Math.ceil(total / input.limitPerPage)
+        }
+      };
     }),
 
   adminGetAssignment: adminProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.assignment.findMany();
+    return await ctx.prisma.assignment.findMany({
+      include: {
+        submission: {
+          select: {
+            id: true,
+            filePath: true,
+            score: true,
+            student: {
+              select: {
+                nim: true,
+                profile: {
+                  select: {
+                    name: true,
+                    faculty: true,
+                    campus: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
   }),
 
   adminAddNewAssignment: adminProcedure
@@ -118,8 +219,8 @@ export const assignmentRouter = createTRPCRouter({
         type: z.nativeEnum(AssignmentType),
         filePath: z.string(),
         description: z.string(),
-        startTime: z.string().datetime(),
-        endTime: z.string().datetime()
+        startTime: z.coerce.date(),
+        endTime: z.coerce.date()
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -253,7 +354,7 @@ export const assignmentRouter = createTRPCRouter({
           });
         });
 
-        const updatePoint = await ctx.prisma.$transaction(async (tx) => {
+        await ctx.prisma.$transaction(async (tx) => {
           return await tx.profile.update({
             where: { userId: updatedSubmission.studentId },
             data: { point: { increment: score } }

@@ -42,7 +42,9 @@ export const env = createEnv({
       (str) => (str ? +str : 1),
       // SAMPLER_RATIO must be a positive number
       z.number().positive().min(0).max(1)
-    )
+    ),
+    GHOST_CONTENT_API: z.string().min(1),
+    GHOST_ADMIN_API: z.string().min(1)
   },
 
   /**
@@ -66,7 +68,9 @@ export const env = createEnv({
     SESSION_MAXAGE: process.env.SESSION_MAXAGE,
     S_MAXAGE: process.env.S_MAXAGE,
     STALE_WHILE_REVALIDATE: process.env.STALE_WHILE_REVALIDATE,
-    SAMPLER_RATIO: process.env.SAMPLER_RATIO
+    SAMPLER_RATIO: process.env.SAMPLER_RATIO,
+    GHOST_CONTENT_API: process.env.GHOST_CONTENT_API,
+    GHOST_ADMIN_API: process.env.GHOST_ADMIN_API
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
