@@ -386,7 +386,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminGetAttendanceDayList: adminProcedure.query(async ({ ctx }) => {
+  getAttendanceDayList: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.attendanceDay.findMany();
   }),
 
@@ -413,7 +413,10 @@ export const attendanceRouter = createTRPCRouter({
       });
 
       if (!groupId) {
-        return undefined;
+        return {
+          data: [],
+          metadata: {}
+        };
       }
 
       // mencari kehadiran dari anak didik mentor dan secara default menugurutkan berdasarkan
