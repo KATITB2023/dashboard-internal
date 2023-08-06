@@ -184,7 +184,7 @@ export default function Penilaian() {
 
         {/* table */}
         {data.isLoading ? (
-          <Flex justifyContent='center'>
+          <Flex justifyContent='center' height='100%'>
             <Spinner />
             <Box marginLeft='2rem'>Memuat data...</Box>
           </Flex>
