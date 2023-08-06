@@ -1,14 +1,12 @@
 import { Flex, Image, Text } from '@chakra-ui/react';
-import Card from '~/component/404/Card';
+import Card from '~/components/404/Card';
+import ErrorBackground from '~/components/background/ErrorBackground';
 
 export default function Custom404() {
   return (
     <Flex
       width='100%'
-      height='100%'
-      bgImage='url(/img/404/error-background.png)'
-      bgRepeat='no-repeat'
-      bgSize='100% 100%'
+      height={{ base: 'auto', xl: '2129px' }}
       justifyContent='space-around'
       alignItems='center'
       flexDirection='column'
@@ -54,7 +52,7 @@ export default function Custom404() {
           </Text>
         </Flex>
       </Flex>
-      <Flex
+      {/* <Flex
         justifyContent='space-evenly'
         alignItems='center'
         textAlign='center'
@@ -72,13 +70,14 @@ export default function Custom404() {
         <Flex
           justifyContent='space-evenly'
           alignItems='center'
-          flexDirection={{ base: 'column', lg: 'row' }}
+          flexDirection={{ base: 'column', xl: 'row' }}
         >
           <Card />
           <Card />
           <Card />
         </Flex>
-      </Flex>
+      </Flex> */}
+      <ErrorBackground />
     </Flex>
   );
 }
