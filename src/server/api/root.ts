@@ -4,6 +4,7 @@ import { attendanceRouter } from '~/server/api/routers/attendance';
 import { groupRouter } from '~/server/api/routers/group';
 import { leaderboardRouter } from '~/server/api/routers/leaderboard';
 import { cmsRouter } from '~/server/api/routers/cms';
+import { feedsRouter } from './routers/feeds';
 /**
  * This is the primary router for your server.
  *
@@ -14,7 +15,8 @@ export const appRouter = createTRPCRouter({
   attendance: attendanceRouter,
   group: groupRouter,
   leaderboard: leaderboardRouter,
-  cms: cmsRouter
+  cms: cmsRouter,
+  feeds: feedsRouter
 });
 
 // export type definition of API
