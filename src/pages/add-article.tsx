@@ -7,12 +7,17 @@ import {
   Spacer,
   Button,
   FormErrorMessage,
-  FormControl
+  FormControl,
+  useToast,
+  Link
 } from '@chakra-ui/react';
 import { Header } from '~/components/Header';
-import React, { type BaseSyntheticEvent, useState } from 'react';
+import React, { useState } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { Markdown } from '~/components/Markdown';
+import { api } from '~/utils/api';
+import { TRPCError } from '@trpc/server';
+// import { useRouter } from "next/router";
 
 interface FormValue {
   title: string;
@@ -20,35 +25,65 @@ interface FormValue {
   featureImage: string;
 }
 
-export default function AddArticle() {
-  const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
+// TO DO:
+// belum handle feature image
+// markdownnya belum bs resize image hadeh
 
-  const { register, formState, getValues, handleSubmit } = useForm<FormValue>({
-    mode: 'onSubmit',
-    defaultValues: {
-      title: '',
-      body: '',
-      featureImage: ''
-    }
-  });
+export default function AddArticle() {
+  const toast = useToast();
+  // const router = useRouter();
+  const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
+  const addNewArticleMutation = api.cms.adminAddNewArticle.useMutation();
+
+  const { register, formState, getValues, handleSubmit, reset } =
+    useForm<FormValue>({
+      mode: 'onSubmit',
+      defaultValues: {
+        title: '',
+        body: '',
+        featureImage:
+          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9hxIGIRPVvvpnSQjDGNI0undzKEHbVYvWe-7bvt9W4A&s'
+      }
+    });
 
   const handlePreviewMode: React.MouseEventHandler<HTMLButtonElement> = () =>
     setIsPreviewMode(!isPreviewMode);
 
-  const submitArticle: SubmitHandler<FormValue> = (data: FormValue) => {
-    // TO DO : submit
-    console.log('submit article', data);
+  const submitArticle: SubmitHandler<FormValue> = async (
+    data: FormValue,
+    event
+  ) => {
+    event?.preventDefault();
+    try {
+      const res = await addNewArticleMutation.mutateAsync(data);
+      toast({
+        title: 'Success',
+        status: 'success',
+        description: res.message,
+        duration: 2000,
+        isClosable: true,
+        position: 'top'
+      });
+      reset();
+    } catch (error: unknown) {
+      if (!(error instanceof TRPCError)) throw error;
+      toast({
+        title: 'Failed',
+        status: 'error',
+        description: error.message,
+        duration: 2000,
+        isClosable: true,
+        position: 'top'
+      });
+    }
+    // void router.push("/article-cms");
   };
 
   return (
     <Layout type='admin' title='Article Management' fullBg={true}>
       <Header title='Article CMS' />
 
-      <form
-        onSubmit={(e: BaseSyntheticEvent) =>
-          void handleSubmit(submitArticle)(e)
-        }
-      >
+      <form onSubmit={(e) => void handleSubmit(submitArticle)(e)}>
         <Flex direction='column'>
           <Flex alignItems='center'>
             {isPreviewMode ? (
@@ -125,7 +160,7 @@ export default function AddArticle() {
             </FormControl>
           )}
           <Flex justifyContent='flex-end' marginY='8'>
-            {!isPreviewMode ? (
+            {!isPreviewMode && (
               <>
                 <Button
                   variant={'outlineBlue'}
@@ -134,11 +169,13 @@ export default function AddArticle() {
                 >
                   Confirm
                 </Button>
-                <Button variant={'solidBlue'}>Cancel</Button>
+                <Link href='/article-cms'>
+                  <Button variant={'solidBlue'}>Cancel</Button>
+                </Link>
               </>
-            ) : (
-              <Button onClick={handlePreviewMode}>Back</Button>
             )}
+
+            {isPreviewMode && <Button onClick={handlePreviewMode}>Back</Button>}
           </Flex>
         </Flex>
       </form>
