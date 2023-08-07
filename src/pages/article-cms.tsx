@@ -9,53 +9,103 @@ import {
   Flex,
   Select,
   Button,
-  Box
+  Box,
+  useToast,
+  Link
 } from '@chakra-ui/react';
+import { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { FiArrowLeft, FiArrowRight, FiChevronRight } from 'react-icons/fi';
+import { api } from '~/utils/api';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import { TRPCError } from '@trpc/server';
 
 export default function ArticleCMS() {
-  const markdownContent = `
-# This is a level 1 heading (h1)
+  const toast = useToast();
+  const [recordsNum, setRecordsNum] = useState(3);
+  const [currentPageNum, setCurrentPageNum] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const options = Array.from({ length: totalPages }, (_, index) => index + 1);
+  const getArticlesListQuery = api.cms.adminGetArticlesList.useQuery({
+    currentPage: currentPageNum,
+    limitPerPage: recordsNum,
+    searchQuery: ''
+  });
+  const deleteArticleMutation = api.cms.adminDeleteArticle.useMutation();
+  const articlesList = getArticlesListQuery.data;
 
-## This is a level 2 heading (h2)
+  const handleRecordsNumChange: React.ChangeEventHandler<HTMLInputElement> = (
+    e
+  ) => setRecordsNum(parseInt(e.target.value));
+  const handleCurrentPageNumChange: React.ChangeEventHandler<
+    HTMLSelectElement
+  > = (e) => setCurrentPageNum(parseInt(e.target.value));
 
-### This is a level 3 heading (h3)
+  useEffect(() => {
+    /// hmmm??
+    void getArticlesListQuery.refetch();
+  });
 
-#### This is a level 4 heading (h4)
+  useEffect(() => {
+    setTotalPages(articlesList?.meta.pagination.pages as number);
+  }, [articlesList]);
 
-##### This is a level 5 heading (h5)
+  const handleDeleteArticle = async (id: string) => {
+    console.log('delete article', id);
+    try {
+      const res = await deleteArticleMutation.mutateAsync({
+        articleId: id
+      });
 
-###### This is a level 6 heading (h6)
-`;
+      toast({
+        title: 'Success',
+        status: 'success',
+        description: res.message,
+        duration: 2000,
+        isClosable: true,
+        position: 'top'
+      });
+    } catch (error: unknown) {
+      if (!(error instanceof TRPCError)) throw error;
 
-  const handleDeleteArticle = () => {
-    // TO DO : delete
-    console.log('delete article');
+      toast({
+        title: 'Failed',
+        status: 'error',
+        description: error.message,
+        duration: 2000,
+        isClosable: true,
+        position: 'top'
+      });
+    }
   };
 
-  const handleEditArticle = () => {
-    // TO DO : submit
-    console.log('edit article');
+  const handleEditArticle = (id: string) => {
+    // TO DO : edit
+    // sebenarnya nunggu add article fixed dulu si
+    console.log('edit article', id);
   };
 
   return (
     <Layout type='admin' title='Article CMS' fullBg={true}>
       <Header title='Article CMS' />
-      <InputGroup my='4'>
-        <Input
-          variant='outline'
-          size='md'
-          placeholder='Search'
-          width='48'
-          borderColor='gray.400'
-          borderRadius='12'
-        />
-        <InputLeftElement pointerEvents='none'>
-          <FaSearch />
-        </InputLeftElement>
-      </InputGroup>
+      <Flex>
+        <InputGroup my='4'>
+          <Input
+            variant='outline'
+            size='md'
+            placeholder='Search'
+            width='48'
+            borderColor='gray.400'
+            borderRadius='12'
+          />
+          <InputLeftElement pointerEvents='none'>
+            <FaSearch />
+          </InputLeftElement>
+        </InputGroup>
+        <Link href='/add-article'>
+          <Button>Add Article</Button>
+        </Link>
+      </Flex>
       <Flex alignItems='center' justifyContent='flex-start'>
         <InputGroup width='24' size='sm'>
           <Input
@@ -63,6 +113,8 @@ export default function ArticleCMS() {
             borderColor='gray.400'
             borderRadius='12'
             mr='2'
+            value={recordsNum}
+            onChange={handleRecordsNumChange}
           />
           <InputRightElement pointerEvents='none'>
             <FiChevronRight />
@@ -70,32 +122,45 @@ export default function ArticleCMS() {
         </InputGroup>
         <Text> records per page</Text>
       </Flex>
-      {/* component */}
-      <Box
-        border='2px solid'
-        p='3'
-        borderRadius='md'
-        my='2'
-        borderColor='gray.300'
-        height='180'
-      >
-        <Text fontFamily='SomarRounded-Bold'> Hi 123</Text>
-        <Box height='110' overflow='hidden' fontSize='sm'>
-          <ReactMarkdown>{markdownContent}</ReactMarkdown>
-        </Box>
-        <Flex
-          textDecoration='underline'
-          justifyContent='flex-end'
-          fontSize='sm'
-        >
-          <Text mx='2' cursor='pointer' onClick={handleEditArticle}>
-            Edit
-          </Text>
-          <Text mx='2' cursor='pointer' onClick={handleDeleteArticle}>
-            Remove
-          </Text>
-        </Flex>
-      </Box>
+
+      {articlesList?.data.map((article, index: number) => {
+        return (
+          <Box
+            border='2px solid'
+            p='3'
+            borderRadius='md'
+            my='2'
+            borderColor='gray.300'
+            height='180'
+            key={index}
+          >
+            <Text fontFamily='SomarRounded-Bold'> {article.title}</Text>
+            <Box height='110' overflow='hidden' fontSize='sm'>
+              <ReactMarkdown>{article.slug}</ReactMarkdown>
+            </Box>
+            <Flex
+              textDecoration='underline'
+              justifyContent='flex-end'
+              fontSize='sm'
+            >
+              <Text
+                mx='2'
+                cursor='pointer'
+                onClick={() => void handleEditArticle(article.id)}
+              >
+                Edit
+              </Text>
+              <Text
+                mx='2'
+                cursor='pointer'
+                onClick={() => void handleDeleteArticle(article.id)}
+              >
+                Remove
+              </Text>
+            </Flex>
+          </Box>
+        );
+      })}
 
       <Flex alignItems='center' justifyContent='flex-end'>
         <Button variant='outlineBlue'>
@@ -108,10 +173,14 @@ export default function ArticleCMS() {
           size='sm'
           borderRadius='12'
           mx='2'
+          value={currentPageNum}
+          onChange={handleCurrentPageNumChange}
         >
-          <option value='option1'>1</option>
-          <option value='option2'>2</option>
-          <option value='option3'>3</option>
+          {options.map((page) => (
+            <option key={page} value={page}>
+              {page}
+            </option>
+          ))}
         </Select>
         <Button variant='outlineBlue'>
           <FiArrowRight />

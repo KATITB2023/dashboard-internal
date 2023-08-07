@@ -1,7 +1,7 @@
 // import { type ImageProps } from "next/image";
 import React, { type ElementType } from 'react';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-
+import ChakraUIRenderer from 'chakra-ui-markdown-renderer';
 // kenapa tdk bs yh hhh
 // import { Image } from "@chakra-ui/react";
 
@@ -22,5 +22,16 @@ export const Markdown = ({ body }: { body: string }) => {
   //     image: ImageRenderer
   // };
 
-  return <ReactMarkdown>{body}</ReactMarkdown>;
+  // const newTheme = {
+  //   p: props => {
+  //     const { children } = props;
+  //     return (
+  //       <Text mb={2} fontSize={'12px'}>
+  //         {children}
+  //       </Text>
+  //     );
+  //   },
+  // };
+
+  return <ReactMarkdown components={ChakraUIRenderer()}>{body}</ReactMarkdown>;
 };
