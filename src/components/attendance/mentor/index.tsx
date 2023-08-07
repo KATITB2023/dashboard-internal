@@ -7,7 +7,7 @@ import { MentorRecap } from './mentor-recap/MentorRecap';
 export default function AttendancePageMentor() {
   const toast = useToast();
 
-  const dayListQuery = api.attendance.adminGetAttendanceDayList.useQuery(); // ganti querynya jadi buat mentor
+  const dayListQuery = api.attendance.mentorGetEventList.useQuery(); // ganti querynya jadi buat mentor
   const dayList = dayListQuery.data || [];
 
   const groupDataQuery = api.group.mentorGetGroupData.useQuery(); // belum ada query group data yang ada nomor kelompoknya

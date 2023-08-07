@@ -18,11 +18,10 @@ import { RouterOutputs, api } from '~/utils/api';
 import { MdEdit } from 'react-icons/md';
 import { EditDayModal } from './EditDayModal';
 import { AddDayModal } from './AddDayModal';
-
-type dayList = RouterOutputs['attendance']['adminGetAttendanceDayList'];
+import { AttendanceDay } from '@prisma/client';
 
 interface DayManagementModalProps {
-  dayList: dayList;
+  dayList: AttendanceDay[];
   editDay: (dayId: string, name: string, date: Date) => void;
   addDay: (name: string, date: Date) => void;
   deleteDay: (dayId: string) => void;
@@ -48,31 +47,35 @@ export const DayManagementModal = ({
           <ModalCloseButton />
           <ModalHeader>Day Management</ModalHeader>
           <ModalBody maxH='60vh' overflowY='scroll'>
-            {dayList.map((day, i) => {
-              return (
-                <Flex
-                  border='1px solid black'
-                  boxShadow='1px 1px 3px 3px black'
-                  w='100%'
-                  borderRadius='10px'
-                  justifyContent='space-between'
-                  alignItems='center'
-                  mt='1em'
-                  px='1em'
-                  py='0.5em'
-                >
-                  <Text w='70%'>{day.name}</Text>
-                  <Text w='20%'>{day.time.toISOString().split('T')[0]}</Text>
-                  <EditDayModal
-                    dayData={day}
-                    editDay={(name: string, date: Date) =>
-                      editDay(day.id, name, date)
-                    }
-                    deleteDay={deleteDay}
-                  />
-                </Flex>
-              );
-            })}
+            {dayList.length < 1 ? (
+              <Text fontStyle='italic'>Belum ada day</Text>
+            ) : (
+              dayList.map((day, i) => {
+                return (
+                  <Flex
+                    border='1px solid black'
+                    boxShadow='1px 1px 3px 3px black'
+                    w='100%'
+                    borderRadius='10px'
+                    justifyContent='space-between'
+                    alignItems='center'
+                    mt='1em'
+                    px='1em'
+                    py='0.5em'
+                  >
+                    <Text w='70%'>{day.name}</Text>
+                    <Text w='20%'>{day.time.toISOString().split('T')[0]}</Text>
+                    <EditDayModal
+                      dayData={day}
+                      editDay={(name: string, date: Date) =>
+                        editDay(day.id, name, date)
+                      }
+                      deleteDay={deleteDay}
+                    />
+                  </Flex>
+                );
+              })
+            )}
           </ModalBody>
           <ModalFooter>
             <AddDayModal addDay={addDay} />

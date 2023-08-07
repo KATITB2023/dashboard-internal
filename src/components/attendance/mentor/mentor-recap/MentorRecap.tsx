@@ -30,7 +30,7 @@ import { MentorRecapRow } from './MentorRecapRow';
 import { Status } from '@prisma/client';
 
 type mentorGetAttendanceRecordOutput =
-  RouterOutputs['attendance']['mentorGetAttendance']['data'];
+  RouterOutputs['attendance']['mentorGetAttendance']['data'][0];
 
 interface MentorRecapProps {
   dayId: string;
@@ -60,7 +60,7 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
     total: 0
   };
 
-  const maxPage = Math.ceil(recordListMetaData.total / rowPerPage);
+  const maxPage = Math.ceil(recordListMetaData.total || 1000 / rowPerPage);
 
   const {
     isOpen: isEditingRowPerPageOpen,
