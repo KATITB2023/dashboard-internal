@@ -43,7 +43,8 @@ export const feedsRouter = createTRPCRouter({
     .input(
       z.object({
         feedId: z.number(),
-        body: z.string().optional()
+        body: z.string().optional(),
+        attachment: z.string().optional()
       })
     )
     .mutation(async ({ ctx, input }) => {
