@@ -5,7 +5,8 @@ import {
   createTRPCRouter,
   mentorProcedure,
   publicProcedure,
-  adminProcedure
+  adminProcedure,
+  protectedProcedure
 } from '~/server/api/trpc';
 
 export const attendanceRouter = createTRPCRouter({
