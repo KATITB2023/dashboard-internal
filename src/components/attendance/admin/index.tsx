@@ -16,6 +16,7 @@ import {
   useTab,
   useToast
 } from '@chakra-ui/react';
+import { AttendanceDay } from '@prisma/client';
 import React, { useState } from 'react';
 import { DayManagementModal } from '~/components/attendance/admin/day-management/DayManagementModal';
 import { EventList } from '~/components/attendance/admin/event-management/EventList';
@@ -26,8 +27,8 @@ import { api } from '~/utils/api';
 export default function AttendancePageAdmin() {
   const toast = useToast();
 
-  const dayListQuery = api.attendance.adminGetAttendanceDayList.useQuery();
-  const dayList = dayListQuery.data || [];
+  const dayListQuery = api.attendance.getAttendanceDayList.useQuery();
+  const dayList: AttendanceDay[] = dayListQuery.data || [];
 
   const addDayMutation = api.attendance.adminAddAttendanceDay.useMutation();
   const editDayMutation = api.attendance.adminEditAttendanceDay.useMutation();

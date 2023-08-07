@@ -29,7 +29,7 @@ export const DateInput = ({
     <Input
       {...rest}
       type='date'
-      value={getDateFormat(dateState ?? new Date())}
+      value={dateState && getDateFormat(dateState ?? new Date())}
       onChange={dateChangeHandler}
       color='white'
     />

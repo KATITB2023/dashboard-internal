@@ -1,18 +1,17 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 import {
   softDeleteChangeFind,
   softDeleteChangeUpdate,
   softDeleteChangeDelete,
-  versioningChangeUpdate,
-} from "~/server/db/middleware";
-import { otelSetup } from "~/server/db/setup";
-import { env } from "~/env.mjs";
+  versioningChangeUpdate
+} from '~/server/db/middleware';
+import { otelSetup } from '~/server/db/setup';
+import { env } from '~/env.mjs';
 
 // This is a helper function that instantiates Prisma
 const instantiatePrisma = () => {
   const prisma = new PrismaClient({
-    log:
-      env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+    log: env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error']
   });
 
   // Register OpenTelemetry
@@ -27,7 +26,7 @@ const instantiatePrisma = () => {
   // Add middleware to handle optimistic concurrency control
   // Comment this out to disable optimistic concurrency control
   // prisma.$use(versioningChangeUpdate);
-
+  console.log('Prisma instantiated to database: ' + env.DATABASE_URL);
   return prisma;
 };
 
@@ -37,4 +36,4 @@ const globalForPrisma = globalThis as unknown as {
 
 export const prisma = globalForPrisma.prisma ?? instantiatePrisma();
 
-if (env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
