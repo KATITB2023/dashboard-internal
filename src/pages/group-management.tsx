@@ -1,8 +1,9 @@
 import { Box, Flex, Text, Image } from '@chakra-ui/react';
 import React from 'react';
-import MembersTable from '~/component/group-information-management/MembersTable';
-import MentorBox from '~/component/group-information-management/MentorBox';
-import DUMMY_MEMBERS from '~/component/group-information-management/dummyData';
+import { Header } from '~/components/Header';
+import MembersTable from '~/components/group-information-management/MembersTable';
+import MentorBox from '~/components/group-information-management/MentorBox';
+import DUMMY_MEMBERS from '~/components/group-information-management/dummyData';
 import Layout from '~/layout/index';
 
 export default function GroupManagement() {
@@ -28,26 +29,15 @@ export default function GroupManagement() {
         {/* Logo and kelompok, flex display  */}
         <Flex
           justifyContent='space-between'
-          alignItems={{ base: 'center', md: 'flex-start' }}
+          alignItems='center'
           flexDirection={{ base: 'column', md: 'row' }}
         >
-          {/* Logo, pakai placeholder dulu */}
-          <Box
-            mb={{ base: 4, md: 0 }}
-            mr={{ base: 0, md: 4 }}
-            w={{ base: '100%', md: 'auto' }}
-          >
-            <Image
-              src='/images/placeholder_logo_manage.png'
-              objectFit='contain'
-              height='100%'
-              alt='placeholder_logo_manage'
-            />
-          </Box>
+          {/* Logo */}
+          <Header title='Group Management' />
 
           {/* Kelompok */}
           <Box
-            width={{ base: '370px', md: '400px' }}
+            width='auto'
             height='96px'
             bgImage='/images/comet_container.png'
             backgroundSize='cover'

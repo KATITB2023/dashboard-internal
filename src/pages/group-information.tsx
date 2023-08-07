@@ -9,9 +9,11 @@ import {
   MenuList
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import MembersTable from '~/component/group-information-management/MembersTable';
-import MentorBox from '~/component/group-information-management/MentorBox';
-import DUMMY_MEMBERS from '~/component/group-information-management/dummyData';
+import { Header } from '~/components/Header';
+import MembersTable from '~/components/group-information-management/MembersTable';
+import MentorBox from '~/components/group-information-management/MentorBox';
+import DUMMY_MEMBERS from '~/components/group-information-management/dummyData';
+import { RiArrowDownSLine } from 'react-icons/ri';
 import Layout from '~/layout/index';
 
 export default function GroupInformation() {
@@ -46,26 +48,15 @@ export default function GroupInformation() {
         {/* Logo and dropdown, flex display  */}
         <Flex
           justifyContent='space-between'
-          alignItems={{ base: 'center', md: 'flex-start' }}
+          alignItems='center'
           flexDirection={{ base: 'column', md: 'row' }}
         >
-          {/* Logo, pakai placeholder dulu */}
-          <Box
-            mb={{ base: 4, md: 0 }}
-            mr={{ base: 0, md: 4 }}
-            w={{ base: '100%', md: 'auto' }}
-          >
-            <Image
-              src='/images/placeholder_logo_info.png'
-              objectFit='contain'
-              height='100%'
-              alt='placeholder_logo_info'
-            />
-          </Box>
+          {/* Logo */}
+          <Header title='Group Information' />
 
           {/* Dropdown */}
           <Box
-            width='408px'
+            width='auto'
             height='96px'
             bgImage='/images/comet_container.png'
             backgroundSize='cover'
@@ -94,7 +85,7 @@ export default function GroupInformation() {
                     e.stopPropagation();
                   }}
                 >
-                  <Image src='/images/dropdown_icon.png' alt='dropdown_icon' />
+                  <RiArrowDownSLine size={24} />
                 </MenuButton>
               </Flex>
               <MenuList bg='black' borderColor='black'>

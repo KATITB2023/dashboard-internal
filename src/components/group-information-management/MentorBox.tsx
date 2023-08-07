@@ -11,7 +11,6 @@ interface Mentor {
 const MentorBox: React.FC<{ mentor: Mentor }> = ({ mentor }) => {
   return (
     <Flex
-      maxH='96px'
       width='480px'
       minW='200px'
       bg='#0B0A0A'
