@@ -62,21 +62,34 @@ export const EventList = ({ day, dayList }: EventListProps) => {
     endTime: [number, number]
   ) => {
     const startDate = new Date(day.time);
-    startDate.setHours(6);
+    startDate.setHours(startTime[0]);
     startDate.setMinutes(startTime[1]);
 
     const endDate = new Date(day.time);
     endDate.setHours(endTime[0]);
     endDate.setMinutes(endTime[1]);
 
-    const res = await addEventMutation.mutateAsync({
-      dayId: day.id,
-      title: name,
-      startTime: startDate,
-      endTime: endDate
-    });
-
-    eventListQuery.refetch();
+    addEventMutation
+      .mutateAsync({
+        dayId: day.id,
+        title: name,
+        startTime: startDate,
+        endTime: endDate
+      })
+      .then(() => {
+        toast({
+          title: 'Berhasil menambah event',
+          status: 'success',
+          duration: 3000
+        });
+      })
+      .catch(() => {
+        toast({
+          title: 'Gagal menambah event',
+          status: 'error',
+          duration: 3000
+        });
+      });
   };
 
   const [page, setPage] = useState<number>(1);

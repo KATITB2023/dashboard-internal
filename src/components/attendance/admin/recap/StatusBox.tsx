@@ -36,6 +36,11 @@ export const StatusBox = ({ record, editRecord }: StatusBoxProps) => {
   };
 
   const editRecordStatus = (status: Status) => {
+    if (status == Status.HADIR) {
+      editRecord(record, { newStatus: status, newDesc: '' }, () => {});
+      setStatus(status);
+      return;
+    }
     modalDisclosure.onOpen();
     setStatus(status);
   };
