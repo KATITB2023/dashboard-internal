@@ -1,7 +1,6 @@
 import {
     Flex,
     Box,
-    Image,
     Button,
     useDisclosure,
     Modal,
@@ -23,66 +22,43 @@ import {
     PopoverHeader,
     PopoverFooter,
     Input,
-    CloseButton,
     Tag,
     TagLabel,
-    TagCloseButton
+    TagCloseButton,
+    Icon,
+    BoxProps
 } from '@chakra-ui/react';
 import Layout from '~/layout/index';
-import { type SubmitHandler, useForm, Controller } from 'react-hook-form';
-import React, { BaseSyntheticEvent, ChangeEvent, ChangeEventHandler, useState } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import React, { BaseSyntheticEvent, ChangeEvent, ChangeEventHandler, useState, forwardRef } from 'react';
 import { Header } from '~/components/Header';
-import { motion } from 'framer-motion';
-
-const FadeUpBox = motion(Box);
+import { SlOptions, SlPencil, SlPicture, SlTrash } from 'react-icons/sl';
 
 interface FeedProps {
     postId: string;
     article: string;
-    urlLink: string;
-    imageUrl: string;
+    url: string;
+    img: string;
     time: string;
 }
 
-interface DeleteFeedModalProps {
-    isRemoveOpen: boolean;
-    onRemoveClose: () => void;
-    onConfirmDelete: () => void;
-    onCancelDelete: () => void;
-}
-
-const DeleteFeedModal: React.FC<DeleteFeedModalProps> = ({
-    isRemoveOpen,
-    onRemoveClose,
-    onConfirmDelete,
-    onCancelDelete,
-}) => {
+const PopoverBox = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
     return (
-        <Modal isOpen={isRemoveOpen} onClose={onRemoveClose}>
-            <ModalContent>
-                <ModalHeader>Are you sure you want to delete this feed?</ModalHeader>
-                <ModalFooter>
-                    <Button variant='outlineBlue' mr={3} onClick={onCancelDelete}>
-                        Cancel
-                    </Button>
-                    <Button variant='solidBlue' onClick={onConfirmDelete}>
-                        Confirm
-                    </Button>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
+        <Box ref={ref} {...props}>
+            {props.children}
+        </Box>
     );
-};
+});
 
 export default function Feeds() {
-    const { register, formState, getValues, handleSubmit, setValue, reset } = useForm<FeedProps>({
+    const { register, formState, handleSubmit, reset } = useForm<FeedProps>({
         mode: 'onSubmit',
         defaultValues: {
             postId: '',
             time: '',
             article: '',
-            imageUrl: '',
-            urlLink: '',
+            url: '',
+            img: '',
         }
     });
 
@@ -116,39 +92,23 @@ export default function Feeds() {
 
 
     // INSERT URL (TO DO: upload handlers)
-    const [attachment, setAttachment] = useState<string>('')
-    console.log('Attachment: ', attachment);
-    const [isAttachUrl, setIsAttachUrl] = useState<boolean>(false);
     const [isAttachImg, setIsAttachImg] = useState<boolean>(false);
-    const handleIsAttachUrl = () => {
-        reset({ urlLink: '' })
-        if (isAttachUrl === true) {
-            setIsAttachUrl(false);
-        } else {
-            setIsAttachUrl(true);
-        }
-    }
     const handleIsAttachImg = () => {
-        reset({ imageUrl: '' })
+        reset({ img: '' })
         if (isAttachImg === true) {
             setIsAttachImg(false);
         } else {
             setIsAttachImg(true);
         }
     }
-    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setAttachment(event.target.value)
-    }
 
     // POST FEEDS (TO DO: Submit handlers)
     const submitArticle: SubmitHandler<FeedProps> = (data: FeedProps) => {
-        const urlData = attachment
         const newId = Math.random().toString(36).substr(2, 9);
         const currentTime = new Date().toISOString();
-        setDataPost([...dataPost, { ...data, postId: newId, time: currentTime, urlLink: urlData }]);
-        console.log('submit article', data);
+        setDataPost([...dataPost, { ...data, postId: newId, time: currentTime, img: 'gambar.jpg' }]);
+        console.log('feed data: ', data);
         reset();
-        setIsAttachUrl(false);
         setIsAttachImg(false);
         onPostClose();
         onEditClose();
@@ -161,7 +121,7 @@ export default function Feeds() {
         if (postToEdit) {
             setEditId(id);
             setEditedArticle(postToEdit.article);
-            setEditedUrl(postToEdit.urlLink);
+            setEditedUrl(postToEdit.url);
         }
     };
 
@@ -170,7 +130,7 @@ export default function Feeds() {
             setDataPost(prevData =>
                 prevData.map(post =>
                     post.postId === editId
-                        ? { ...post, article: editedArticle, urlLink: editedUrl }
+                        ? { ...post, article: editedArticle, url: editedUrl }
                         : post
                 )
             );
@@ -178,17 +138,15 @@ export default function Feeds() {
             setEditedArticle('');
             setEditedUrl('');
         }
-        setAttachment('');
-        setIsAttachUrl(false);
+        ('');
         setIsAttachImg(false);
-        onEditClose();
+
     };
     const handleCancelEdit = () => {
         reset();
         setEditId(null);
         setEditedArticle('');
         setEditedUrl('');
-        setIsAttachUrl(false);
         setIsAttachImg(false);
     };
 
@@ -227,24 +185,47 @@ export default function Feeds() {
                                     }
                                 >
                                     <ModalHeader width='100%' mx='auto' borderBottom='1px solid #CBD2E0'>
-                                        <ModalCloseButton pos='absolute' left='0' onClick={() => { reset(), handleIsAttachImg(), handleIsAttachUrl() }} />
+                                        <ModalCloseButton pos='absolute' left='0' onClick={() => { reset(), handleIsAttachImg() }} />
                                         <Center>
                                             Add New Post
                                         </Center>
                                     </ModalHeader>
                                     <ModalBody>
-                                        <FormControl isInvalid={!!formState.errors.article}>
+                                        <FormControl isInvalid={!!formState.errors.url}>
+                                            <Text> URL</Text>
+                                            <Input
+                                                variant='solidLight'
+                                                border={formState.errors.url ? '1px solid red' : '1px solid black'}
+                                                {...register('url', {
+                                                    required: {
+                                                        value: true,
+                                                        message: 'URL is required'
+                                                    }
+                                                })}
+                                            />
+                                            {formState.errors.url && (
+                                                <FormErrorMessage>
+                                                    {' '}
+                                                    {formState.errors.url.message as string}{' '}
+                                                </FormErrorMessage>
+                                            )}
+                                        </FormControl>
+                                        <FormControl isInvalid={!!formState.errors.article} mt='1rem'>
+                                            <Text>Article</Text>
                                             <Textarea
-                                                placeholder='Add article here...'
+                                                variant='unstyled'
+                                                border={formState.errors.url ? '1px solid red' : '1px solid black'}
+                                                px='0.5rem'
+                                                py='0.25rem'
                                                 width='100%'
-                                                height='400px'
-                                                border='1px solid black'
-                                                _hover={{ border: '1px solid black' }}
+                                                bgColor='white'
                                                 focusBorderColor='none'
+                                                borderRadius='8px'
+                                                height='400px'
                                                 {...register('article', {
                                                     required: {
                                                         value: true,
-                                                        message: 'Artikel tidak boleh kosong'
+                                                        message: 'Article is required'
                                                     }
                                                 })}
                                             />
@@ -262,56 +243,17 @@ export default function Feeds() {
                                                         mt='8px'
                                                     >
                                                         <TagLabel
-                                                            {...register('imageUrl')}
+                                                            {...register('url')}
                                                         >Image.jpg</TagLabel>
                                                         <TagCloseButton onClick={handleIsAttachImg} />
                                                     </Tag>
                                                 )
                                                 : ''
                                         }
-                                        {
-                                            isAttachUrl ?
-                                                (
-                                                    <FadeUpBox
-                                                        initial={{ opacity: 0, y: 20 }}
-                                                        animate={{ opacity: 1, y: 0 }}
-                                                        transition={{ duration: 0.2, delay: 0 }}
-                                                    >
-                                                        <Text
-                                                            mt='8px'
-                                                        >URL:</Text>
-                                                        <HStack>
-                                                            <Input
-                                                                variant='unstyled'
-                                                                px='0.5rem'
-                                                                py='0.25rem'
-                                                                width='100%'
-                                                                bgColor='white'
-                                                                border='1px solid black'
-                                                                focusBorderColor='none'
-                                                                borderRadius='8px'
-                                                                placeholder='Input URL...'
-                                                                size='sm'
-                                                                value={attachment}
-                                                                {...register('urlLink')}
-                                                                onChange={handleInputChange}
-                                                            />
-                                                            <CloseButton onClick={handleIsAttachUrl} />
-                                                        </HStack>
-                                                    </FadeUpBox>
-                                                ) : ''
-                                        }
                                     </ModalBody>
                                     <ModalFooter borderTop='1px solid #CBD2E0'>
                                         <Flex width='100%' justifyContent='space-between' alignItems='center'>
-                                            <HStack width='100px' cursor='pointer'>
-                                                <Box onClick={handleIsAttachImg}>
-                                                    <Image src='/img/uploadImg.svg' />
-                                                </Box>
-                                                <Box onClick={handleIsAttachUrl}>
-                                                    <Image src='/img/attachment.svg' />
-                                                </Box>
-                                            </HStack>
+                                            <Icon as={SlPicture} boxSize={8} onClick={handleIsAttachImg} cursor='pointer' />
                                             <Button variant='solidBlue' type='submit'>Post</Button>
                                         </Flex>
                                     </ModalFooter>
@@ -339,46 +281,74 @@ export default function Feeds() {
                                 <Box float='right' my='1rem' cursor='pointer'>
                                     <Popover placement='bottom-end' autoFocus={false}>
                                         <PopoverTrigger>
-                                            <Image src='/img/tripple.svg' />
+                                            <PopoverBox>
+
+                                                <Icon as={SlOptions} boxSize={6} fill='gray.300' />
+                                            </PopoverBox>
                                         </PopoverTrigger>
-                                        <PopoverContent width='fit-content' borderColor='#000'>
+                                        <PopoverContent width='fit-content' borderColor='#000' zIndex='100000'>
                                             <PopoverHeader onClick={() => { handlePostEdit(item.postId), onEditOpen() }} borderColor='#000'>
                                                 <HStack>
-                                                    <Image src='/img/edit.svg' width='30px' />
+                                                    <Icon as={SlPencil} boxSize={6} />
                                                     <Text>Edit</Text>
                                                     {/* ========== Edit Form ========== */}
                                                     <Modal blockScrollOnMount={true} isOpen={isEditOpen} onClose={onEditClose} size='4xl'>
                                                         <ModalContent>
                                                             <form
-                                                            // onSubmit={(e: BaseSyntheticEvent) =>
-                                                            //     void handleSubmit(submitArticle)(e)
-                                                            // }
+                                                            onSubmit={(e: BaseSyntheticEvent) =>
+                                                                void handleSubmit(submitArticle)(e)
+                                                            }
                                                             >
                                                                 <ModalHeader width='100%' mx='auto' borderBottom='1px solid #CBD2E0'>
-                                                                    <ModalCloseButton pos='absolute' left='0' onClick={() => { setIsAttachImg(false), setIsAttachUrl(false), handleCancelEdit() }} />
+                                                                    <ModalCloseButton pos='absolute' left='0' onClick={() => { setIsAttachImg(false), (false), handleCancelEdit() }} />
                                                                     <Center>
                                                                         Edit Post
                                                                     </Center>
                                                                 </ModalHeader>
                                                                 <ModalBody>
-                                                                    <FormControl isInvalid={!!formState.errors.article}>
+                                                                    <FormControl isInvalid={!!formState.errors.url}>
+                                                                        <Text> URL</Text>
+                                                                        <Input
+                                                                            variant='solidLight'
+                                                                            border={formState.errors.url ? '1px solid red' : '1px solid black'}
+                                                                            {...register('url', {
+                                                                                required: {
+                                                                                    value: true,
+                                                                                    message: 'URL is required'
+                                                                                }
+                                                                            })}
+                                                                            placeholder={editedUrl}
+                                                                            value={editedUrl}
+                                                                            onChange={e => setEditedUrl(e.target.value)}
+                                                                        />
+                                                                        {formState.errors.url && (
+                                                                            <FormErrorMessage>
+                                                                                {' '}
+                                                                                {formState.errors.url.message as string}{' '}
+                                                                            </FormErrorMessage>
+                                                                        )}
+                                                                    </FormControl>
+                                                                    <FormControl isInvalid={!!formState.errors.article} mt='1rem'>
+                                                                        <Text>Article</Text>
                                                                         <Textarea
-                                                                            itemType='text'
-                                                                            // value={item.article}
+                                                                            variant='unstyled'
+                                                                            border={formState.errors.url ? '1px solid red' : '1px solid black'}
+                                                                            px='0.5rem'
+                                                                            py='0.25rem'
                                                                             width='100%'
-                                                                            height='400px'
-                                                                            border='1px solid black'
-                                                                            _hover={{ border: '1px solid black' }}
+                                                                            bgColor='white'
                                                                             focusBorderColor='none'
+                                                                            borderRadius='8px'
+                                                                            height='400px'
                                                                             {...register('article', {
                                                                                 required: {
                                                                                     value: true,
-                                                                                    message: 'Artikel tidak boleh kosong'
-                                                                                },
+                                                                                    message: 'Article is required'
+                                                                                }
                                                                             })}
-                                                                            autoFocus={true}
+                                                                            placeholder={editedArticle}
                                                                             value={editedArticle}
-                                                                            onChange={e => setEditedArticle(e.target.value)}
+                                                                            onChange={(e) => setEditedArticle(e.target.value)}
                                                                         />
                                                                         {formState.errors.article && (
                                                                             <FormErrorMessage>
@@ -387,47 +357,19 @@ export default function Feeds() {
                                                                             </FormErrorMessage>
                                                                         )}
                                                                     </FormControl>
-                                                                    {item.imageUrl ? (<Tag
+                                                                    {item.img ? (<Tag
                                                                         mt='8px'
                                                                     >
-                                                                        <TagLabel
-                                                                            {...register('imageUrl')}
-                                                                        >{item.imageUrl}</TagLabel>
+                                                                        {item.img}
                                                                         <TagCloseButton onClick={handleIsAttachImg} />
                                                                     </Tag>) : ''}
-                                                                    <Text
-                                                                        mt='8px'
-                                                                    >URL:</Text>
-                                                                    <HStack>
-                                                                        <Input
-                                                                            variant='unstyled'
-                                                                            px='0.5rem'
-                                                                            py='0.25rem'
-                                                                            width='100%'
-                                                                            bgColor='white'
-                                                                            border='1px solid black'
-                                                                            focusBorderColor='none'
-                                                                            borderRadius='8px'
-                                                                            placeholder='Input URL...'
-                                                                            size='sm'
-                                                                            value={editedUrl}
-                                                                            {...register('urlLink')}
-                                                                            onChange={e => setEditedUrl(e.target.value)}
-                                                                        />
-                                                                        <CloseButton onClick={handleIsAttachUrl} />
-                                                                    </HStack>
                                                                 </ModalBody>
                                                                 <ModalFooter borderTop='1px solid #CBD2E0'>
                                                                     <Flex width='100%' justifyContent='space-between' alignItems='center'>
-                                                                        <HStack width='100px' cursor='pointer'>
-                                                                            <Box onClick={handleIsAttachImg}>
-                                                                                <Image src='/img/uploadImg.svg' />
-                                                                            </Box>
-                                                                            <Box onClick={handleIsAttachUrl}>
-                                                                                <Image src='/img/attachment.svg' />
-                                                                            </Box>
-                                                                        </HStack>
-                                                                        <Button variant='solidBlue' onClick={handleSaveEdit}>Confirm</Button>
+                                                                        <Box onClick={handleIsAttachImg}>
+                                                                            <Icon as={SlPicture} boxSize={8} onClick={handleIsAttachImg} cursor='pointer' />
+                                                                        </Box>
+                                                                        <Button variant='solidBlue' onClick={handleSaveEdit} type='submit'>Confirm</Button>
                                                                     </Flex>
                                                                 </ModalFooter>
                                                             </form>
@@ -437,24 +379,26 @@ export default function Feeds() {
                                             </PopoverHeader>
                                             <PopoverFooter >
                                                 {/* ========== Delete Form ========== */}
-                                                <HStack>
-                                                    <Image src='/img/delete.svg' width='30px' />
-                                                    <Text onClick={() => {
-                                                        setItemToDeleteIndex(item.postId);
-                                                        onRemoveOpen();
-                                                    }}>Remove</Text>
-                                                    <DeleteFeedModal
-                                                        isRemoveOpen={isRemoveOpen}
-                                                        onRemoveClose={onRemoveClose}
-                                                        onConfirmDelete={() => {
-                                                            handleDelete(itemToDeleteIndex);
-                                                        }}
-                                                        onCancelDelete={() => {
-                                                            onRemoveClose();
-                                                            setItemToDeleteIndex('');
-                                                        }}
-                                                    />
+                                                <HStack onClick={() => {
+                                                    setItemToDeleteIndex(item.postId);
+                                                    onRemoveOpen();
+                                                }} >
+                                                    <Icon as={SlTrash} boxSize={6} />
+                                                    <Text>Remove</Text>
                                                 </HStack>
+                                                <Modal isOpen={isRemoveOpen} onClose={onRemoveClose}>
+                                                    <ModalContent>
+                                                        <ModalHeader>Are you sure to delete this feed?</ModalHeader>
+                                                        <ModalFooter>
+                                                            <Button variant='outlineBlue' mr={3} onClick={() => { setItemToDeleteIndex(''), onRemoveClose() }}>
+                                                                Cancel
+                                                            </Button>
+                                                            <Button variant='solidBlue' onClick={() => handleDelete(itemToDeleteIndex)}>
+                                                                Confirm
+                                                            </Button>
+                                                        </ModalFooter>
+                                                    </ModalContent>
+                                                </Modal>
                                             </PopoverFooter>
                                         </PopoverContent>
                                     </Popover>
@@ -462,11 +406,17 @@ export default function Feeds() {
                                 <Box py='1rem'>
                                     <Flex justifyContent='space-between' alignItems='center'>
                                         <Text fontSize='2xl' fontWeight='700'>OSKM ITB 2023</Text>
-                                        <Text>{getTimeLabel(item.time)}</Text>
+                                        <Text mr='1rem'>{getTimeLabel(item.time)}</Text>
                                     </Flex>
                                     <Text>
                                         {item.article}
                                     </Text>
+                                    <HStack>
+                                        <Tag>{item.url}</Tag>
+                                        {
+                                            item.img ? (<Tag>{item.img}</Tag>) : ''
+                                        }
+                                    </HStack>
                                 </Box>
                             </Box>
                         ))}
