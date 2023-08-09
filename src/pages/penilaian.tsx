@@ -41,8 +41,6 @@ export interface AssignmentListProps {
 }
 
 export default function Penilaian() {
-  // dummy data
-
   const [search, setSearch] = useState(''); // serach bar value
   const [filterBy, setFilterBy] = useState(''); // filter by value
   const [filterTugas, setFilterTugas] = useState(''); // filter tugas value
