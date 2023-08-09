@@ -38,7 +38,7 @@ export const DayManagementModal = ({
 
   return (
     <>
-      <Button variant='mono-gray' ml='1em' onClick={onOpen}>
+      <Button variant='mono-gray' onClick={onOpen} ml='1em'>
         Manage Day
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} size='3xl'>
@@ -59,7 +59,7 @@ export const DayManagementModal = ({
                     borderRadius='10px'
                     justifyContent='space-between'
                     alignItems='center'
-                    mt='1em'
+                    mt='2em'
                     px='1em'
                     py='0.5em'
                   >

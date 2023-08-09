@@ -174,14 +174,15 @@ export const EventList = ({ day, dayList }: EventListProps) => {
   };
   return (
     <Flex flexDir='column'>
-      <Button variant='mono-outline' w='8em'>
+      <Button variant='mono-outline' w={{ base: '30%', lg: '8em' }} h='2em'>
         Cetak CSV
       </Button>
       <Flex alignItems='center' mt='1em'>
         <>
           <Button
             variant='mono-outline'
-            w='8em'
+            w={{ base: '30%', lg: '4em' }}
+            h='2em'
             onClick={onEditingRowPerPageOpen}
           >
             {rowPerPage}
@@ -258,7 +259,8 @@ export const EventList = ({ day, dayList }: EventListProps) => {
         <Flex justifyContent={{ base: 'space-between', lg: 'none' }}>
           <Button
             variant='mono-outline'
-            w={{ base: '30%', lg: '6em' }}
+            w={{ base: '30%', lg: '4em' }}
+            h='2em'
             mr='1em'
             onClick={prevPage}
           >
@@ -269,8 +271,8 @@ export const EventList = ({ day, dayList }: EventListProps) => {
               border='1px solid gray'
               borderRadius='12px'
               color='gray.600'
-              w={{ base: '30%', lg: '6em' }}
-              h='2.5em'
+              w={{ base: '30%', lg: '4em' }}
+              h='2em'
             >
               {`${page}`}
             </MenuButton>
@@ -290,7 +292,8 @@ export const EventList = ({ day, dayList }: EventListProps) => {
           </Menu>
           <Button
             variant='mono-outline'
-            w={{ base: '30%', lg: '6em' }}
+            w={{ base: '30%', lg: '4em' }}
+            h='2em'
             ml='1em'
             onClick={nextPage}
           >

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Layout from '~/layout';
 import { api } from '~/utils/api';
 import { MentorRecap } from './mentor-recap/MentorRecap';
+import { Header } from '~/components/Header';
 
 export default function AttendancePageMentor() {
   const toast = useToast();
@@ -19,75 +20,66 @@ export default function AttendancePageMentor() {
   };
 
   return (
-    <Layout title='Attendance Page' type='mentor' fullBg>
-      <Box bg='white'>
+    <Layout title='Attendance Page' type='mentor'>
+      <Flex
+        justifyContent={{
+          base: 'center',
+          lg: 'space-between'
+        }}
+        flexDir={{
+          base: 'column',
+          lg: 'row'
+        }}
+        w='100%'
+      >
+        <Header title={'Rekap Absensi'} />
         <Flex
-          justifyContent={{
-            base: 'center',
-            lg: 'space-between'
-          }}
-          flexDir={{
-            base: 'column',
-            lg: 'row'
-          }}
-          w='100%'
+          bg='black'
+          p='1em'
+          borderRadius='10px'
+          pos='relative'
+          w='min(20em,90%)'
+          alignItems='center'
+          overflow='hidden'
+          h='4.5em'
         >
-          <Text
-            color='#340C8F'
-            fontSize='2xl'
-            w='20em'
-            textAlign='left'
-            my='1em'
-            fontWeight='bolder'
-          >
-            Rekap Absensi
+          <Text color='white' fontSize='2xl' fontWeight='bold' zIndex='2'>
+            {`Kelompok ${groupNumber}`}
           </Text>
-          <Flex
-            bg='black'
-            p='1em'
-            borderRadius='10px'
-            pos='relative'
-            w='min(20em,90%)'
-            alignItems='center'
-            overflow='hidden'
-          >
-            <Text color='white' fontSize='3xl' fontWeight='bold' zIndex='2'>
-              {`Kelompok ${groupNumber}`}
-            </Text>
-            <Image
-              src='/images/komet-absen.png'
-              position='absolute'
-              right='-5%'
-              w='25%'
-              top='-1em'
-            />
-          </Flex>
+          <Image
+            src='/images/komet-absen.png'
+            position='absolute'
+            right='-5%'
+            w='25%'
+            top='-1em'
+          />
         </Flex>
+      </Flex>
 
-        <Flex w='100%' ml='1em' mt='1em'>
-          <Select
-            placeholder='Select Day'
-            color='white'
-            borderRadius='md'
-            bg='black'
-            w='10em'
-            onChange={dayChangeHandler}
-          >
-            {dayList.map((day, i) => (
-              <option value={day.id} key={i} style={{ color: 'black' }}>
-                {day.name}
-              </option>
-            ))}
-          </Select>
-        </Flex>
-        {dayId ? (
-          <Box minH='30em'>
-            <MentorRecap dayId={dayId} />
-          </Box>
-        ) : (
-          <Box h='30em' />
-        )}
-      </Box>
+      <Flex w='100%' mt='2em'>
+        <Select
+          placeholder='Select Day'
+          color='white'
+          borderRadius='md'
+          bg='black'
+          w='10em'
+          onChange={dayChangeHandler}
+          defaultValue={dayList.length > 0 ? dayList[0]?.id : undefined} // P benerin
+        >
+          {dayList.map((day, i) => (
+            <option value={day.id} key={i} style={{ color: 'black' }}>
+              {day.name}
+            </option>
+          ))}
+        </Select>
+      </Flex>
+      {dayId ? (
+        <Box minH='30em'>
+          <MentorRecap dayId={dayId} />
+        </Box>
+      ) : (
+        <Box h='30em' />
+      )}
     </Layout>
   );
 }

@@ -190,12 +190,13 @@ export const AddPoint = () => {
             />
           </Flex>
         </Flex>
-        <Flex justifyContent='space-between' mt='1em'>
+        <Flex justifyContent='space-between' mt='2em'>
           <Flex alignItems='center' mt='1em'>
             <>
               <Button
                 variant='mono-outline'
-                w='8em'
+                w={{ base: '30%', lg: '6em' }}
+                h='2em'
                 onClick={onEditingRowPerPageOpen}
               >
                 {rowPerPage}
@@ -292,7 +293,8 @@ export const AddPoint = () => {
           <Flex justifyContent={{ base: 'space-between', lg: 'right' }}>
             <Button
               variant='mono-outline'
-              w={{ base: '30%', lg: '6em' }}
+              w={{ base: '30%', lg: '4em' }}
+              h='2em'
               mr='1em'
               onClick={prevPage}
             >
@@ -313,7 +315,8 @@ export const AddPoint = () => {
                   <Input value={jumpInput} onChange={jumpChangeHandler} />
                   <Button
                     variant='mono-outline'
-                    w='8em'
+                    w={{ base: '30%', lg: '4em' }}
+                    h='2.5em'
                     ml='1em'
                     onClick={jumpToPage}
                   >
@@ -324,7 +327,8 @@ export const AddPoint = () => {
             </Menu>
             <Button
               variant='mono-outline'
-              w={{ base: '30%', lg: '6em' }}
+              w={{ base: '30%', lg: '4em' }}
+              h='2em'
               ml='1em'
               onClick={nextPage}
             >

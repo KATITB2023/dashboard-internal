@@ -153,7 +153,8 @@ export const Recap = ({ dayId }: RecapProps) => {
           <>
             <Button
               variant='mono-outline'
-              w='8em'
+              w={{ base: '30%', lg: '4em' }}
+              h='2em'
               onClick={onEditingRowPerPageOpen}
             >
               {rowPerPage}
@@ -277,7 +278,8 @@ export const Recap = ({ dayId }: RecapProps) => {
         <Flex justifyContent={{ base: 'space-between', lg: 'right' }}>
           <Button
             variant='mono-outline'
-            w={{ base: '30%', lg: '6em' }}
+            w={{ base: '30%', lg: '4em' }}
+            h='2em'
             mr='1em'
             onClick={prevPage}
           >
@@ -298,7 +300,8 @@ export const Recap = ({ dayId }: RecapProps) => {
                 <Input value={jumpInput} onChange={jumpChangeHandler} />
                 <Button
                   variant='mono-outline'
-                  w='8em'
+                  w={{ base: '30%', lg: '4em' }}
+                  h='2.5em'
                   ml='1em'
                   onClick={jumpToPage}
                 >
@@ -309,7 +312,8 @@ export const Recap = ({ dayId }: RecapProps) => {
           </Menu>
           <Button
             variant='mono-outline'
-            w={{ base: '30%', lg: '6em' }}
+            w={{ base: '30%', lg: '4em' }}
+            h='2em'
             ml='1em'
             onClick={nextPage}
           >

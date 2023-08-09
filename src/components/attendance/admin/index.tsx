@@ -18,6 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { AttendanceDay } from '@prisma/client';
 import React, { useState } from 'react';
+import { Header } from '~/components/Header';
 import { DayManagementModal } from '~/components/attendance/admin/day-management/DayManagementModal';
 import { EventList } from '~/components/attendance/admin/event-management/EventList';
 import { Recap } from '~/components/attendance/admin/recap/Recap';
@@ -151,18 +152,9 @@ export default function AttendancePageAdmin() {
     );
   });
   return (
-    <Layout title='Attendance Page' type='admin' fullBg>
+    <Layout title='Attendance Page' type='admin'>
       <Box bg='white'>
-        <Text
-          color='#340C8F'
-          fontSize='2xl'
-          w='100%'
-          textAlign='left'
-          my='1em'
-          fontWeight='bolder'
-        >
-          Rekap Absensi
-        </Text>
+        <Header title={'Rekap Absensi'} />
         <Tabs
           variant='soft-rounded'
           colorScheme='green'
@@ -170,7 +162,7 @@ export default function AttendancePageAdmin() {
           w='100%'
           isLazy={true}
         >
-          <TabList w='initial' px='0'>
+          <TabList w='initial' px='0' mt='1em'>
             <Flex
               border='4px solid black'
               borderRadius='3xl'
@@ -199,7 +191,7 @@ export default function AttendancePageAdmin() {
               </Tab>
             </Flex>
           </TabList>
-          <Flex w='100%' ml='1em' mt='1em'>
+          <Flex w='100%' ml='1em' mt='2em'>
             <Select
               placeholder='Select Day'
               color='white'
