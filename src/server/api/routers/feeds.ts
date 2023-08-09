@@ -49,5 +49,26 @@ export const feedsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // Edit feed berdasarkan id feed
+      const { feedId, body, attachment } = input;
+
+      try {
+        const updatedFeed = await ctx.prisma.feed.update({
+          where: { id: feedId },
+          data: {
+            text: body,
+            attachmentUrl: attachment
+          }
+        });
+
+        return {
+          message: 'Feed edited successfully',
+          updatedFeed
+        };
+      } catch (err) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to edit the feed'
+        });
+      }
     })
 });
