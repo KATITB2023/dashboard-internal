@@ -36,7 +36,7 @@ import { SlOptions, SlPencil, SlPicture, SlTrash } from 'react-icons/sl';
 
 interface FeedProps {
     postId: string;
-    article: string;
+    content: string;
     url: string;
     img: string;
     time: string;
@@ -56,7 +56,7 @@ export default function Feeds() {
         defaultValues: {
             postId: '',
             time: '',
-            article: '',
+            content: '',
             url: '',
             img: '',
         }
@@ -66,11 +66,6 @@ export default function Feeds() {
     const { isOpen: isPostOpen, onOpen: onPostOpen, onClose: onPostClose } = useDisclosure();
     const { isOpen: isRemoveOpen, onOpen: onRemoveOpen, onClose: onRemoveClose } = useDisclosure();
     const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
-    const [editId, setEditId] = useState<string | null>(null);
-    const [editedArticle, setEditedArticle] = useState('');
-    const [editedUrl, setEditedUrl] = useState('');
-    console.log('Edited feed: ', editedArticle);
-    console.log('Edited url: ', editedUrl);
 
     const getTimeLabel = (timestamp: string): string => {
         const currentTime = new Date();
@@ -103,7 +98,7 @@ export default function Feeds() {
     }
 
     // POST FEEDS (TO DO: Submit handlers)
-    const submitArticle: SubmitHandler<FeedProps> = (data: FeedProps) => {
+    const submitcontent: SubmitHandler<FeedProps> = (data: FeedProps) => {
         const newId = Math.random().toString(36).substr(2, 9);
         const currentTime = new Date().toISOString();
         setDataPost([...dataPost, { ...data, postId: newId, time: currentTime, img: 'gambar.jpg' }]);
@@ -116,37 +111,14 @@ export default function Feeds() {
 
 
     // EDIT FEEDS (TO DO: Edit handler)
-    const handlePostEdit = (id: string) => {
-        const postToEdit = dataPost.find(post => post.postId === id);
-        if (postToEdit) {
-            setEditId(id);
-            setEditedArticle(postToEdit.article);
-            setEditedUrl(postToEdit.url);
-        }
-    };
+    const handleSubmitEdit = (id: string) => {};
 
     const handleSaveEdit = () => {
-        if (editId !== null) {
-            setDataPost(prevData =>
-                prevData.map(post =>
-                    post.postId === editId
-                        ? { ...post, article: editedArticle, url: editedUrl }
-                        : post
-                )
-            );
-            setEditId(null);
-            setEditedArticle('');
-            setEditedUrl('');
-        }
-        ('');
         setIsAttachImg(false);
 
     };
     const handleCancelEdit = () => {
         reset();
-        setEditId(null);
-        setEditedArticle('');
-        setEditedUrl('');
         setIsAttachImg(false);
     };
 
@@ -181,7 +153,7 @@ export default function Feeds() {
                             <ModalContent>
                                 <form
                                     onSubmit={(e: BaseSyntheticEvent) =>
-                                        void handleSubmit(submitArticle)(e)
+                                        void handleSubmit(submitcontent)(e)
                                     }
                                 >
                                     <ModalHeader width='100%' mx='auto' borderBottom='1px solid #CBD2E0'>
@@ -210,8 +182,8 @@ export default function Feeds() {
                                                 </FormErrorMessage>
                                             )}
                                         </FormControl>
-                                        <FormControl isInvalid={!!formState.errors.article} mt='1rem'>
-                                            <Text>Article</Text>
+                                        <FormControl isInvalid={!!formState.errors.content} mt='1rem'>
+                                            <Text>content</Text>
                                             <Textarea
                                                 variant='unstyled'
                                                 border={formState.errors.url ? '1px solid red' : '1px solid black'}
@@ -222,17 +194,17 @@ export default function Feeds() {
                                                 focusBorderColor='none'
                                                 borderRadius='8px'
                                                 height='400px'
-                                                {...register('article', {
+                                                {...register('content', {
                                                     required: {
                                                         value: true,
-                                                        message: 'Article is required'
+                                                        message: 'content is required'
                                                     }
                                                 })}
                                             />
-                                            {formState.errors.article && (
+                                            {formState.errors.content && (
                                                 <FormErrorMessage>
                                                     {' '}
-                                                    {formState.errors.article.message as string}{' '}
+                                                    {formState.errors.content.message as string}{' '}
                                                 </FormErrorMessage>
                                             )}
                                         </FormControl>
@@ -261,7 +233,7 @@ export default function Feeds() {
                             </ModalContent>
                         </Modal>
                     </Box>
-                    {/* ========== Article List ========== */}
+                    {/* ========== content List ========== */}
                     <Box overflowY='auto' width='100%' maxHeight='600px'
                         css={{
                             '&::-webkit-scrollbar': {
@@ -287,7 +259,7 @@ export default function Feeds() {
                                             </PopoverBox>
                                         </PopoverTrigger>
                                         <PopoverContent width='fit-content' borderColor='#000' zIndex='100000'>
-                                            <PopoverHeader onClick={() => { handlePostEdit(item.postId), onEditOpen() }} borderColor='#000'>
+                                            <PopoverHeader onClick={() => { handleSubmitEdit(item.postId), onEditOpen() }} borderColor='#000'>
                                                 <HStack>
                                                     <Icon as={SlPencil} boxSize={6} />
                                                     <Text>Edit</Text>
@@ -296,7 +268,7 @@ export default function Feeds() {
                                                         <ModalContent>
                                                             <form
                                                             onSubmit={(e: BaseSyntheticEvent) =>
-                                                                void handleSubmit(submitArticle)(e)
+                                                                void handleSubmit(submitcontent)(e)
                                                             }
                                                             >
                                                                 <ModalHeader width='100%' mx='auto' borderBottom='1px solid #CBD2E0'>
@@ -317,9 +289,9 @@ export default function Feeds() {
                                                                                     message: 'URL is required'
                                                                                 }
                                                                             })}
-                                                                            placeholder={editedUrl}
-                                                                            value={editedUrl}
-                                                                            onChange={e => setEditedUrl(e.target.value)}
+                                                                            placeholder=''
+                                                                            value=''
+                                                                            // onChange={}
                                                                         />
                                                                         {formState.errors.url && (
                                                                             <FormErrorMessage>
@@ -328,8 +300,8 @@ export default function Feeds() {
                                                                             </FormErrorMessage>
                                                                         )}
                                                                     </FormControl>
-                                                                    <FormControl isInvalid={!!formState.errors.article} mt='1rem'>
-                                                                        <Text>Article</Text>
+                                                                    <FormControl isInvalid={!!formState.errors.content} mt='1rem'>
+                                                                        <Text>content</Text>
                                                                         <Textarea
                                                                             variant='unstyled'
                                                                             border={formState.errors.url ? '1px solid red' : '1px solid black'}
@@ -340,20 +312,20 @@ export default function Feeds() {
                                                                             focusBorderColor='none'
                                                                             borderRadius='8px'
                                                                             height='400px'
-                                                                            {...register('article', {
+                                                                            {...register('content', {
                                                                                 required: {
                                                                                     value: true,
-                                                                                    message: 'Article is required'
+                                                                                    message: 'content is required'
                                                                                 }
                                                                             })}
-                                                                            placeholder={editedArticle}
-                                                                            value={editedArticle}
-                                                                            onChange={(e) => setEditedArticle(e.target.value)}
+                                                                            placeholder=''
+                                                                            value=''
+                                                                            // onChange={}
                                                                         />
-                                                                        {formState.errors.article && (
+                                                                        {formState.errors.content && (
                                                                             <FormErrorMessage>
                                                                                 {' '}
-                                                                                {formState.errors.article.message as string}{' '}
+                                                                                {formState.errors.content.message as string}{' '}
                                                                             </FormErrorMessage>
                                                                         )}
                                                                     </FormControl>
@@ -409,7 +381,7 @@ export default function Feeds() {
                                         <Text mr='1rem'>{getTimeLabel(item.time)}</Text>
                                     </Flex>
                                     <Text>
-                                        {item.article}
+                                        {item.content}
                                     </Text>
                                     <HStack>
                                         <Tag>{item.url}</Tag>
