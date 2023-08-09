@@ -37,6 +37,31 @@ export const feedsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // Delete feed berdasarkan id feed
+      const { feedId } = input;
+      try {
+        const feed = await prisma.feed.findUnique({
+          where: { id: feedId }
+        });
+
+        if (!feed) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'BAD_REQUEST'
+          });
+        }
+
+        await prisma.feed.delete({
+          where: { id: feedId }
+        });
+        
+        return feed;
+      } catch (error) {
+        console.error('Error dalam menghapus feed:', error);
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'BAD_REQUEST'
+        });
+      }
     }),
 
   adminEditFeed: adminProcedure
