@@ -24,16 +24,14 @@ const ErrorBackground = () => {
       margin='auto'
       overflow='hidden'
       zIndex='-10'
-      backgroundImage='/images/404/bg.png'
-      backgroundSize='cover'
-      backgroundPosition='center'
-      backgroundRepeat='no-repeat'
+      backgroundColor='#0b0a0a'
     >
       <Image
         src='/images/404/komet-4.png'
         alt=''
         top={{ base: '23%', md: '7%' }}
-        left={{ base: '-35%', xl: '-10%' }}
+        left={{ base: '-28%', xl: '-10%' }}
+        width={{ base: '60%', md: '20%' }}
         transform={{ base: 'rotate(13.85deg)', md: 'rotate(-167.12deg)' }}
       />
       <Image
@@ -47,8 +45,9 @@ const ErrorBackground = () => {
       <Image
         src='/images/404/sparkle-telanjang-2.png'
         alt=''
-        top={{ base: '45%', md: '26%' }}
-        left='62%'
+        top={{ base: '52%', md: '54%' }}
+        left='55%'
+        width={{ base: '20%', md: '5%' }}
         transform='rotate(25.01deg)'
       />
       <Image
@@ -64,12 +63,14 @@ const ErrorBackground = () => {
         alt=''
         top={{ base: '41%', md: '48%' }}
         right={{ base: '-60%', lg: '-13%' }}
+        width={{ base: '90%', md: '30%' }}
       />
       <Image
         src='/images/404/mini2-1.png'
         alt=''
         top={{ base: '66%', md: '55%' }}
         left={{ base: '90%', md: '-3%' }}
+        width={{ base: '50%', md: '10%' }}
       />
       <Image
         src='/images/404/mini2-2.png'
@@ -81,8 +82,9 @@ const ErrorBackground = () => {
       <Image
         src='/images/404/mini2-2.png'
         alt=''
-        top='62%'
+        top='80%'
         left='2%'
+        width='20%'
         visibility={{ base: 'visible', md: 'hidden' }}
       />
       <Image

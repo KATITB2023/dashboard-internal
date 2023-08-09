@@ -1,7 +1,14 @@
-import { Flex, Image, Text } from '@chakra-ui/react';
+import { Flex, Image, Link, Text } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import ErrorBackground from '~/components/background/ErrorBackground';
 
 export default function Custom404() {
+  const router = useRouter();
+
+  const goBack = () => {
+    router.back();
+  };
+
   return (
     <Flex
       width='100%'
@@ -41,14 +48,15 @@ export default function Custom404() {
             fontFamily='SomarRounded-Regular'
             fontSize={{ base: '14px', md: '20px' }}
           >
-            Jangan khawatir, Spacefarers! Kalian bisa kembali ke{' '}
-            <a
-              href='https://oskmitb.com'
-              style={{ color: '#FE06BE', textDecoration: 'underline' }}
+            Jangan khawatir! Kamu dapat kembali ke{' '}
+            <Link
+              onClick={goBack}
+              _hover={{ textDecoration: 'underline', cursor: 'pointer' }}
+              style={{ color: '#FE06BE' }}
             >
-              home
-            </a>{' '}
-            atau kunjungi fitur menarik lainnya di bawah ini.
+              halaman sebelumnya
+            </Link>
+            .
           </Text>
         </Flex>
       </Flex>
