@@ -27,6 +27,23 @@ export const feedsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // Post feed baru
+      try {
+        const postFeed = await ctx.prisma.feed.create({
+          data: {
+            text: input.body,
+            attachmentUrl: input.attachment
+          }
+        });
+        return {
+          message: 'Create feed successfully',
+          postFeed
+        };
+      } catch (err) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to create the feed'
+        });
+      }
     }),
 
   adminDeleteFeed: adminProcedure
