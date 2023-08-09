@@ -128,21 +128,19 @@ export const AddPoint = () => {
         userId: id,
         point: point
       })
-      .then(() => {
+      .then((res) => {
         toast({
-          title: 'Berhasil mengubah poin',
+          title: res.message,
           status: 'success',
-          duration: 3000,
-          isClosable: true
+          duration: 3000
         });
         leaderboardQuery.refetch();
       })
-      .catch(() => {
+      .catch((err) => {
         toast({
-          title: 'Gagal mengubah poin',
+          title: err.message,
           status: 'error',
-          duration: 3000,
-          isClosable: true
+          duration: 3000
         });
       });
   };

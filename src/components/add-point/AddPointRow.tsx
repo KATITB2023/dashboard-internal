@@ -29,17 +29,13 @@ export const AddPointRow = ({ data, num, editPoint }: AddPointRowProps) => {
   };
 
   const incPointHandler = () => {
-    if (point < 100) {
-      setPoint(point + 1);
-    }
+    setPoint(point + 1);
   };
 
   const pointInputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
     if (value < 0) {
       setPoint(0);
-    } else if (value > 100) {
-      setPoint(100);
     } else {
       setPoint(value);
     }

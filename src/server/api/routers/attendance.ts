@@ -95,7 +95,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminAddAttendanceEvent: publicProcedure
+  adminAddAttendanceEvent: adminProcedure
     .input(
       z.object({
         dayId: z.string().uuid(),

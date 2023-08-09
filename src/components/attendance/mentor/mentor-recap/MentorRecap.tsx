@@ -129,15 +129,20 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
         kehadiran: newStatus,
         reason: newDesc
       })
-      .then(() => {
+      .then((res) => {
         toast({
-          title: 'Status berhasil diubah',
+          title: res.message,
           status: 'success',
-          duration: 3000,
-          isClosable: true
+          duration: 3000
         });
-        successFn();
         recordListQuery.refetch();
+      })
+      .catch((err) => {
+        toast({
+          title: err.message,
+          status: 'error',
+          duration: 3000
+        });
       });
   };
 

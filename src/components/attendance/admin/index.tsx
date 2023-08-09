@@ -50,12 +50,26 @@ export default function AttendancePageAdmin() {
       return;
     }
 
-    const res = await addDayMutation.mutateAsync({
-      name: dayName,
-      time: dayDate
-    });
-
-    dayListQuery.refetch();
+    addDayMutation
+      .mutateAsync({
+        name: dayName,
+        time: dayDate
+      })
+      .then((res) => {
+        toast({
+          title: res.message,
+          status: 'success',
+          duration: 3000
+        });
+        dayListQuery.refetch();
+      })
+      .catch((err) => {
+        toast({
+          title: err.message,
+          status: 'error',
+          duration: 3000
+        });
+      });
   };
 
   const editDay = async (id: string, name: string, date: Date) => {
@@ -68,43 +82,49 @@ export default function AttendancePageAdmin() {
       return;
     }
 
-    const res = await editDayMutation.mutateAsync({
-      name: name,
-      time: date,
-      dayId: id
-    });
-
-    if (res.message) {
-      toast({
-        title: 'Gagal mengedit Day',
-        status: 'error',
-        duration: 3000
+    editDayMutation
+      .mutateAsync({
+        name: name,
+        time: date,
+        dayId: id
+      })
+      .then((res) => {
+        toast({
+          title: res.message,
+          status: 'success',
+          duration: 3000
+        });
+        dayListQuery.refetch();
+      })
+      .catch((err) => {
+        toast({
+          title: err.message,
+          status: 'error',
+          duration: 3000
+        });
       });
-      return;
-    }
   };
 
   const deleteDay = async (id: string) => {
-    const res = await removeDayMutation.mutateAsync({
-      dayId: id
-    });
-
-    if (res.message) {
-      toast({
-        title: 'Gagal menghapus Day',
-        status: 'error',
-        duration: 3000
+    removeDayMutation
+      .mutateAsync({
+        dayId: id
+      })
+      .then((res) => {
+        toast({
+          title: res.message,
+          status: 'success',
+          duration: 3000
+        });
+        dayListQuery.refetch();
+      })
+      .catch((err) => {
+        toast({
+          title: err.message,
+          status: 'error',
+          duration: 3000
+        });
       });
-      return;
-    }
-
-    toast({
-      title: 'Berhasil menghapus Day',
-      status: 'success',
-      duration: 2000
-    });
-
-    dayListQuery.refetch();
   };
 
   // function for custom tab
@@ -130,8 +150,6 @@ export default function AttendancePageAdmin() {
       </Button>
     );
   });
-  console.log(dayList);
-  console.log(dayId);
   return (
     <Layout title='Attendance Page' type='admin' fullBg>
       <Box bg='white'>
