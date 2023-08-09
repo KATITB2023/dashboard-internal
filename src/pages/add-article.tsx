@@ -12,42 +12,70 @@ import {
   Link
 } from '@chakra-ui/react';
 import { Header } from '~/components/Header';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
-import { Markdown } from '~/components/Markdown';
-import { api } from '~/utils/api';
+import { api, type RouterInputs } from '~/utils/api';
 import { TRPCError } from '@trpc/server';
-// import { useRouter } from "next/router";
+import { uploadFile, sanitizeURL } from '~/utils/file';
+import ReactHtmlParser from 'react-html-parser';
 
 interface FormValue {
   title: string;
   body: string;
-  featureImage: string;
+  featureImage: FileList;
 }
-
-// TO DO:
-// belum handle feature image
-// markdownnya belum bs resize image hadeh
 
 export default function AddArticle() {
   const toast = useToast();
-  // const router = useRouter();
   const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
   const addNewArticleMutation = api.cms.adminAddNewArticle.useMutation();
+  const [file, setFile] = useState<File | null>(null);
 
-  const { register, formState, getValues, handleSubmit, reset } =
+  const { register, formState, getValues, handleSubmit, reset, setValue } =
     useForm<FormValue>({
       mode: 'onSubmit',
       defaultValues: {
         title: '',
         body: '',
-        featureImage:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9hxIGIRPVvvpnSQjDGNI0undzKEHbVYvWe-7bvt9W4A&s'
+        featureImage: undefined
       }
     });
 
   const handlePreviewMode: React.MouseEventHandler<HTMLButtonElement> = () =>
     setIsPreviewMode(!isPreviewMode);
+
+  const handleDrop: React.DragEventHandler<HTMLTextAreaElement> = (e) => {
+    e.preventDefault();
+
+    if (e.dataTransfer.files.length > 0) {
+      console.log('tes');
+      const droppedFile = e.dataTransfer.files[0];
+      if (!droppedFile) return;
+      setFile(droppedFile);
+    }
+  };
+
+  useEffect(() => {
+    if (file) {
+      try {
+        const handleUploadFile = async () => {
+          const fileName = `article-${file.name.replace(' ', '')}`;
+          const extension = file.name.split('.').pop() as string;
+          const imagePath = sanitizeURL(
+            `https://cdn.oskmitb.com/${fileName}.${extension}`
+          );
+
+          await uploadFile(imagePath, file);
+          const imgHtml = `<img src=${imagePath} alt=${fileName} width='500px'/>`;
+          setValue('body', getValues('body') + imgHtml);
+          setFile(null);
+        };
+        void handleUploadFile();
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  });
 
   const submitArticle: SubmitHandler<FormValue> = async (
     data: FormValue,
@@ -55,7 +83,23 @@ export default function AddArticle() {
   ) => {
     event?.preventDefault();
     try {
-      const res = await addNewArticleMutation.mutateAsync(data);
+      let imagePath = '';
+      if (data.featureImage[0]) {
+        const fileName = `article-feature-img-${data.featureImage[0].name.replace(
+          ' ',
+          ''
+        )}`;
+        imagePath = sanitizeURL(`https://cdn.oskmitb.com/${fileName}`);
+        await uploadFile(imagePath, data.featureImage[0]);
+      }
+
+      const payload: RouterInputs['cms']['adminAddNewArticle'] = {
+        title: data.title,
+        body: data.body,
+        featureImage: imagePath
+      };
+
+      const res = await addNewArticleMutation.mutateAsync(payload);
       toast({
         title: 'Success',
         status: 'success',
@@ -76,13 +120,15 @@ export default function AddArticle() {
         position: 'top'
       });
     }
-    // void router.push("/article-cms");
   };
 
   return (
     <Layout type='admin' title='Article Management' fullBg={true}>
       <Header title='Article CMS' />
-
+      <Flex marginTop='10px'>
+        <Spacer />
+        {!isPreviewMode && <Button onClick={handlePreviewMode}>Preview</Button>}
+      </Flex>
       <form onSubmit={(e) => void handleSubmit(submitArticle)(e)}>
         <Flex direction='column'>
           <Flex alignItems='center'>
@@ -127,15 +173,40 @@ export default function AddArticle() {
               </>
             )}
           </Flex>
-          <Flex marginTop='10px'>
-            <Spacer />
-            {!isPreviewMode && (
-              <Button onClick={handlePreviewMode}>Preview</Button>
+          <FormControl isInvalid={!!formState.errors.featureImage}>
+            <Input
+              type='file'
+              accept='image/*'
+              variant='unstyled'
+              {...register('featureImage', {
+                required: {
+                  value: true,
+                  message: 'Feature Image tidak boleh kosong'
+                },
+                validate: (value) => {
+                  const file: File | undefined = value[0];
+                  if (
+                    file &&
+                    file.name.split('.')[1] !== 'png' &&
+                    file.name.split('.')[1] !== 'jpeg'
+                  ) {
+                    return 'Gambar harus berupa .png atau .jpeg';
+                  }
+                  return true;
+                }
+              })}
+            />
+            {formState.errors.featureImage && (
+              <FormErrorMessage>
+                {formState.errors.featureImage.message as string}
+              </FormErrorMessage>
             )}
-          </Flex>
+          </FormControl>
+
           {isPreviewMode ? (
-            <Markdown body={getValues('body')} />
+            <Flex>{ReactHtmlParser(getValues('body'))}</Flex>
           ) : (
+            // <Markdown body={getValues('body')} />
             <FormControl isInvalid={!!formState.errors.body}>
               <Textarea
                 placeholder='Lorem ipsum dolor sit amet, consectetur adipiscing elit...'
@@ -149,6 +220,7 @@ export default function AddArticle() {
                     message: 'Artikel tidak boleh kosong'
                   }
                 })}
+                onDrop={handleDrop}
               />
 
               {formState.errors.body && (

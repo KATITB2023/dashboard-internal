@@ -17,8 +17,8 @@ import { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { FiArrowLeft, FiArrowRight, FiChevronRight } from 'react-icons/fi';
 import { api } from '~/utils/api';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { TRPCError } from '@trpc/server';
+import ReactHtmlParser from 'react-html-parser';
 
 export default function ArticleCMS() {
   const toast = useToast();
@@ -42,7 +42,6 @@ export default function ArticleCMS() {
   > = (e) => setCurrentPageNum(parseInt(e.target.value));
 
   useEffect(() => {
-    /// hmmm??
     void getArticlesListQuery.refetch();
   });
 
@@ -81,7 +80,6 @@ export default function ArticleCMS() {
 
   const handleEditArticle = (id: string) => {
     // TO DO : edit
-    // sebenarnya nunggu add article fixed dulu si
     console.log('edit article', id);
   };
 
@@ -115,6 +113,7 @@ export default function ArticleCMS() {
             mr='2'
             value={recordsNum}
             onChange={handleRecordsNumChange}
+            defaultValue={3}
           />
           <InputRightElement pointerEvents='none'>
             <FiChevronRight />
@@ -136,7 +135,7 @@ export default function ArticleCMS() {
           >
             <Text fontFamily='SomarRounded-Bold'> {article.title}</Text>
             <Box height='110' overflow='hidden' fontSize='sm'>
-              <ReactMarkdown>{article.slug}</ReactMarkdown>
+              {ReactHtmlParser(article.html as string)}
             </Box>
             <Flex
               textDecoration='underline'

@@ -5,7 +5,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { adminProcedure, createTRPCRouter } from '~/server/api/trpc';
+import {
+  adminProcedure,
+  createTRPCRouter,
+  publicProcedure
+} from '~/server/api/trpc';
 import GhostContentAPI from '@tryghost/content-api';
 // @ts-ignore
 import GhostAdminAPI from '@tryghost/admin-api';
@@ -24,7 +28,7 @@ const adminApi = new GhostAdminAPI({
 });
 
 export const cmsRouter = createTRPCRouter({
-  adminGetArticlesList: adminProcedure
+  adminGetArticlesList: publicProcedure
     .input(
       z.object({
         searchQuery: z.string().optional(),
@@ -61,7 +65,7 @@ export const cmsRouter = createTRPCRouter({
       );
     }),
 
-  adminAddNewArticle: adminProcedure
+  adminAddNewArticle: publicProcedure
     .input(
       z.object({
         title: z.string(),
@@ -154,7 +158,7 @@ export const cmsRouter = createTRPCRouter({
       }
     }),
 
-  adminDeleteArticle: adminProcedure
+  adminDeleteArticle: publicProcedure
     .input(z.object({ articleId: z.string() }))
     .mutation(async ({ input }) => {
       try {
