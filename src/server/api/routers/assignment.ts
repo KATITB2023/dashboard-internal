@@ -253,6 +253,10 @@ export const assignmentRouter = createTRPCRouter({
             });
           })
         );
+
+        return {
+          message: 'Assignment added successfully'
+        };
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
