@@ -2,6 +2,7 @@ import { TRPCError } from '@trpc/server';
 import { Status } from '@prisma/client';
 import { z } from 'zod';
 import { createTRPCRouter, adminProcedure } from '~/server/api/trpc';
+import { prisma } from '~/server/db';
 
 export const feedsRouter = createTRPCRouter({
   adminGetFeeds: adminProcedure.query(async ({ ctx }) => {
@@ -54,6 +55,20 @@ export const feedsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // Delete feed berdasarkan id feed
+      const { feedId } = input;
+      try {
+        await prisma.feed.delete({
+          where: { id: feedId }
+        });
+        return {
+          message: "PENGHAPUSAN FEED BERHASIL"
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'ERROR DALAM MENGHAPUS FEED'
+        });
+      }
     }),
 
   adminEditFeed: adminProcedure
