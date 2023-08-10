@@ -139,7 +139,7 @@ export default function Penilaian() {
               <Select
                 value={filterBy}
                 width='max-content'
-                placeholder='filter by'
+                placeholder='Filter by'
                 border='2px'
                 borderColor='gray.300'
                 cursor='pointer'
