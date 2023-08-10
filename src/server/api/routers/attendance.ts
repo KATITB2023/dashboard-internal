@@ -173,7 +173,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminEditAttendanceEvent: publicProcedure
+  adminEditAttendanceEvent: adminProcedure
     .input(
       z.object({
         eventId: z.string().uuid(),
