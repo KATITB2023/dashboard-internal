@@ -4,13 +4,12 @@ import { z } from 'zod';
 import {
   createTRPCRouter,
   mentorProcedure,
-  publicProcedure,
   adminProcedure,
   protectedProcedure
 } from '~/server/api/trpc';
 
 export const attendanceRouter = createTRPCRouter({
-  adminAddAttendanceDay: publicProcedure
+  adminAddAttendanceDay: adminProcedure
     .input(
       z.object({
         name: z.string(),
@@ -38,7 +37,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminEditAttendanceDay: publicProcedure
+  adminEditAttendanceDay: adminProcedure
     .input(
       z.object({
         dayId: z.string().uuid(),
@@ -70,7 +69,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminDeleteAttendanceDay: publicProcedure
+  adminDeleteAttendanceDay: adminProcedure
     .input(
       z.object({
         dayId: z.string().uuid()
@@ -207,7 +206,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminDeleteAttendanceEvent: publicProcedure
+  adminDeleteAttendanceEvent: adminProcedure
     .input(
       z.object({
         eventId: z.string().uuid()
@@ -233,7 +232,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminGetAttendanceRecord: publicProcedure
+  adminGetAttendanceRecord: adminProcedure
     .input(
       z.object({
         dayId: z.string().uuid().optional(),
@@ -370,7 +369,7 @@ export const attendanceRouter = createTRPCRouter({
       };
     }),
 
-  adminGetAttendanceBaseOnDayId: publicProcedure
+  adminGetAttendanceBaseOnDayId: adminProcedure
     .input(z.object({ dayId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const dayId = input.dayId;
@@ -518,7 +517,7 @@ export const attendanceRouter = createTRPCRouter({
       });
     }),
 
-  mentorGetEventList: publicProcedure.query(async ({ ctx }) => {
+  mentorGetEventList: mentorProcedure.query(async ({ ctx }) => {
     try {
       const attendanceDaysWithEvents = await ctx.prisma.attendanceDay.findMany({
         include: {
@@ -534,7 +533,7 @@ export const attendanceRouter = createTRPCRouter({
     }
   }),
 
-  editAttendanceRecord: publicProcedure
+  editAttendanceRecord: mentorProcedure
     .input(
       z.object({
         attendanceId: z.string().uuid(),
