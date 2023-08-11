@@ -224,6 +224,13 @@ export const assignmentRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      if (input.startTime > input.endTime) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'End time cannot be earlier than start time'
+        });
+      }
+
       try {
         const [assignment, users] = await Promise.all([
           ctx.prisma.assignment.create({
@@ -239,6 +246,9 @@ export const assignmentRouter = createTRPCRouter({
           ctx.prisma.user.findMany({
             select: {
               id: true
+            },
+            where: {
+              role: 'STUDENT'
             }
           })
         ]);

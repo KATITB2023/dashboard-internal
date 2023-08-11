@@ -24,10 +24,11 @@ import { MdEdit } from 'react-icons/md';
 import { type Assignment, AssignmentType } from '@prisma/client';
 import { type SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { type BaseSyntheticEvent, useState } from 'react';
-import { TRPCError } from '@trpc/server';
 import { sanitizeURL, uploadFile } from '~/utils/file';
 import moment from 'moment';
 import { type RouterInputs, api } from '~/utils/api';
+import DeleteAssignmentModal from './DeleteAssignmentModal';
+import { TRPCClientError } from '@trpc/client';
 
 interface FormValues {
   title: string;
@@ -123,7 +124,7 @@ export default function EditAssignmentModal({ props, emit }: Props) {
       emit(true);
       onClose();
     } catch (error) {
-      if (!(error instanceof TRPCError)) throw error;
+      if (!(error instanceof TRPCClientError)) throw error;
 
       toast({
         title: 'Error',
@@ -207,6 +208,7 @@ export default function EditAssignmentModal({ props, emit }: Props) {
                           color='white'
                           w='full'
                           borderColor='gray.400'
+                          defaultValue={props.type}
                           onChange={(e) =>
                             setValue(
                               'type',
@@ -238,7 +240,6 @@ export default function EditAssignmentModal({ props, emit }: Props) {
                               }}
                               key={index}
                               value={type}
-                              selected={type === props.type}
                             >
                               {type.includes('_')
                                 ? type.split('_').join(' ')
@@ -335,7 +336,12 @@ export default function EditAssignmentModal({ props, emit }: Props) {
               </VStack>
             </ModalBody>
 
-            <ModalFooter>
+            <ModalFooter columnGap={4}>
+              <DeleteAssignmentModal
+                id={props.id}
+                title={props.title}
+                emit={() => emit(true)}
+              />
               <Button
                 variant={'outline'}
                 isLoading={loading}

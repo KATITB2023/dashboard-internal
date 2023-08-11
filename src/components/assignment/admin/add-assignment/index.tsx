@@ -14,9 +14,9 @@ import { AssignmentType } from '@prisma/client';
 import { type RouterInputs, type RouterOutputs, api } from '~/utils/api';
 import { type SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { type BaseSyntheticEvent, useState } from 'react';
-import { TRPCError } from '@trpc/server';
 import { sanitizeURL, uploadFile } from '~/utils/file';
 import moment from 'moment';
+import { TRPCClientError } from '@trpc/client';
 
 interface FormValues {
   title: string;
@@ -33,8 +33,7 @@ export default function AddAssignment() {
     control,
     handleSubmit,
     register,
-    formState: { errors, isDirty, isValid, isSubmitting },
-    setError,
+    formState: { errors },
     setValue,
     reset
   } = useForm<FormValues>({
@@ -93,8 +92,9 @@ export default function AddAssignment() {
         isClosable: true,
         position: 'top'
       });
+      reset();
     } catch (error) {
-      if (!(error instanceof TRPCError)) throw error;
+      if (!(error instanceof TRPCClientError)) throw error;
 
       toast({
         title: 'Error',
