@@ -19,9 +19,11 @@ import { FiArrowLeft, FiArrowRight, FiChevronRight } from 'react-icons/fi';
 import { api } from '~/utils/api';
 import { TRPCError } from '@trpc/server';
 import ReactHtmlParser from 'react-html-parser';
+import { useRouter } from 'next/router';
 
 export default function ArticleCMS() {
   const toast = useToast();
+  const router = useRouter();
   const [totalRecords, setTotalRecords] = useState<number>(0);
   const [recordsNum, setRecordsNum] = useState<number>(3);
   const [currentPageNum, setCurrentPageNum] = useState<number>(1);
@@ -90,8 +92,7 @@ export default function ArticleCMS() {
   };
 
   const handleEditArticle = (id: string) => {
-    // TO DO : edit
-    console.log('edit article', id);
+    void router.push(`/article-cms/edit/${id}`);
   };
 
   return (
@@ -113,7 +114,7 @@ export default function ArticleCMS() {
             <FaSearch />
           </InputLeftElement>
         </InputGroup>
-        <Link href='/add-article'>
+        <Link href='/article-cms/add'>
           <Button>Add Article</Button>
         </Link>
       </Flex>

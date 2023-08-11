@@ -9,7 +9,8 @@ import {
   FormErrorMessage,
   FormControl,
   useToast,
-  Link
+  Link,
+  Image
 } from '@chakra-ui/react';
 import { Header } from '~/components/Header';
 import React, { useState, useEffect } from 'react';
@@ -28,6 +29,7 @@ interface FormValue {
 export default function AddArticle() {
   const toast = useToast();
   const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
   const addNewArticleMutation = api.cms.adminAddNewArticle.useMutation();
 
@@ -51,6 +53,12 @@ export default function AddArticle() {
       const droppedFile = e.dataTransfer.files[0];
       if (!droppedFile) return;
       setFile(droppedFile);
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setSelectedImage(URL.createObjectURL(e.target.files[0] as Blob));
     }
   };
 
@@ -129,11 +137,11 @@ export default function AddArticle() {
       <Header title='Add Article' />
       <Flex marginY='10px'>
         <Spacer />
-        {/* {!isPreviewMode && <Button onClick={handlePreviewMode}>Preview</Button>} */}
         <Button onClick={handlePreviewMode}>
           {isPreviewMode ? 'Back' : 'Preview'}
         </Button>
       </Flex>
+      {isPreviewMode && <Image src={selectedImage} alt='selected image' />}
       <form onSubmit={(e) => void handleSubmit(submitArticle)(e)}>
         <Flex direction='column'>
           <Flex alignItems='center'>
@@ -169,18 +177,16 @@ export default function AddArticle() {
             )}
           </Flex>
 
-          {!isPreviewMode && (
-            <FormControl isInvalid={!!formState.errors.featureImage}>
-              <Input
-                type='file'
-                accept='image/*'
-                variant='unstyled'
-                display='none'
-                {...register('featureImage', {
-                  required: {
-                    value: true,
-                    message: 'Feature Image tidak boleh kosong'
-                  },
+          <FormControl isInvalid={!!formState.errors.featureImage}>
+            <Input
+              type='file'
+              accept='image/*'
+              variant='unstyled'
+              display={isPreviewMode ? 'none' : undefined}
+              onChange={(event) => {
+                handleImageChange(event);
+                register('featureImage', {
+                  required: 'Feature Image tidak boleh kosong',
                   validate: (value) => {
                     const file: File | undefined = value[0];
                     if (
@@ -192,15 +198,15 @@ export default function AddArticle() {
                     }
                     return true;
                   }
-                })}
-              />
-              {formState.errors.featureImage && (
-                <FormErrorMessage>
-                  {formState.errors.featureImage.message as string}
-                </FormErrorMessage>
-              )}
-            </FormControl>
-          )}
+                });
+              }}
+            />
+            {formState.errors.featureImage && (
+              <FormErrorMessage>
+                {formState.errors.featureImage.message as string}
+              </FormErrorMessage>
+            )}
+          </FormControl>
 
           {isPreviewMode ? (
             <Flex>{ReactHtmlParser(getValues('body'))}</Flex>
