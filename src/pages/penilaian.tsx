@@ -14,6 +14,7 @@ import { api } from '~/utils/api';
 import { Header } from '~/components/Header';
 import MentorRoute from '~/layout/MentorRoute';
 import { useSession } from 'next-auth/react';
+import { UserRole } from '@prisma/client';
 
 export function useDebounce<T>(value: T, delay?: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
@@ -57,11 +58,12 @@ export default function Penilaian() {
   const [page, setPage] = useState(1); // page number
 
   const data =
-    api.assignment.mentorGetAssignment.useQuery({
+    api.assignment.mentorAndEOGetAssignment.useQuery({
       currentPage: page,
       limitPerPage: recordsPerPage,
       filterBy: filterBy,
-      searchQuery: filterBy === 'Tugas' ? filterTugas : searchValue
+      searchQuery: filterBy === 'Tugas' ? filterTugas : searchValue,
+      isEO: session && session.user.role === UserRole.EO ? true : false
     }) || [];
 
   const tugasList =

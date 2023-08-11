@@ -5,7 +5,9 @@ import {
   createTRPCRouter,
   adminProcedure,
   mentorProcedure,
-  protectedProcedure
+  protectedProcedure,
+  mentorAndEOProcedure,
+  publicProcedure
 } from '~/server/api/trpc';
 
 export const assignmentRouter = createTRPCRouter({
@@ -232,6 +234,151 @@ export const assignmentRouter = createTRPCRouter({
       };
     }),
 
+  mentorAndEOGetAssignment: mentorAndEOProcedure
+    .input(
+      z.object({
+        filterBy: z.string().optional(),
+        searchQuery: z.string().optional(),
+        currentPage: z.number(),
+        limitPerPage: z.number(),
+        isEO: z.boolean()
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const currentPage = input.currentPage;
+      const limitPerPage = input.limitPerPage;
+      const offset = (currentPage - 1) * limitPerPage;
+
+      const filterAssignmentType = input.isEO
+        ? {
+            assignment: {
+              OR: [
+                {
+                  type: AssignmentType.DAILY_QUEST
+                },
+                {
+                  type: AssignmentType.SIDE_QUEST
+                }
+              ]
+            }
+          }
+        : {};
+
+      const filterByMentor = !input.isEO
+        ? {
+            student: {
+              student: {
+                some: {
+                  mentorId: ctx.session.user.id
+                }
+              }
+            }
+          }
+        : {};
+
+      const filteredData = await ctx.prisma.assignmentSubmission.findMany({
+        where: {
+          AND: [
+            {
+              assignment: {
+                title: {
+                  contains: input.filterBy === 'Tugas' ? input.searchQuery : '',
+                  mode: 'insensitive'
+                }
+              }
+            },
+            {
+              student: {
+                nim: {
+                  contains: input.filterBy === 'NIM' ? input.searchQuery : ''
+                }
+              }
+            },
+            {
+              student: {
+                profile: {
+                  name: {
+                    contains:
+                      input.filterBy === 'Nama' ? input.searchQuery : '',
+                    mode: 'insensitive'
+                  }
+                }
+              }
+            },
+            filterAssignmentType,
+            filterByMentor
+          ]
+        },
+        skip: offset,
+        take: limitPerPage,
+        include: {
+          assignment: {
+            select: {
+              id: true,
+              type: true,
+              title: true,
+              endTime: true
+            }
+          },
+          student: {
+            select: {
+              id: true,
+              nim: true,
+              profile: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
+        }
+      });
+
+      const total = await ctx.prisma.assignmentSubmission.count({
+        where: {
+          AND: [
+            {
+              assignment: {
+                title: {
+                  contains: input.filterBy === 'Tugas' ? input.searchQuery : '',
+                  mode: 'insensitive'
+                }
+              }
+            },
+            {
+              student: {
+                nim: {
+                  contains: input.filterBy === 'NIM' ? input.searchQuery : ''
+                }
+              }
+            },
+            {
+              student: {
+                profile: {
+                  name: {
+                    contains:
+                      input.filterBy === 'Nama' ? input.searchQuery : '',
+                    mode: 'insensitive'
+                  }
+                }
+              }
+            },
+            filterAssignmentType,
+            filterByMentor
+          ]
+        }
+      });
+
+      return {
+        data: filteredData,
+        metadata: {
+          total: total,
+          page: input.currentPage,
+          lastPage: Math.ceil(total / input.limitPerPage)
+        }
+      };
+    }),
+
   adminAddNewAssignment: adminProcedure
     .input(
       z.object({
@@ -379,7 +526,7 @@ export const assignmentRouter = createTRPCRouter({
     return assignments;
   }),
 
-  mentorSetAssignmentScore: mentorProcedure
+  mentorSetAssignmentScore: mentorAndEOProcedure
     .input(
       z.object({
         submissionId: z.string().uuid(),
