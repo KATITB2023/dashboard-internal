@@ -25,7 +25,7 @@ import {
   useToast
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { RouterInputs, RouterOutputs, api } from '~/utils/api';
+import { type RouterInputs, type RouterOutputs, api } from '~/utils/api';
 import { RecapRow } from './RecapRow';
 import { Status } from '@prisma/client';
 
@@ -211,7 +211,7 @@ export const Recap = ({ dayId }: RecapProps) => {
               <option value={Status.IZIN_DITOLAK}>Izin Ditolak</option>
               <option value={Status.IZIN_PENDING}>Izin Pending</option>
             </Select>
-          ) : (
+          ) : filterBy !== '' ? (
             <InputGroup ml='1em' w='20em'>
               <Input
                 placeholder='Search'
@@ -219,7 +219,7 @@ export const Recap = ({ dayId }: RecapProps) => {
                 onChange={searchQueryChangeHandler}
               />
             </InputGroup>
-          )}
+          ) : null}
         </Flex>
       </Flex>
       {recordListQuery.isLoading ? (
