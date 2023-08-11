@@ -18,12 +18,10 @@ import {
   useTab,
   useMultiStyleConfig
 } from '@chakra-ui/react';
+import AdminRoute from '~/layout/AdminRoute';
 
 export default function RekapPenilaian() {
   const { data: session } = useSession();
-  const router = useRouter();
-
-  if (!session) return <Redirect />;
 
   // eslint-disable-next-line react/display-name
   const Tab = React.forwardRef((props: TabProps, ref) => {
@@ -49,8 +47,8 @@ export default function RekapPenilaian() {
     );
   });
 
-  if (session?.user.role === UserRole.ADMIN) {
-    return (
+  return (
+    <AdminRoute session={session}>
       <Layout type='admin' title='Rekap Penilaian' fullBg={false}>
         <Header title='Rekap Penilaian' />
         <Tabs
@@ -99,6 +97,6 @@ export default function RekapPenilaian() {
           </TabPanels>
         </Tabs>
       </Layout>
-    );
-  }
+    </AdminRoute>
+  );
 }

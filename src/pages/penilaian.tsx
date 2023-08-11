@@ -12,6 +12,8 @@ import { FiArrowLeft, FiArrowRight } from 'react-icons/fi';
 import AssignmentListTable from '~/components/assignment-list/AssignmentListTable';
 import { api } from '~/utils/api';
 import { Header } from '~/components/Header';
+import MentorRoute from '~/layout/MentorRoute';
+import { useSession } from 'next-auth/react';
 
 export function useDebounce<T>(value: T, delay?: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
@@ -41,6 +43,7 @@ export interface AssignmentListProps {
 }
 
 export default function Penilaian() {
+  const { data: session } = useSession();
   const [search, setSearch] = useState(''); // serach bar value
   const [filterBy, setFilterBy] = useState(''); // filter by value
   const [filterTugas, setFilterTugas] = useState(''); // filter tugas value
@@ -93,192 +96,195 @@ export default function Penilaian() {
   });
 
   return (
-    <Layout type='mentor' title='Penilaian' fullBg={false}>
-      {/* wrapper */}
+    <MentorRoute session={session} allowEO={true}>
+      <Layout type='mentor' title='Penilaian' fullBg={false}>
+        {/* wrapper */}
 
-      <Flex color='black' gap='1.75rem' direction='column' height='100%'>
-        <Header title='Penilaian' />
-        <Flex justifyContent='space-between' alignItems='end'>
-          {/* records perpage select element */}
-          <Flex>
-            <label>
-              <Flex alignItems='center' gap='.5rem'>
-                <Select
-                  value={recordsPerPage}
-                  width='fit-content'
-                  border='2px'
-                  borderColor='gray.300'
-                  cursor='pointer'
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-                    setRecordsPerPage(parseInt(e.target.value));
-                    setPage(1);
-                  }}
-                >
-                  {dataList.length > 0 ? (
-                    <>
-                      <option value={totalData}>All</option>
-                      {Array(totalData)
-                        .fill(1)
-                        .map((_, index: number) => (
-                          <option key={index} value={index + 1}>
-                            {index + 1}
-                          </option>
-                        ))}
-                    </>
-                  ) : (
-                    <option value={0}>-</option>
-                  )}
-                </Select>
-                <span>data perhalaman</span>
-              </Flex>
-            </label>
-          </Flex>
-          {/* filter select element */}
-          <Flex gap='.5rem'>
-            <label>
-              <Select
-                value={filterBy}
-                width='max-content'
-                placeholder='Filter by'
-                border='2px'
-                borderColor='gray.300'
-                cursor='pointer'
-                onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-                  setFilterBy(e.target.value);
-                  setSearch('');
-                  setFilterTugas('');
-                  setRecordsPerPage(totalData);
-                }}
-              >
-                {['Tugas', 'NIM', 'Nama'].map((item: string) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </Select>
-            </label>
-            {filterBy !== 'Tugas' ? (
-              <Input
-                type='search'
-                placeholder='Search'
-                width='15rem'
-                value={search}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setSearch(e.target.value);
-                  setRecordsPerPage(totalData);
-                }}
-                variant='outline'
-                border='2px'
-                borderColor='gray.300'
-                display={filterBy === '' ? 'none' : 'block'}
-              />
-            ) : (
+        <Flex color='black' gap='1.75rem' direction='column' height='100%'>
+          <Header title='Penilaian' />
+          <Flex justifyContent='space-between' alignItems='end'>
+            {/* records perpage select element */}
+            <Flex>
+              <label>
+                <Flex alignItems='center' gap='.5rem'>
+                  <Select
+                    value={recordsPerPage}
+                    width='fit-content'
+                    border='2px'
+                    borderColor='gray.300'
+                    cursor='pointer'
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                      setRecordsPerPage(parseInt(e.target.value));
+                      setPage(1);
+                    }}
+                  >
+                    {dataList.length > 0 ? (
+                      <>
+                        <option value={totalData}>All</option>
+                        {Array(totalData)
+                          .fill(1)
+                          .map((_, index: number) => (
+                            <option key={index} value={index + 1}>
+                              {index + 1}
+                            </option>
+                          ))}
+                      </>
+                    ) : (
+                      <option value={0}>-</option>
+                    )}
+                  </Select>
+                  <span>data perhalaman</span>
+                </Flex>
+              </label>
+            </Flex>
+            {/* filter select element */}
+            <Flex gap='.5rem'>
               <label>
                 <Select
-                  width='15rem'
-                  value={filterTugas}
+                  value={filterBy}
+                  width='max-content'
+                  placeholder='Filter by'
                   border='2px'
                   borderColor='gray.300'
-                  placeholder='Daftar Tugas'
                   cursor='pointer'
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-                    setFilterTugas(e.target.value);
+                    setFilterBy(e.target.value);
+                    setSearch('');
+                    setFilterTugas('');
                     setRecordsPerPage(totalData);
                   }}
                 >
-                  {tugasList.map((item) => (
-                    <option key={item.id} value={item.title}>
-                      {item.title}
+                  {['Tugas', 'NIM', 'Nama'].map((item: string) => (
+                    <option key={item} value={item}>
+                      {item}
                     </option>
                   ))}
                 </Select>
               </label>
-            )}
-          </Flex>
-        </Flex>
-
-        {/* table */}
-        {data.isLoading ? (
-          <Flex justifyContent='center' height='100%'>
-            <Spinner />
-            <Box marginLeft='2rem'>Memuat data...</Box>
-          </Flex>
-        ) : dataList.length > 0 ? (
-          <AssignmentListTable
-            filteredData={sortedDataList}
-            recordPerPage={recordsPerPage}
-            page={page}
-            sortParams={sortParams}
-            setSortParams={setSortParams}
-          />
-        ) : (
-          <Box marginInline='auto'>Tidak ada data yang sesuai</Box>
-        )}
-
-        <Flex alignItems='end' justifyContent='flex-end' gap='.5rem'>
-          {/* left arrow */}
-          <IconButton
-            variant='unstyled'
-            display='flex'
-            justifyContent='center'
-            border='1px'
-            _hover={{
-              backgroundColor: 'rgba(0, 0, 0, 0.1)'
-            }}
-            aria-label='back'
-            icon={<FiArrowLeft />}
-            onClick={() => {
-              setPage((prev) => prev - 1);
-            }}
-            visibility={page === 1 ? 'hidden' : 'visible'}
-          />
-          {/* page select element */}
-          <label>
-            Halaman
-            <Select
-              border='2px'
-              borderColor='gray.300'
-              cursor='pointer'
-              value={page}
-              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                setPage(parseInt(e.target.value))
-              }
-            >
-              {totalData > 0 && recordsPerPage > 0 ? (
-                Array(Math.ceil(totalData / recordsPerPage))
-                  .fill(1)
-                  .map((_, index: number) => (
-                    <option key={index} value={index + 1}>
-                      {index + 1}
-                    </option>
-                  ))
+              {filterBy !== 'Tugas' ? (
+                <Input
+                  type='search'
+                  placeholder='Search'
+                  width='15rem'
+                  value={search}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    setSearch(e.target.value);
+                    setRecordsPerPage(totalData);
+                  }}
+                  variant='outline'
+                  border='2px'
+                  borderColor='gray.300'
+                  display={filterBy === '' ? 'none' : 'block'}
+                />
               ) : (
-                <option value={0}>-</option>
+                <label>
+                  <Select
+                    width='15rem'
+                    value={filterTugas}
+                    border='2px'
+                    borderColor='gray.300'
+                    placeholder='Daftar Tugas'
+                    cursor='pointer'
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                      setFilterTugas(e.target.value);
+                      setRecordsPerPage(totalData);
+                    }}
+                  >
+                    {tugasList.map((item) => (
+                      <option key={item.id} value={item.title}>
+                        {item.title}
+                      </option>
+                    ))}
+                  </Select>
+                </label>
               )}
-            </Select>
-          </label>
-          {/* right arrow */}
-          <IconButton
-            variant='unstyled'
-            display='flex'
-            justifyContent='center'
-            border='1px'
-            _hover={{
-              backgroundColor: 'rgba(0, 0, 0, 0.1)'
-            }}
-            aria-label='back'
-            icon={<FiArrowRight />}
-            onClick={() => {
-              setPage((prev) => prev + 1);
-            }}
-            visibility={
-              page === Math.ceil(totalData / recordsPerPage) || totalData === 0
-                ? 'hidden'
-                : 'visible'
-            }
-          />
+            </Flex>
+          </Flex>
+
+          {/* table */}
+          {data.isLoading ? (
+            <Flex justifyContent='center' height='100%'>
+              <Spinner />
+              <Box marginLeft='2rem'>Memuat data...</Box>
+            </Flex>
+          ) : dataList.length > 0 ? (
+            <AssignmentListTable
+              filteredData={sortedDataList}
+              recordPerPage={recordsPerPage}
+              page={page}
+              sortParams={sortParams}
+              setSortParams={setSortParams}
+            />
+          ) : (
+            <Box marginInline='auto'>Tidak ada data yang sesuai</Box>
+          )}
+
+          <Flex alignItems='end' justifyContent='flex-end' gap='.5rem'>
+            {/* left arrow */}
+            <IconButton
+              variant='unstyled'
+              display='flex'
+              justifyContent='center'
+              border='1px'
+              _hover={{
+                backgroundColor: 'rgba(0, 0, 0, 0.1)'
+              }}
+              aria-label='back'
+              icon={<FiArrowLeft />}
+              onClick={() => {
+                setPage((prev) => prev - 1);
+              }}
+              visibility={page === 1 ? 'hidden' : 'visible'}
+            />
+            {/* page select element */}
+            <label>
+              Halaman
+              <Select
+                border='2px'
+                borderColor='gray.300'
+                cursor='pointer'
+                value={page}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  setPage(parseInt(e.target.value))
+                }
+              >
+                {totalData > 0 && recordsPerPage > 0 ? (
+                  Array(Math.ceil(totalData / recordsPerPage))
+                    .fill(1)
+                    .map((_, index: number) => (
+                      <option key={index} value={index + 1}>
+                        {index + 1}
+                      </option>
+                    ))
+                ) : (
+                  <option value={0}>-</option>
+                )}
+              </Select>
+            </label>
+            {/* right arrow */}
+            <IconButton
+              variant='unstyled'
+              display='flex'
+              justifyContent='center'
+              border='1px'
+              _hover={{
+                backgroundColor: 'rgba(0, 0, 0, 0.1)'
+              }}
+              aria-label='back'
+              icon={<FiArrowRight />}
+              onClick={() => {
+                setPage((prev) => prev + 1);
+              }}
+              visibility={
+                page === Math.ceil(totalData / recordsPerPage) ||
+                totalData === 0
+                  ? 'hidden'
+                  : 'visible'
+              }
+            />
+          </Flex>
         </Flex>
-      </Flex>
-    </Layout>
+      </Layout>
+    </MentorRoute>
   );
 }
