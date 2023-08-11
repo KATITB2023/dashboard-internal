@@ -20,6 +20,7 @@ import { api, type RouterInputs } from '~/utils/api';
 import { TRPCError } from '@trpc/server';
 import { uploadFile, sanitizeURL } from '~/utils/file';
 import ReactHtmlParser from 'react-html-parser';
+import { useRouter } from 'next/router';
 
 interface FormValue {
   title: string;
@@ -29,6 +30,7 @@ interface FormValue {
 
 export default function AddArticle() {
   const toast = useToast();
+  const router = useRouter();
   const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
@@ -95,8 +97,8 @@ export default function AddArticle() {
         isClosable: true,
         position: 'top'
       });
-
       reset();
+      void router.push('/article-cms');
     } catch (error: unknown) {
       if (!(error instanceof TRPCError)) throw error;
       toast({
