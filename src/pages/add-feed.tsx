@@ -8,7 +8,7 @@ import { api } from "~/utils/api";
 import { AiOutlineLink } from 'react-icons/ai'
 import { sanitizeURL, uploadFile } from "~/utils/file";
 
-const AddFeed = () => {
+const AddFeed = ({feedChange}: {feedChange: () => void}) => {
     const toast = useToast();
     const { isOpen: isPostOpen, onOpen: onPostOpen, onClose: onPostClose } = useDisclosure();
     const { register, formState, handleSubmit, reset, setValue, getValues, watch, unregister } = useForm<FeedProps>({
@@ -42,7 +42,6 @@ const AddFeed = () => {
             unregister('url');
         }
     }
-
     const submitContent: SubmitHandler<FeedProps> = async (data: FeedProps) => {
         if (data.filePath) {
             setValue('filePath', data.filePath[0]);
@@ -56,6 +55,7 @@ const AddFeed = () => {
                     `https://cdn.oskmitb.com/attachment-feeds/${fileName}.${extension}`
                 );
                 await uploadFile(imagePath, fileStr);
+                console.log('file cdn: ', imagePath)
                 const res = createFeed.mutateAsync({
                     body: data.content,
                     attachment: imagePath,
@@ -91,6 +91,7 @@ const AddFeed = () => {
                 position: 'top'
             });
         }
+        feedChange()
         reset();
         setIsAttachFile(false);
         setIsAttachUrl(false);

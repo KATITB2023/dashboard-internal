@@ -9,7 +9,11 @@ import { sanitizeURL } from "~/utils/file";
 import { deleteFile, uploadFile } from "~/utils/file";
 import { TRPCError } from "@trpc/server";
 
-const EditFeed = ({ id, content, url }: FeedProps) => {
+interface EditFeedProp extends FeedProps {
+    feedChange: () => void;
+  }
+
+const EditFeed = ({ id, content, url, feedChange }: EditFeedProp) => {
     const toast = useToast();
     const { register, formState, handleSubmit, reset, setValue, getValues, watch, unregister } = useForm<FeedProps>({
         mode: 'onSubmit',
@@ -110,6 +114,7 @@ const EditFeed = ({ id, content, url }: FeedProps) => {
                 position: 'top'
             });
         }
+        feedChange();
         reset();
         onEditClose();
     };

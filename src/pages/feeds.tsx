@@ -21,14 +21,13 @@ import {
 } from '@chakra-ui/react';
 import Layout from '~/layout/index';
 import { useForm } from 'react-hook-form';
-import React, { ChangeEvent, useState, forwardRef } from 'react';
+import React, { useState, forwardRef, useEffect } from 'react';
 import { Header } from '~/components/Header';
 import { SlOptions, SlTrash } from 'react-icons/sl';
 import { deleteFile } from '~/utils/file';
 import { api } from '~/utils/api';
 import AddFeed from './add-feed';
 import EditFeed from './edit-feed';
-import { TRPCError } from '@trpc/server';
 
 export interface FeedProps {
     id: number;
@@ -59,8 +58,30 @@ export default function Feeds() {
     const { isOpen: isRemoveOpen, onOpen: onRemoveOpen, onClose: onRemoveClose } = useDisclosure();
     const getFeedsList = api.feeds.adminGetFeeds.useQuery();
     const deleteFeed = api.feeds.adminDeleteFeed.useMutation()
+    const [fetchCount, setFetchCount] = useState<number>(0);
     const feedsList = getFeedsList.data
-
+    const [shouldRefetch, setShouldRefetch] = useState(false);
+    
+    const increment = () => {
+        setFetchCount(fetchCount + 1)
+    }
+    console.log('jumlah', fetchCount)
+    useEffect(() => {
+        if (shouldRefetch) {
+            const delay = 500;
+            const timeoutId = setTimeout(() => {
+                getFeedsList.refetch();
+                setShouldRefetch(false);
+            }, delay);
+            
+            return () => clearTimeout(timeoutId);
+        }
+    }, [shouldRefetch, getFeedsList]);
+    
+    useEffect(() => {
+        setShouldRefetch(true);
+    }, [fetchCount]);
+    
     const handleDelete = (idValue: number) => {
         setValue('id', idValue)
     }
@@ -68,12 +89,13 @@ export default function Feeds() {
     const handleSubmitDelete = async (itemId: number, url: string | null) => {
         try {
             deleteFeed.mutate({ feedId: itemId });
-            if(url){
-                await deleteFile(url);  
+            if (url) {
+                await deleteFile(url);
             }
         } catch (error) {
             console.log(error);
         }
+        setFetchCount(fetchCount + 1);
         reset();
         onRemoveClose();
     };
@@ -102,7 +124,7 @@ export default function Feeds() {
                     border='1px solid #CBD2E0'
                     borderRadius='8px'
                 >
-                    <AddFeed />
+                    <AddFeed feedChange={increment}/>
                     {/* ========== content List ========== */}
                     <Box overflowY='auto' width='100%' maxHeight='600px'
                         css={{
@@ -130,7 +152,7 @@ export default function Feeds() {
                                             </PopoverTrigger>
                                             <PopoverContent width='fit-content' borderColor='#000' zIndex='100000'>
                                                 <PopoverHeader borderColor='#000'>
-                                                    <EditFeed id={item.id} content={item.text} url={item.attachmentUrl!} />
+                                                    <EditFeed id={item.id} content={item.text} url={item.attachmentUrl!} feedChange={increment}/>
                                                 </PopoverHeader>
                                                 <PopoverFooter >
                                                     <HStack onClick={() => {
