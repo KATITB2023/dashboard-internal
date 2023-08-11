@@ -13,7 +13,7 @@ import {
   useToast,
   Link
 } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { FiArrowLeft, FiArrowRight, FiChevronRight } from 'react-icons/fi';
 import { api } from '~/utils/api';
@@ -22,35 +22,45 @@ import ReactHtmlParser from 'react-html-parser';
 
 export default function ArticleCMS() {
   const toast = useToast();
-  const [recordsNum, setRecordsNum] = useState(3);
-  const [currentPageNum, setCurrentPageNum] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState<number>(0);
+  const [recordsNum, setRecordsNum] = useState<number>(3);
+  const [currentPageNum, setCurrentPageNum] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const options = Array.from({ length: totalPages }, (_, index) => index + 1);
   const getArticlesListQuery = api.cms.adminGetArticlesList.useQuery({
     currentPage: currentPageNum,
     limitPerPage: recordsNum,
-    searchQuery: ''
+    searchQuery: searchQuery
   });
   const deleteArticleMutation = api.cms.adminDeleteArticle.useMutation();
   const articlesList = getArticlesListQuery.data;
 
+  const handleSearchQueryChange: React.ChangeEventHandler<HTMLInputElement> = (
+    e
+  ) => setSearchQuery(e.target.value);
   const handleRecordsNumChange: React.ChangeEventHandler<HTMLInputElement> = (
     e
   ) => setRecordsNum(parseInt(e.target.value));
   const handleCurrentPageNumChange: React.ChangeEventHandler<
     HTMLSelectElement
   > = (e) => setCurrentPageNum(parseInt(e.target.value));
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPageNum(page);
+    }
+  };
 
   useEffect(() => {
     void getArticlesListQuery.refetch();
-  });
+  }, [totalRecords]);
 
   useEffect(() => {
     setTotalPages(articlesList?.meta.pagination.pages as number);
+    setTotalRecords(articlesList?.meta.pagination.total as number);
   }, [articlesList]);
 
   const handleDeleteArticle = async (id: string) => {
-    console.log('delete article', id);
     try {
       const res = await deleteArticleMutation.mutateAsync({
         articleId: id
@@ -64,6 +74,7 @@ export default function ArticleCMS() {
         isClosable: true,
         position: 'top'
       });
+      setTotalRecords(totalRecords - 1);
     } catch (error: unknown) {
       if (!(error instanceof TRPCError)) throw error;
 
@@ -95,6 +106,8 @@ export default function ArticleCMS() {
             width='48'
             borderColor='gray.400'
             borderRadius='12'
+            value={searchQuery}
+            onChange={handleSearchQueryChange}
           />
           <InputLeftElement pointerEvents='none'>
             <FaSearch />
@@ -134,7 +147,13 @@ export default function ArticleCMS() {
             key={index}
           >
             <Text fontFamily='SomarRounded-Bold'> {article.title}</Text>
-            <Box height='110' overflow='hidden' fontSize='sm'>
+            <Box
+              height='108px'
+              overflow='hidden'
+              textOverflow='ellipsis'
+              whiteSpace='pre-line'
+              fontSize='sm'
+            >
               {ReactHtmlParser(article.html as string)}
             </Box>
             <Flex
@@ -162,9 +181,14 @@ export default function ArticleCMS() {
       })}
 
       <Flex alignItems='center' justifyContent='flex-end'>
-        <Button variant='outlineBlue'>
-          <FiArrowLeft />
-        </Button>
+        {currentPageNum != 1 && (
+          <Button
+            variant='outlineBlue'
+            onClick={() => handlePageChange(currentPageNum - 1)}
+          >
+            <FiArrowLeft />
+          </Button>
+        )}
         <Select
           placeholder=''
           width='20'
@@ -181,9 +205,14 @@ export default function ArticleCMS() {
             </option>
           ))}
         </Select>
-        <Button variant='outlineBlue'>
-          <FiArrowRight />
-        </Button>
+        {currentPageNum != totalPages && (
+          <Button
+            variant='outlineBlue'
+            onClick={() => handlePageChange(currentPageNum + 1)}
+          >
+            <FiArrowRight />
+          </Button>
+        )}
       </Flex>
     </Layout>
   );
