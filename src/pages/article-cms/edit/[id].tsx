@@ -90,7 +90,7 @@ export default function EditArticle() {
           ' ',
           ''
         )}`;
-        imagePath = sanitizeURL(`https://cdn.oskmitb.com/${fileName}`);
+        imagePath = sanitizeURL(`https://cdn.oskmitb.com/article/${fileName}`);
         await uploadFile(imagePath, data.featureImage[0]);
       }
 
@@ -132,7 +132,9 @@ export default function EditArticle() {
       try {
         const handleUploadFile = async () => {
           const fileName = `article-${file.name.replace(' ', '')}`;
-          const imagePath = sanitizeURL(`https://cdn.oskmitb.com/${fileName}`);
+          const imagePath = sanitizeURL(
+            `https://cdn.oskmitb.com/article/${fileName}`
+          );
 
           await uploadFile(imagePath, file);
           const imgHtml = `<img src=${imagePath} alt=${fileName} width='500px'/>`;
