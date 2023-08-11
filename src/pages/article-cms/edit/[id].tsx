@@ -10,7 +10,8 @@ import {
   FormControl,
   useToast,
   Link,
-  Image
+  Image,
+  Box
 } from '@chakra-ui/react';
 import { Header } from '~/components/Header';
 import React, { useState, useEffect } from 'react';
@@ -131,10 +132,7 @@ export default function EditArticle() {
       try {
         const handleUploadFile = async () => {
           const fileName = `article-${file.name.replace(' ', '')}`;
-          const extension = file.name.split('.').pop() as string;
-          const imagePath = sanitizeURL(
-            `https://cdn.oskmitb.com/${fileName}.${extension}`
-          );
+          const imagePath = sanitizeURL(`https://cdn.oskmitb.com/${fileName}`);
 
           await uploadFile(imagePath, file);
           const imgHtml = `<img src=${imagePath} alt=${fileName} width='500px'/>`;
@@ -231,7 +229,7 @@ export default function EditArticle() {
           )}
 
           {isPreviewMode ? (
-            <Flex>{ReactHtmlParser(getValues('body'))}</Flex>
+            <Box>{ReactHtmlParser(getValues('body'))}</Box>
           ) : (
             <>
               <FormControl isInvalid={!!formState.errors.body}>
