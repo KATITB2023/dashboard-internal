@@ -1,11 +1,11 @@
-import { ComponentStyleConfig, SystemStyleFunction } from '@chakra-ui/react';
+import type { SystemStyleFunction } from '@chakra-ui/theme-tools';
+import { type ComponentStyleConfig } from '@chakra-ui/react';
 
 const blackTableStyle: SystemStyleFunction = () => {
   return {
     table: {
       width: '100%',
       borderCollapse: 'collapse',
-      w: '100vw',
       thead: {
         bg: 'black',
         color: 'white',

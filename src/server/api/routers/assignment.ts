@@ -187,44 +187,70 @@ export const assignmentRouter = createTRPCRouter({
       };
     }),
 
-  adminGetAssignment: adminProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.assignment.findMany({
-      include: {
-        submission: {
-          select: {
-            id: true,
-            filePath: true,
-            score: true,
-            student: {
-              select: {
-                nim: true,
-                profile: {
-                  select: {
-                    name: true,
-                    faculty: true,
-                    campus: true
+  adminGetAssignment: adminProcedure
+    .input(z.object({ currentPage: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const offset = (input.currentPage - 1) * 5;
+      const data = await ctx.prisma.assignment.findMany({
+        include: {
+          submission: {
+            select: {
+              id: true,
+              filePath: true,
+              score: true,
+              student: {
+                select: {
+                  nim: true,
+                  profile: {
+                    select: {
+                      name: true,
+                      faculty: true,
+                      campus: true
+                    }
                   }
                 }
               }
             }
           }
+        },
+        skip: offset,
+        take: 5,
+        orderBy: {
+          startTime: 'desc'
         }
-      }
-    });
-  }),
+      });
+
+      const total = await ctx.prisma.assignment.count();
+
+      return {
+        data: data,
+        metadata: {
+          total: total,
+          page: input.currentPage,
+          lastPage: Math.ceil(total / 5)
+        }
+      };
+    }),
 
   adminAddNewAssignment: adminProcedure
     .input(
       z.object({
         title: z.string(),
         type: z.nativeEnum(AssignmentType),
-        filePath: z.string(),
-        description: z.string(),
+        filePath: z.string().optional(),
+        description: z.string().optional(),
         startTime: z.coerce.date(),
         endTime: z.coerce.date()
       })
     )
     .mutation(async ({ ctx, input }) => {
+      if (input.startTime > input.endTime) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'End time cannot be earlier than start time'
+        });
+      }
+
       try {
         const [assignment, users] = await Promise.all([
           ctx.prisma.assignment.create({
@@ -240,6 +266,9 @@ export const assignmentRouter = createTRPCRouter({
           ctx.prisma.user.findMany({
             select: {
               id: true
+            },
+            where: {
+              role: 'STUDENT'
             }
           })
         ]);
@@ -254,6 +283,10 @@ export const assignmentRouter = createTRPCRouter({
             });
           })
         );
+
+        return {
+          message: 'Assignment added successfully'
+        };
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -267,15 +300,23 @@ export const assignmentRouter = createTRPCRouter({
       z.object({
         assignmentId: z.string().uuid(),
         title: z.string().optional(),
+        type: z.nativeEnum(AssignmentType).optional(),
         filePath: z.string().optional(),
         description: z.string().optional(),
-        startTime: z.string().datetime().optional(),
-        endTime: z.string().datetime().optional()
+        startTime: z.coerce.date().optional(),
+        endTime: z.coerce.date().optional()
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { assignmentId, title, filePath, description, startTime, endTime } =
-        input;
+      const {
+        assignmentId,
+        title,
+        type,
+        filePath,
+        description,
+        startTime,
+        endTime
+      } = input;
 
       try {
         // Prepare the update data with only defined properties (skip undefined)
@@ -284,6 +325,7 @@ export const assignmentRouter = createTRPCRouter({
           where: { id: assignmentId },
           data: {
             title: title,
+            type: type,
             filePath: filePath,
             description: description,
             startTime: startTime,

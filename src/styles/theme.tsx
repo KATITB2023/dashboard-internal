@@ -3,6 +3,7 @@ import { colors } from './component/colors';
 import { Button } from './component/button';
 import { Input } from './component/input';
 import { Table } from './component/table';
+import { Textarea } from './component/textarea';
 
 const theme = extendTheme({
   fonts: {
@@ -36,7 +37,8 @@ const theme = extendTheme({
   components: {
     Button,
     Input,
-    Table
+    Table,
+    Textarea
   }
 });
 
