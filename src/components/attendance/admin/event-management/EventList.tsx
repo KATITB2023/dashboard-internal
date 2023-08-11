@@ -6,12 +6,7 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
+  Select,
   Table,
   Tbody,
   Td,
@@ -25,7 +20,7 @@ import {
 import { useState } from 'react';
 import { RouterInputs, RouterOutputs, api } from '~/utils/api';
 import { AddEventModal } from './AddEventModal';
-import { AttendanceDay, AttendanceEvent } from '@prisma/client';
+import { type AttendanceDay, type AttendanceEvent } from '@prisma/client';
 import { MdEdit } from 'react-icons/md';
 import { EventListRow } from './EventListRow';
 
@@ -48,7 +43,7 @@ export const EventList = ({ day, dayList }: EventListProps) => {
   const deleteEventMutation =
     api.attendance.adminDeleteAttendanceEvent.useMutation();
 
-  const [rowPerPage, setRowPerPage] = useState(5);
+  const [rowPerPage, setRowPerPage] = useState<number>(5);
   const {
     isOpen: isEditingRowPerPageOpen,
     onClose: onEditingRowPerPageClose,
@@ -178,33 +173,25 @@ export const EventList = ({ day, dayList }: EventListProps) => {
         Cetak CSV
       </Button>
       <Flex alignItems='center' mt='1em'>
-        <>
-          <Button
-            variant='mono-outline'
-            w='8em'
-            onClick={onEditingRowPerPageOpen}
-          >
-            {rowPerPage}
-          </Button>
-          <Modal
-            isOpen={isEditingRowPerPageOpen}
-            onClose={() => {
-              onEditingRowPerPageClose();
-            }}
-          >
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>Change Row Per Page</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody>
-                <Input
-                  value={rowPerPage}
-                  onChange={(e) => setRowPerPage(parseInt(e.target.value) | 0)}
-                />
-              </ModalBody>
-            </ModalContent>
-          </Modal>
-        </>
+        <Select
+          borderRadius='12'
+          cursor='pointer'
+          color='gray.500'
+          borderWidth='2px'
+          borderColor='gray.500'
+          w='8em'
+          _active={{
+            bg: 'rgba(47, 46, 46, 0.6)',
+            shadow: 'none'
+          }}
+          onChange={(e) => setRowPerPage(parseInt(e.target.value))}
+        >
+          <option value={5} selected>
+            5
+          </option>
+          <option value={10}>10</option>
+          <option value={15}>15</option>
+        </Select>
         <Text ml='1em' fontWeight='bold' color='black'>
           Records per page
         </Text>

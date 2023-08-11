@@ -6,14 +6,7 @@ import {
   InputGroup,
   Menu,
   MenuButton,
-  MenuItem,
   MenuList,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
   Select,
   Table,
   Tbody,
@@ -150,35 +143,25 @@ export const Recap = ({ dayId }: RecapProps) => {
     <Flex flexDir='column'>
       <Flex justifyContent='space-between'>
         <Flex alignItems='center' mt='1em'>
-          <>
-            <Button
-              variant='mono-outline'
-              w='8em'
-              onClick={onEditingRowPerPageOpen}
-            >
-              {rowPerPage}
-            </Button>
-            <Modal
-              isOpen={isEditingRowPerPageOpen}
-              onClose={() => {
-                onEditingRowPerPageClose();
-              }}
-            >
-              <ModalOverlay />
-              <ModalContent>
-                <ModalHeader>Change Row Per Page</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  <Input
-                    value={rowPerPage}
-                    onChange={(e) =>
-                      setRowPerPage(parseInt(e.target.value) | 0)
-                    }
-                  />
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-          </>
+          <Select
+            borderRadius='12'
+            cursor='pointer'
+            color='gray.500'
+            borderWidth='2px'
+            borderColor='gray.500'
+            w='8em'
+            _active={{
+              bg: 'rgba(47, 46, 46, 0.6)',
+              shadow: 'none'
+            }}
+            onChange={(e) => setRowPerPage(parseInt(e.target.value))}
+          >
+            <option value={5} selected>
+              5
+            </option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+          </Select>
           <Text ml='1em' fontWeight='bold' color='black'>
             Records per page
           </Text>
