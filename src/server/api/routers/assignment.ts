@@ -213,7 +213,10 @@ export const assignmentRouter = createTRPCRouter({
           }
         },
         skip: offset,
-        take: 5
+        take: 5,
+        orderBy: {
+          startTime: 'desc'
+        }
       });
 
       const total = await ctx.prisma.assignment.count();
