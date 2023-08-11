@@ -1,12 +1,12 @@
 ##### DEPENDENCIES
 
 FROM --platform=linux/amd64 node:16-alpine3.17 AS deps
-RUN apk add --no-cache libc6-compat openssl1.1-compat
+RUN apk add --no-cache libc6-compat openssl1.1-compat git
 WORKDIR /app
 
 # Install Prisma Client - remove if not using Prisma
 
-COPY prisma ./
+# COPY prisma ./
 
 # Install dependencies based on the preferred package manager
 
@@ -23,7 +23,11 @@ RUN \
 
 FROM --platform=linux/amd64 node:16-alpine3.17 AS builder
 ARG DATABASE_URL
-ARG NEXT_PUBLIC_CLIENTVAR
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_BUCKET_API_KEY
+ENV DATABASE_URL=$DATABASE_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_BUCKET_API_KEY=$NEXT_PUBLIC_BUCKET_API_KEY
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .

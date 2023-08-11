@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-nextjs';
+import { z } from 'zod';
 
 export const env = createEnv({
   /**
@@ -8,9 +8,9 @@ export const env = createEnv({
    */
   server: {
     DATABASE_URL: z.string().url(),
-    NODE_ENV: z.enum(["development", "test", "production"]),
+    NODE_ENV: z.enum(['development', 'test', 'production']),
     NEXTAUTH_SECRET:
-      process.env.NODE_ENV === "production"
+      process.env.NODE_ENV === 'production'
         ? z.string().min(1)
         : z.string().min(1).optional(),
     NEXTAUTH_URL: z.preprocess(
@@ -43,20 +43,8 @@ export const env = createEnv({
       // SAMPLER_RATIO must be a positive number
       z.number().positive().min(0).max(1)
     ),
-    GOOGLE_APPLICATION_CREDENTIALS: z.string().min(1),
-    BUCKET_NAME: z.string().min(1),
-    URL_EXPIRATION_TIME: z.preprocess(
-      // If URL_EXPIRATION_TIME is not set, set it to 1 hour
-      (str) => (str ? +str : 60 * 60 * 1000),
-      // URL_EXPIRATION_TIME must be a positive integer
-      z.number().int().positive().min(1)
-    ),
-    BUCKET_CORS_EXPIRATION_TIME: z.preprocess(
-      // If BUCKET_CORS_EXPIRATION_TIME is not set, set it to 1 hour
-      (str) => (str ? +str : 60 * 60),
-      // BUCKET_CORS_EXPIRATION_TIME must be a positive integer
-      z.number().int().positive().min(1)
-    ),
+    GHOST_CONTENT_API: z.string().min(1),
+    GHOST_ADMIN_API: z.string().min(1)
   },
 
   /**
@@ -65,7 +53,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+    NEXT_PUBLIC_BUCKET_API_KEY: z.string().min(1)
   },
 
   /**
@@ -81,14 +69,13 @@ export const env = createEnv({
     S_MAXAGE: process.env.S_MAXAGE,
     STALE_WHILE_REVALIDATE: process.env.STALE_WHILE_REVALIDATE,
     SAMPLER_RATIO: process.env.SAMPLER_RATIO,
-    GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-    BUCKET_NAME: process.env.BUCKET_NAME,
-    URL_EXPIRATION_TIME: process.env.URL_EXPIRATION_TIME,
-    BUCKET_CORS_EXPIRATION_TIME: process.env.BUCKET_CORS_EXPIRATION_TIME,
+    GHOST_CONTENT_API: process.env.GHOST_CONTENT_API,
+    GHOST_ADMIN_API: process.env.GHOST_ADMIN_API,
+    NEXT_PUBLIC_BUCKET_API_KEY: process.env.NEXT_PUBLIC_BUCKET_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
    * This is especially useful for Docker builds.
    */
-  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
+  skipValidation: !!process.env.SKIP_ENV_VALIDATION
 });
