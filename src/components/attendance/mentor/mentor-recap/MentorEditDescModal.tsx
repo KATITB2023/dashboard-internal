@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { RouterOutputs } from '~/utils/api';
 
 type getAttendanceRecordOutput =
-  RouterOutputs['attendance']['adminGetAttendanceRecord']['data'][0];
+  RouterOutputs['attendance']['mentorGetAttendance']['data'][0];
 
 interface EditDescModalProps {
   record: getAttendanceRecordOutput;

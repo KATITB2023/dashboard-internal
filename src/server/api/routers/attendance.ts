@@ -444,6 +444,7 @@ export const attendanceRouter = createTRPCRouter({
               }
             }
           },
+          id: true,
           date: true,
           status: true,
           reason: true

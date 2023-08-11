@@ -28,6 +28,7 @@ import React, { useState } from 'react';
 import { RouterInputs, RouterOutputs, api } from '~/utils/api';
 import { MentorRecapRow } from './MentorRecapRow';
 import { Status } from '@prisma/client';
+import { TRPCClientError } from '@trpc/client';
 
 type mentorGetAttendanceRecordOutput =
   RouterOutputs['attendance']['mentorGetAttendance']['data'][0];
@@ -131,15 +132,16 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
         kehadiran: newStatus,
         reason: newDesc
       })
-      .then((res) => {
+      .then(async (res) => {
         toast({
           title: res.message,
           status: 'success',
           duration: 3000
         });
-        recordListQuery.refetch();
+        await recordListQuery.refetch();
       })
       .catch((err) => {
+        if (!(err instanceof TRPCClientError)) throw err;
         toast({
           title: err.message,
           status: 'error',
@@ -208,7 +210,7 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
               ml='1em'
               w='20em'
             >
-              <option value={Status.HADIR}>'Hadir</option>
+              <option value={Status.HADIR}>Hadir</option>
               <option value={Status.TIDAK_HADIR}>Tidak Hadir</option>
               <option value={Status.IZIN_DITERIMA}>Izin Diterima</option>
               <option value={Status.IZIN_DITOLAK}>Izin Ditolak</option>

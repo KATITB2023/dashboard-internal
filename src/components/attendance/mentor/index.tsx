@@ -20,7 +20,7 @@ export default function AttendancePageMentor() {
   };
 
   return (
-    <Layout title='Attendance Page' type='mentor'>
+    <Layout title='Attendance Page' type='mentor' fullBg>
       <Flex
         justifyContent={{
           base: 'center',

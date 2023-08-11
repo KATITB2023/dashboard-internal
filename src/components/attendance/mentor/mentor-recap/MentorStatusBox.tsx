@@ -14,7 +14,7 @@ import { RouterOutputs } from '~/utils/api';
 import { MentorEditDescModal } from './MentorEditDescModal';
 
 type getAttendanceRecordOutput =
-  RouterOutputs['attendance']['adminGetAttendanceRecord']['data'][0];
+  RouterOutputs['attendance']['mentorGetAttendance']['data'][0];
 
 interface StatusBoxProps {
   record: getAttendanceRecordOutput;
