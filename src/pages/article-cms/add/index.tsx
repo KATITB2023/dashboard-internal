@@ -183,23 +183,24 @@ export default function AddArticle() {
               accept='image/*'
               variant='unstyled'
               display={isPreviewMode ? 'none' : undefined}
-              onChange={(event) => {
-                handleImageChange(event);
-                register('featureImage', {
-                  required: 'Feature Image tidak boleh kosong',
-                  validate: (value) => {
-                    const file: File | undefined = value[0];
-                    if (
-                      file &&
-                      file.name.split('.')[1] !== 'png' &&
-                      file.name.split('.')[1] !== 'jpeg'
-                    ) {
-                      return 'Gambar harus berupa .png atau .jpeg';
-                    }
-                    return true;
+              {...register('featureImage', {
+                required: {
+                  value: true,
+                  message: 'Feature Image tidak boleh kosong'
+                },
+                validate: (value) => {
+                  const file: File | undefined = value[0];
+                  if (
+                    file &&
+                    file.name.split('.')[1] !== 'png' &&
+                    file.name.split('.')[1] !== 'jpeg'
+                  ) {
+                    return 'Gambar harus berupa .png atau .jpeg';
                   }
-                });
-              }}
+                  return true;
+                }
+              })}
+              onChange={(e) => handleImageChange(e)}
             />
             {formState.errors.featureImage && (
               <FormErrorMessage>
