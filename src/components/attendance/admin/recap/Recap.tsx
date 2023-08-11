@@ -158,8 +158,8 @@ export const Recap = ({ dayId }: RecapProps) => {
 
   return (
     <Flex flexDir='column'>
-      <Flex justifyContent='space-between'>
-        <Flex alignItems='center' mt='1em'>
+      <Flex justifyContent='space-between' alignItems='center'>
+        <Flex alignItems='center'>
           <Select
             borderRadius='12'
             cursor='pointer'
@@ -211,14 +211,8 @@ export const Recap = ({ dayId }: RecapProps) => {
               <option value={Status.IZIN_DITOLAK}>Izin Ditolak</option>
               <option value={Status.IZIN_PENDING}>Izin Pending</option>
             </Select>
-          ) : (
-            <InputGroup
-              ml='1em'
-              w='20em'
-              visibility={
-                filterBy === 'all' || filterBy === '' ? 'hidden' : 'visible'
-              }
-            >
+          ) : filterBy === 'all' || filterBy === '' ? null : (
+            <InputGroup ml='1em' w='20em'>
               <Input
                 placeholder='Search'
                 value={searchQuery}
