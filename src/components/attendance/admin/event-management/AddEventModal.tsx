@@ -97,7 +97,6 @@ export const AddEventModal = ({ addEvent, day }: AddDayModalProps) => {
       <Button
         variant='mono-outline'
         onClick={onOpen}
-        mt={{ base: 'none', lg: '1em' }}
         w={{ base: '100%', lg: '8em' }}
         h='2em'
       >

@@ -11,6 +11,7 @@ import {
   Table,
   Tbody,
   Td,
+  Th,
   Text,
   Thead,
   Tr,
@@ -74,6 +75,7 @@ export const Recap = ({ dayId }: RecapProps) => {
   const filterByChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target.value !== 'status' && filterBy === 'status')
       setSearchQuery('');
+    else if (e.target.value === 'status') setSearchQuery(Status.HADIR);
     setFilterBy(e.target.value);
   };
 
@@ -172,10 +174,9 @@ export const Recap = ({ dayId }: RecapProps) => {
               shadow: 'none'
             }}
             onChange={(e) => setRowPerPage(parseInt(e.target.value))}
+            defaultValue={5}
           >
-            <option value={5} selected>
-              5
-            </option>
+            <option value={5}>5</option>
             <option value={10}>10</option>
             <option value={15}>15</option>
           </Select>
@@ -199,7 +200,6 @@ export const Recap = ({ dayId }: RecapProps) => {
             <Select
               value={searchQuery}
               onChange={statusSearchQueryChangeHandler}
-              placeholder='Select Status'
               border='1px solid white'
               borderRadius='5px'
               ml='1em'
@@ -245,15 +245,17 @@ export const Recap = ({ dayId }: RecapProps) => {
         >
           <Table w='100%' variant='black'>
             <Thead>
-              <Td w='5%'>No.</Td>
-              <Td w='3%'>Kel.</Td>
-              <Td w='12%'>Mentor</Td>
-              <Td w='10%'>NIM</Td>
-              <Td w='15%'>Nama</Td>
-              <Td w='10%'>Tanggal</Td>
-              <Td w='10%'>Jam</Td>
-              <Td w='15%'>Status</Td>
-              <Td w='20%'>Keterangan</Td>
+              <Tr>
+                <Th w='5%'>No.</Th>
+                <Th w='3%'>Kel.</Th>
+                <Th w='12%'>Mentor</Th>
+                <Th w='10%'>NIM</Th>
+                <Th w='15%'>Nama</Th>
+                <Th w='10%'>Tanggal</Th>
+                <Th w='10%'>Jam</Th>
+                <Th w='15%'>Status</Th>
+                <Th w='20%'>Keterangan</Th>
+              </Tr>
             </Thead>
             <Tbody>
               {recordList.map((record, index) => (
@@ -274,11 +276,13 @@ export const Recap = ({ dayId }: RecapProps) => {
         mt='1em'
         flexDir={{ base: 'column', lg: 'row-reverse' }}
       >
-        <Flex justifyContent={{ base: 'space-between', lg: 'right' }}>
+        <Flex
+          justifyContent={{ base: 'space-between', lg: 'right' }}
+          alignItems={'center'}
+        >
           <Button
             variant='mono-outline'
             w={{ base: '30%', lg: '4em' }}
-            h='2em'
             mr='1em'
             onClick={prevPage}
           >
@@ -289,7 +293,7 @@ export const Recap = ({ dayId }: RecapProps) => {
               border='1px solid gray'
               borderRadius='12px'
               color='gray.600'
-              w={{ base: '30%', lg: '6em' }}
+              w={{ base: '30%', lg: '4em' }}
               h='2.5em'
             >
               {`${page}`}
@@ -312,13 +316,21 @@ export const Recap = ({ dayId }: RecapProps) => {
           <Button
             variant='mono-outline'
             w={{ base: '30%', lg: '4em' }}
-            h='2em'
             ml='1em'
             onClick={nextPage}
           >
             {'>'}
           </Button>
         </Flex>
+        {!recordListQuery.isLoading && (
+          <Text>
+            Showing rows {(page - 1) * 5 + 1} to{' '}
+            {page * 5 > recordListMetaData.total
+              ? recordListMetaData.total
+              : page * 5}{' '}
+            of {recordListMetaData.total} entries
+          </Text>
+        )}
       </Flex>
     </Flex>
   );

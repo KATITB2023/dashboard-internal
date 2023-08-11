@@ -108,16 +108,11 @@ export default function AssignmentList() {
           </Tbody>
         </Table>
       </TableContainer>
-      <Flex justifyContent={'space-between'}>
-        <Text>
-          Showing rows {(page - 1) * 5 + 1} to{' '}
-          {page * 5 > (metadata?.total as number) ? metadata?.total : page * 5}{' '}
-          of {metadata?.total} entries
-        </Text>
+      <Flex justifyContent={'space-between'} flexDir={'row-reverse'}>
         <Flex>
           <Button
             variant='mono-outline'
-            w={{ base: '30%', lg: '6em' }}
+            w={{ base: '30%', lg: '4em' }}
             mr='1em'
             onClick={prevPage}
           >
@@ -128,7 +123,7 @@ export default function AssignmentList() {
               border='1px solid gray'
               borderRadius='12px'
               color='gray.600'
-              w={{ base: '30%', lg: '6em' }}
+              w={{ base: '30%', lg: '4em' }}
               h='2.5em'
             >
               {page}
@@ -154,13 +149,22 @@ export default function AssignmentList() {
           </Menu>
           <Button
             variant='mono-outline'
-            w={{ base: '30%', lg: '6em' }}
+            w={{ base: '30%', lg: '4em' }}
             ml='1em'
             onClick={nextPage}
           >
             {'>'}
           </Button>
         </Flex>
+        {!assignmentQuery.isLoading && (
+          <Text>
+            Showing rows {(page - 1) * 5 + 1} to{' '}
+            {page * 5 > (metadata?.total as number)
+              ? metadata?.total
+              : page * 5}{' '}
+            of {metadata?.total} entries
+          </Text>
+        )}
       </Flex>
     </Flex>
   );

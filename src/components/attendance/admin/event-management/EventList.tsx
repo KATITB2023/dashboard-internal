@@ -211,10 +211,9 @@ export const EventList = ({ day, dayList }: EventListProps) => {
             shadow: 'none'
           }}
           onChange={(e) => setRowPerPage(parseInt(e.target.value))}
+          defaultValue={5}
         >
-          <option value={5} selected>
-            5
-          </option>
+          <option value={5}>5</option>
           <option value={10}>10</option>
           <option value={15}>15</option>
         </Select>
@@ -239,12 +238,14 @@ export const EventList = ({ day, dayList }: EventListProps) => {
         >
           <Table w='100%' variant='black'>
             <Thead>
-              <Td w='10%'>No.</Td>
-              <Td w='30%'>Keterangan</Td>
-              <Td w='20%'>Tanggal</Td>
-              <Td w='15%'>Waktu Mulai</Td>
-              <Td w='15%'>Waktu Selesai</Td>
-              <Td w='10%'>Edit</Td>
+              <Tr>
+                <Th w='10%'>No.</Th>
+                <Th w='30%'>Keterangan</Th>
+                <Th w='20%'>Tanggal</Th>
+                <Th w='15%'>Waktu Mulai</Th>
+                <Th w='15%'>Waktu Selesai</Th>
+                <Th w='10%'>Edit</Th>
+              </Tr>
             </Thead>
             <Tbody borderRadius='0 0 12px 12px'>
               {eventList
@@ -265,6 +266,7 @@ export const EventList = ({ day, dayList }: EventListProps) => {
 
       <Flex
         justifyContent='space-between'
+        alignItems={'center'}
         mt='1em'
         flexDir={{ base: 'column', lg: 'row-reverse' }}
       >
@@ -272,7 +274,6 @@ export const EventList = ({ day, dayList }: EventListProps) => {
           <Button
             variant='mono-outline'
             w={{ base: '30%', lg: '4em' }}
-            h='2em'
             mr='1em'
             onClick={prevPage}
           >
@@ -284,7 +285,6 @@ export const EventList = ({ day, dayList }: EventListProps) => {
               borderRadius='12px'
               color='gray.600'
               w={{ base: '30%', lg: '4em' }}
-              h='2em'
             >
               {`${page}`}
             </MenuButton>
@@ -305,7 +305,6 @@ export const EventList = ({ day, dayList }: EventListProps) => {
           <Button
             variant='mono-outline'
             w={{ base: '30%', lg: '4em' }}
-            h='2em'
             ml='1em'
             onClick={nextPage}
           >

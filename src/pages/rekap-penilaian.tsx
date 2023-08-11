@@ -24,7 +24,7 @@ export default function RekapPenilaian() {
   const { data: session } = useSession();
 
   // eslint-disable-next-line react/display-name
-  const Tab = React.forwardRef((props: TabProps, ref) => {
+  const Tab = React.forwardRef((props: TabProps, _) => {
     const tabProps = useTab({ ...props });
     const isSelected = !!tabProps['aria-selected'];
 

@@ -11,7 +11,7 @@ const blackTableStyle: SystemStyleFunction = () => {
         color: 'white',
         border: '1px solid',
         borderColor: 'gray.400',
-        td: {
+        th: {
           textAlign: 'center'
         }
       },

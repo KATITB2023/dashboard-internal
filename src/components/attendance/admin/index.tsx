@@ -2,21 +2,17 @@ import {
   Box,
   Button,
   Flex,
-  Heading,
-  Link,
-  PropsOf,
   Select,
   TabList,
   TabPanel,
   TabPanels,
-  TabProps,
+  type TabProps,
   Tabs,
-  Text,
   useMultiStyleConfig,
   useTab,
   useToast
 } from '@chakra-ui/react';
-import { AttendanceDay } from '@prisma/client';
+import { type AttendanceDay } from '@prisma/client';
 import { TRPCClientError } from '@trpc/client';
 import React, { useState } from 'react';
 import { Header } from '~/components/Header';
@@ -135,7 +131,7 @@ export default function AttendancePageAdmin() {
 
   // function for custom tab
   // eslint-disable-next-line react/display-name
-  const Tab = React.forwardRef((props: TabProps, ref) => {
+  const Tab = React.forwardRef((props: TabProps, _) => {
     const tabProps = useTab({ ...props });
     const isSelected = !!tabProps['aria-selected'];
 
@@ -158,8 +154,8 @@ export default function AttendancePageAdmin() {
     );
   });
   return (
-    <Layout title='Attendance Page' type='admin' fullBg>
-      <Box bg='white'>
+    <Layout title='Attendance Page' type='admin' fullBg={false}>
+      <Box>
         <Header title={'Rekap Absensi'} />
         <Tabs
           variant='soft-rounded'
@@ -205,12 +201,19 @@ export default function AttendancePageAdmin() {
               bg='black'
               w='10em'
               onChange={dayChangeHandler}
+              defaultValue={dayId}
             >
-              {dayList.map((day, i) => (
-                <option value={day.id} key={i} style={{ color: 'black' }}>
-                  {day.name}
+              {dayList.length > 0 ? (
+                dayList.map((day, i) => (
+                  <option value={day.id} key={i} style={{ color: 'black' }}>
+                    {day.name}
+                  </option>
+                ))
+              ) : (
+                <option disabled style={{ color: 'black' }}>
+                  No Day Available
                 </option>
-              ))}
+              )}
             </Select>
 
             <DayManagementModal

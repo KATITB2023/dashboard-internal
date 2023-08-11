@@ -390,7 +390,11 @@ export const attendanceRouter = createTRPCRouter({
     }),
 
   getAttendanceDayList: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.attendanceDay.findMany();
+    return await ctx.prisma.attendanceDay.findMany({
+      orderBy: {
+        name: 'asc'
+      }
+    });
   }),
 
   mentorGetAttendance: mentorProcedure
