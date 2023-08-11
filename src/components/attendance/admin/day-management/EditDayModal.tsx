@@ -75,7 +75,7 @@ export const EditDayModal = ({
       <Button onClick={onOpen} bg='none'>
         <MdEdit fontSize='2em' />
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Edit Day</ModalHeader>

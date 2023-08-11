@@ -37,6 +37,7 @@ export const StatusBox = ({ record, editRecord }: StatusBoxProps) => {
 
   const editRecordStatus = (status: Status) => {
     if (status == Status.HADIR) {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       editRecord(record, { newStatus: status, newDesc: '' }, () => {});
       setStatus(status);
       return;

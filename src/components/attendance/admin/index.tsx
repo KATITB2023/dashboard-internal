@@ -17,6 +17,7 @@ import {
   useToast
 } from '@chakra-ui/react';
 import { AttendanceDay } from '@prisma/client';
+import { TRPCClientError } from '@trpc/client';
 import React, { useState } from 'react';
 import { Header } from '~/components/Header';
 import { DayManagementModal } from '~/components/attendance/admin/day-management/DayManagementModal';
@@ -41,7 +42,7 @@ export default function AttendancePageAdmin() {
     setDayId(e.target.value);
   };
 
-  const addDay = async (dayName: string, dayDate: Date, thenFn: () => void) => {
+  const addDay = (dayName: string, dayDate: Date, thenFn: () => void) => {
     if (dayName in (dayList?.map((day) => day.name) || [])) {
       toast({
         title: 'Nama Day sudah ada',
@@ -56,16 +57,17 @@ export default function AttendancePageAdmin() {
         name: dayName,
         time: dayDate
       })
-      .then((res) => {
+      .then(async (res) => {
         toast({
           title: res.message,
           status: 'success',
           duration: 3000
         });
-        dayListQuery.refetch();
+        await dayListQuery.refetch();
         thenFn();
       })
       .catch((err) => {
+        if (!(err instanceof TRPCClientError)) throw err;
         toast({
           title: err.message,
           status: 'error',
@@ -74,7 +76,7 @@ export default function AttendancePageAdmin() {
       });
   };
 
-  const editDay = async (id: string, name: string, date: Date) => {
+  const editDay = (id: string, name: string, date: Date) => {
     if (dayList && name in dayList.map((day) => day.name)) {
       toast({
         title: 'Nama Day sudah ada',
@@ -90,15 +92,16 @@ export default function AttendancePageAdmin() {
         time: date,
         dayId: id
       })
-      .then((res) => {
+      .then(async (res) => {
         toast({
           title: res.message,
           status: 'success',
           duration: 3000
         });
-        dayListQuery.refetch();
+        await dayListQuery.refetch();
       })
       .catch((err) => {
+        if (!(err instanceof TRPCClientError)) throw err;
         toast({
           title: err.message,
           status: 'error',
@@ -107,20 +110,21 @@ export default function AttendancePageAdmin() {
       });
   };
 
-  const deleteDay = async (id: string) => {
+  const deleteDay = (id: string) => {
     removeDayMutation
       .mutateAsync({
         dayId: id
       })
-      .then((res) => {
+      .then(async (res) => {
         toast({
           title: res.message,
           status: 'success',
           duration: 3000
         });
-        dayListQuery.refetch();
+        await dayListQuery.refetch();
       })
       .catch((err) => {
+        if (!(err instanceof TRPCClientError)) throw err;
         toast({
           title: err.message,
           status: 'error',
@@ -130,6 +134,7 @@ export default function AttendancePageAdmin() {
   };
 
   // function for custom tab
+  // eslint-disable-next-line react/display-name
   const Tab = React.forwardRef((props: TabProps, ref) => {
     const tabProps = useTab({ ...props });
     const isSelected = !!tabProps['aria-selected'];
@@ -153,7 +158,7 @@ export default function AttendancePageAdmin() {
     );
   });
   return (
-    <Layout title='Attendance Page' type='admin'>
+    <Layout title='Attendance Page' type='admin' fullBg>
       <Box bg='white'>
         <Header title={'Rekap Absensi'} />
         <Tabs

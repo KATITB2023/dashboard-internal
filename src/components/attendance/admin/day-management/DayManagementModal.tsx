@@ -41,7 +41,7 @@ export const DayManagementModal = ({
       <Button variant='mono-gray' onClick={onOpen} ml='1em'>
         Manage Day
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose} size='3xl'>
+      <Modal isOpen={isOpen} onClose={onClose} size='3xl' isCentered>
         <ModalOverlay />
         <ModalContent w='min(45em,95%)'>
           <ModalCloseButton />
@@ -53,6 +53,7 @@ export const DayManagementModal = ({
               dayList.map((day, i) => {
                 return (
                   <Flex
+                    key={i}
                     border='1px solid black'
                     boxShadow='1px 1px 3px 3px black'
                     w='100%'

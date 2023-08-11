@@ -54,7 +54,7 @@ export const EditDescModal = ({
 
   return (
     <>
-      <Modal isOpen={disclosure.isOpen} onClose={disclosure.onClose}>
+      <Modal isOpen={disclosure.isOpen} onClose={disclosure.onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Masukkan Keterangan</ModalHeader>

@@ -21,6 +21,7 @@ import React, { useState } from 'react';
 import { type RouterInputs, type RouterOutputs, api } from '~/utils/api';
 import { RecapRow } from './RecapRow';
 import { Status } from '@prisma/client';
+import { TRPCClientError } from '@trpc/client';
 
 type recordListQueryInputs =
   RouterInputs['attendance']['adminGetAttendanceRecord'];
@@ -115,7 +116,7 @@ export const Recap = ({ dayId }: RecapProps) => {
     }
   };
 
-  const editRecord = (
+  const editRecord = async (
     record: recordListQueryOutput,
     { newStatus, newDesc }: { newStatus: Status; newDesc: string },
     successFn: () => void
@@ -123,22 +124,36 @@ export const Recap = ({ dayId }: RecapProps) => {
     if (newStatus === record.status) {
       return;
     }
-    editRecordMutation
-      .mutateAsync({
+
+    try {
+      const result = await editRecordMutation.mutateAsync({
         attendanceId: record.id,
         kehadiran: newStatus,
         reason: newDesc
-      })
-      .then(() => {
-        toast({
-          title: 'Status berhasil diubah',
-          status: 'success',
-          duration: 3000,
-          isClosable: true
-        });
-        successFn();
-        recordListQuery.refetch();
       });
+
+      toast({
+        title: 'Success',
+        description: result.message,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        position: 'top'
+      });
+      successFn();
+      await recordListQuery.refetch();
+    } catch (error) {
+      if (!(error instanceof TRPCClientError)) throw error;
+
+      toast({
+        title: 'Error',
+        description: error.message,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        position: 'top'
+      });
+    }
   };
 
   return (
@@ -190,7 +205,7 @@ export const Recap = ({ dayId }: RecapProps) => {
               ml='1em'
               w='20em'
             >
-              <option value={Status.HADIR}>'Hadir</option>
+              <option value={Status.HADIR}>Hadir</option>
               <option value={Status.TIDAK_HADIR}>Tidak Hadir</option>
               <option value={Status.IZIN_DITERIMA}>Izin Diterima</option>
               <option value={Status.IZIN_DITOLAK}>Izin Ditolak</option>
@@ -201,7 +216,7 @@ export const Recap = ({ dayId }: RecapProps) => {
               ml='1em'
               w='20em'
               visibility={
-                (filterBy === 'all') | (filterBy === '') ? 'hidden' : 'visible'
+                filterBy === 'all' || filterBy === '' ? 'hidden' : 'visible'
               }
             >
               <Input
@@ -252,7 +267,7 @@ export const Recap = ({ dayId }: RecapProps) => {
                   key={index}
                   record={record}
                   num={rowPerPage * (page - 1) + index + 1}
-                  editRecord={editRecord}
+                  editRecord={() => void editRecord}
                 />
               ))}
             </Tbody>

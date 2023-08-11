@@ -106,7 +106,7 @@ export const EditEventModal = ({
       <Button bg='none' onClick={onOpen}>
         <MdEdit fontSize='2rem' />
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Edit Event</ModalHeader>

@@ -48,7 +48,7 @@ export const DeleteDayConfirmationModal = ({
       <Button variant='mono' onClick={onOpen} color='salmon'>
         Hapus Day
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Hapus Day</ModalHeader>
@@ -58,7 +58,7 @@ export const DeleteDayConfirmationModal = ({
               <Text>
                 Apakah anda yakin ingin menghapus Day ini?
                 <br />
-                Ketik "HAPUS DAY" jika anda yakin
+                Ketik &quot;HAPUS DAY&quot; jika anda yakin
               </Text>
               <Input
                 value={confirmationString}

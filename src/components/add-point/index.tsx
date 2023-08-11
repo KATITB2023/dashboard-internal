@@ -30,6 +30,7 @@ import { RouterOutputs, api } from '~/utils/api';
 import { Status } from '@prisma/client';
 import { AddPointRow } from './AddPointRow';
 import Layout from '~/layout';
+import { TRPCClientError } from '@trpc/client';
 
 type leaderboardQueryOutput =
   RouterOutputs['leaderboard']['mentorGetLeaderboardData']['data'][0];
@@ -128,15 +129,16 @@ export const AddPoint = () => {
         userId: id,
         point: point
       })
-      .then((res) => {
+      .then(async (res) => {
         toast({
           title: res.message,
           status: 'success',
           duration: 3000
         });
-        leaderboardQuery.refetch();
+        await leaderboardQuery.refetch();
       })
       .catch((err) => {
+        if (!(err instanceof TRPCClientError)) throw err;
         toast({
           title: err.message,
           status: 'error',

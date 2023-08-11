@@ -38,9 +38,9 @@ export const EventListRow = ({
     EventStartTime: [number, number],
     EventEndTime: [number, number]
   ) => {
-    let newStartDate = new Date(event.startTime);
+    const newStartDate = new Date(event.startTime);
     newStartDate.setHours(EventStartTime[0], EventStartTime[1]);
-    let newEndDate = new Date(event.endTime);
+    const newEndDate = new Date(event.endTime);
     newEndDate.setHours(EventEndTime[0], EventEndTime[1]);
 
     editEvent({

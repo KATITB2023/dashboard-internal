@@ -63,7 +63,7 @@ export const AddDayModal = ({ addDay }: AddDayModalProps) => {
       <Button variant='mono-black' onClick={onOpen}>
         Tambah Day
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Tambah Day</ModalHeader>

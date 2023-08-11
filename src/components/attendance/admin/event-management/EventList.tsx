@@ -23,6 +23,7 @@ import { AddEventModal } from './AddEventModal';
 import { type AttendanceDay, type AttendanceEvent } from '@prisma/client';
 import { MdEdit } from 'react-icons/md';
 import { EventListRow } from './EventListRow';
+import { TRPCClientError } from '@trpc/client';
 
 interface EventListProps {
   day: AttendanceDay;
@@ -54,7 +55,7 @@ export const EventList = ({ day, dayList }: EventListProps) => {
 
   const maxPage = Math.ceil(eventList.length / rowPerPage);
 
-  const addEvent = async (
+  const addEvent = (
     name: string,
     startTime: [number, number],
     endTime: [number, number]
@@ -74,19 +75,26 @@ export const EventList = ({ day, dayList }: EventListProps) => {
         startTime: startDate,
         endTime: endDate
       })
-      .then(() => {
+      .then(async (result) => {
         toast({
-          title: 'Berhasil menambah event',
+          title: 'Success',
+          description: result.message,
           status: 'success',
-          duration: 3000
+          duration: 3000,
+          isClosable: true,
+          position: 'top'
         });
-        eventListQuery.refetch();
+        await eventListQuery.refetch();
       })
-      .catch(() => {
+      .catch((error) => {
+        if (!(error instanceof TRPCClientError)) throw error;
         toast({
-          title: 'Gagal menambah event',
+          title: 'Error',
+          description: error.message,
           status: 'error',
-          duration: 3000
+          duration: 3000,
+          isClosable: true,
+          position: 'top'
         });
       });
   };
@@ -133,21 +141,28 @@ export const EventList = ({ day, dayList }: EventListProps) => {
         startTime: newEvent.startTime,
         endTime: newEvent.endTime
       })
-      .then(() => {
+      .then(async (result) => {
         toast({
-          title: 'Berhasil mengubah event',
+          title: 'Success',
+          description: result.message,
           status: 'success',
-          duration: 3000
+          duration: 3000,
+          isClosable: true,
+          position: 'top'
         });
-        eventListQuery.refetch();
+        await eventListQuery.refetch();
       })
-      .catch(() => {
+      .catch(async (error) => {
+        if (!(error instanceof TRPCClientError)) throw error;
         toast({
-          title: 'Gagal mengubah event',
+          title: 'Error',
+          description: error.message,
           status: 'error',
-          duration: 3000
+          duration: 3000,
+          isClosable: true,
+          position: 'top'
         });
-        eventListQuery.refetch();
+        await eventListQuery.refetch();
       });
   };
 
@@ -156,20 +171,27 @@ export const EventList = ({ day, dayList }: EventListProps) => {
       .mutateAsync({
         eventId: eventId
       })
-      .then(() =>
+      .then((result) => {
         toast({
-          title: 'Berhasil menghapus event',
+          title: 'Success',
+          description: result.message,
           status: 'success',
-          duration: 3000
-        })
-      )
-      .catch(() =>
+          duration: 3000,
+          isClosable: true,
+          position: 'top'
+        });
+      })
+      .catch((error) => {
+        if (!(error instanceof TRPCClientError)) throw error;
         toast({
-          title: 'Gagal menghapus event',
+          title: 'Error',
+          description: error.message,
           status: 'error',
-          duration: 3000
-        })
-      );
+          duration: 3000,
+          isClosable: true,
+          position: 'top'
+        });
+      });
   };
   return (
     <Flex flexDir='column'>

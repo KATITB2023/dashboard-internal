@@ -91,7 +91,7 @@ export const leaderboardRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // TODO: mencari user berdasarkan userid yang diberikan
       // Lakukan update kolom point pada tabel profile sesuai dengan input
-      return await ctx.prisma.profile.update({
+      const data = await ctx.prisma.profile.update({
         where: {
           userId: input.userId
         },
@@ -99,5 +99,10 @@ export const leaderboardRouter = createTRPCRouter({
           point: input.point
         }
       });
+
+      return {
+        message: 'Point updated',
+        data
+      };
     })
 });

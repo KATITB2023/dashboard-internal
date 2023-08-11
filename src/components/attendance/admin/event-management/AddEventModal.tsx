@@ -103,7 +103,7 @@ export const AddEventModal = ({ addEvent, day }: AddDayModalProps) => {
       >
         Tambah Event
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Tambah Event</ModalHeader>
