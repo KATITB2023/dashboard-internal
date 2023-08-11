@@ -19,6 +19,9 @@ import {
   useMultiStyleConfig
 } from '@chakra-ui/react';
 import AdminRoute from '~/layout/AdminRoute';
+import { withSession } from '~/server/auth/withSession';
+
+export const getServerSideProps = withSession({ force: true });
 
 export default function RekapPenilaian() {
   const { data: session } = useSession();

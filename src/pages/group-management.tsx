@@ -20,11 +20,14 @@ import Layout from '~/layout/index';
 import { api } from '~/utils/api';
 import MentorRoute from '~/layout/MentorRoute';
 import { useSession } from 'next-auth/react';
+import { withSession } from '~/server/auth/withSession';
 
 interface CellIdentifier {
   rowIndex: number;
   columnIndex: number;
 }
+
+export const getServerSideProps = withSession({ force: true });
 
 export default function GroupManagement() {
   const { data: session } = useSession();

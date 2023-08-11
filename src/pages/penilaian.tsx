@@ -15,6 +15,9 @@ import { Header } from '~/components/Header';
 import MentorRoute from '~/layout/MentorRoute';
 import { useSession } from 'next-auth/react';
 import { UserRole } from '@prisma/client';
+import { withSession } from '~/server/auth/withSession';
+
+export const getServerSideProps = withSession({ force: true });
 
 export function useDebounce<T>(value: T, delay?: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
