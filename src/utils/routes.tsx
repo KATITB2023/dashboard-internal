@@ -16,6 +16,7 @@ import { FaFileInvoice } from 'react-icons/fa';
 import { LuClipboardList } from 'react-icons/lu';
 import { RiMailSettingsFill } from 'react-icons/ri';
 import { BiSolidCalendarStar } from 'react-icons/bi';
+import {BsGrid3X3GapFill} from 'react-icons/bs';
 
 export const adminRoutes: SidebarRoute[] = [
   {
@@ -45,7 +46,7 @@ export const adminRoutes: SidebarRoute[] = [
   {
     name: 'Feeds',
     path: '/feeds',
-    icon: GroupIcon,
+    icon: BsGrid3X3GapFill,
     component: <Feeds />
   }
 ];
