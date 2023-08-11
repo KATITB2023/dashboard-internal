@@ -49,8 +49,8 @@ export default function RekapPenilaian() {
 
   return (
     <AdminRoute session={session}>
-      <Layout type='admin' title='Rekap Penilaian' fullBg={false}>
-        <Header title='Rekap Penilaian' />
+      <Layout type='admin' title='Tugas dan Penilaian' fullBg={false}>
+        <Header title='Tugas dan Penilaian' />
         <Tabs
           variant='soft-rounded'
           colorScheme='green'

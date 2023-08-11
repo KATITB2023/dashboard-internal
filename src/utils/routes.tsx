@@ -18,7 +18,7 @@ import { BiSolidCalendarStar } from 'react-icons/bi';
 
 export const adminRoutes: SidebarRoute[] = [
   {
-    name: 'Rekap Penilaian',
+    name: 'Tugas dan Penilaian',
     path: '/rekap-penilaian',
     icon: LuClipboardList,
     component: <RekapPenilaian />
@@ -67,5 +67,14 @@ export const mentorRoutes: SidebarRoute[] = [
     path: '/tambah-poin',
     icon: BiSolidCalendarStar,
     component: <TambahPoin />
+  }
+];
+
+export const eoRoutes: SidebarRoute[] = [
+  {
+    name: 'Penilaian',
+    path: '/penilaian',
+    icon: LuClipboardList,
+    component: <Penilaian />
   }
 ];

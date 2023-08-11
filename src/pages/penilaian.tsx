@@ -99,7 +99,12 @@ export default function Penilaian() {
 
   return (
     <MentorRoute session={session} allowEO={true}>
-      <Layout type='mentor' title='Penilaian' fullBg={false}>
+      <Layout
+        type='mentor'
+        title='Penilaian'
+        fullBg={false}
+        isEO={session?.user.role === 'EO'}
+      >
         {/* wrapper */}
 
         <Flex color='black' gap='1.75rem' direction='column' height='100%'>
