@@ -6,12 +6,7 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
+  Select,
   Table,
   Tbody,
   Td,
@@ -25,7 +20,7 @@ import {
 import { useState } from 'react';
 import { RouterInputs, RouterOutputs, api } from '~/utils/api';
 import { AddEventModal } from './AddEventModal';
-import { AttendanceDay, AttendanceEvent } from '@prisma/client';
+import { type AttendanceDay, type AttendanceEvent } from '@prisma/client';
 import { MdEdit } from 'react-icons/md';
 import { EventListRow } from './EventListRow';
 
@@ -182,36 +177,25 @@ export const EventList = ({ day, dayList }: EventListProps) => {
         Cetak CSV
       </Button>
       <Flex alignItems='center' mt='1em'>
-        <Menu>
-          <MenuButton
-            border='1px solid gray'
-            borderRadius='12px'
-            color='gray.600'
-            w={{ base: '30%', lg: '6em' }}
-            h='2em'
-          >
-            {rowPerPage}
-          </MenuButton>
-          <MenuList px='1em' border='1px solid gray'>
-            <Flex alignItems='center'>
-              <Input
-                value={rowPerPageInput}
-                onChange={(e) =>
-                  parseInt(e.target.value) &&
-                  setRowPerPageInput(parseInt(e.target.value))
-                }
-              />
-              <Button
-                variant='mono-outline'
-                w={{ base: '30%', lg: '4em' }}
-                ml='1em'
-                onClick={() => setRowPerPage(rowPerPageInput)}
-              >
-                Set
-              </Button>
-            </Flex>
-          </MenuList>
-        </Menu>
+        <Select
+          borderRadius='12'
+          cursor='pointer'
+          color='gray.500'
+          borderWidth='2px'
+          borderColor='gray.500'
+          w='8em'
+          _active={{
+            bg: 'rgba(47, 46, 46, 0.6)',
+            shadow: 'none'
+          }}
+          onChange={(e) => setRowPerPage(parseInt(e.target.value))}
+        >
+          <option value={5} selected>
+            5
+          </option>
+          <option value={10}>10</option>
+          <option value={15}>15</option>
+        </Select>
         <Text ml='1em' fontWeight='bold' color='black'>
           Records per page
         </Text>
