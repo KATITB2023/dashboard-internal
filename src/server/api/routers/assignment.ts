@@ -4,7 +4,8 @@ import { z } from 'zod';
 import {
   createTRPCRouter,
   adminProcedure,
-  mentorProcedure
+  mentorProcedure,
+  protectedProcedure
 } from '~/server/api/trpc';
 
 export const assignmentRouter = createTRPCRouter({
@@ -367,7 +368,7 @@ export const assignmentRouter = createTRPCRouter({
       }
     }),
 
-  mentorGetAssignmentTitleList: mentorProcedure.query(async ({ ctx }) => {
+  mentorGetAssignmentTitleList: protectedProcedure.query(async ({ ctx }) => {
     const assignments = await ctx.prisma.assignment.findMany({
       select: {
         id: true,

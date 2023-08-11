@@ -175,7 +175,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminEditAttendanceEvent: adminProcedure
+  adminEditAttendanceEvent: protectedProcedure
     .input(
       z.object({
         eventId: z.string().uuid(),
@@ -536,7 +536,7 @@ export const attendanceRouter = createTRPCRouter({
     }
   }),
 
-  editAttendanceRecord: protectedProcedure
+  editAttendanceRecord: mentorProcedure
     .input(
       z.object({
         attendanceId: z.string().uuid(),
