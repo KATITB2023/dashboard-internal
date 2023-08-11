@@ -23,7 +23,7 @@ import { AttendanceDay } from '@prisma/client';
 interface DayManagementModalProps {
   dayList: AttendanceDay[];
   editDay: (dayId: string, name: string, date: Date) => void;
-  addDay: (name: string, date: Date) => void;
+  addDay: (name: string, date: Date, thenFn: () => void) => void;
   deleteDay: (dayId: string) => void;
 }
 

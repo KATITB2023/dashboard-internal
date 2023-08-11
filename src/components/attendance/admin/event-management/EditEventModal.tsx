@@ -48,9 +48,10 @@ export const EditEventModal = ({
   const [eventNameInput, setEventNameInput] = useState<string>(event.title);
   const [eventStartTimeInput, setEventStartTimeInput] = useState<
     [number, number]
-  >([0, 0]);
+  >([event.startTime.getHours(), event.startTime.getMinutes()]);
   const [eventEndTimeInput, setEventEndTimeInput] = useState<[number, number]>([
-    0, 0
+    event.endTime.getHours(),
+    event.endTime.getMinutes()
   ]);
 
   const eventNameChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {

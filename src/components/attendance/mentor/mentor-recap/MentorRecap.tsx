@@ -46,6 +46,8 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
   const [filterBy, setFilterBy] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
+  const [rowPerPageInput, setRowPerPageInput] = useState<number>(rowPerPage);
+
   const recordListQuery = api.attendance.mentorGetAttendance.useQuery({
     /* dayId: dayId, */
     currentPage: page,
@@ -150,36 +152,36 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
     <Flex flexDir='column'>
       <Flex justifyContent='space-between'>
         <Flex alignItems='center' mt='1em'>
-          <>
-            <Button
-              variant='mono-outline'
+          <Menu>
+            <MenuButton
+              border='1px solid gray'
+              borderRadius='12px'
+              color='gray.600'
               w={{ base: '30%', lg: '6em' }}
               h='2em'
-              onClick={onEditingRowPerPageOpen}
             >
               {rowPerPage}
-            </Button>
-            <Modal
-              isOpen={isEditingRowPerPageOpen}
-              onClose={() => {
-                onEditingRowPerPageClose();
-              }}
-            >
-              <ModalOverlay />
-              <ModalContent>
-                <ModalHeader>Change Row Per Page</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  <Input
-                    value={rowPerPage}
-                    onChange={(e) =>
-                      setRowPerPage(parseInt(e.target.value) | 0)
-                    }
-                  />
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-          </>
+            </MenuButton>
+            <MenuList>
+              <Flex alignItems='center'>
+                <Input
+                  value={rowPerPageInput}
+                  onChange={(e) =>
+                    parseInt(e.target.value) &&
+                    setRowPerPageInput(parseInt(e.target.value))
+                  }
+                />
+                <Button
+                  variant='mono-outline'
+                  w={{ base: '30%', lg: '4em' }}
+                  ml='1em'
+                  onClick={() => setRowPerPage(rowPerPageInput)}
+                >
+                  Set
+                </Button>
+              </Flex>
+            </MenuList>
+          </Menu>
           <Text ml='1em' fontWeight='bold' color='black'>
             Records per page
           </Text>

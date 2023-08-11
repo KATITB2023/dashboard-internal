@@ -41,7 +41,7 @@ export default function AttendancePageAdmin() {
     setDayId(e.target.value);
   };
 
-  const addDay = async (dayName: string, dayDate: Date) => {
+  const addDay = async (dayName: string, dayDate: Date, thenFn: () => void) => {
     if (dayName in (dayList?.map((day) => day.name) || [])) {
       toast({
         title: 'Nama Day sudah ada',
@@ -63,6 +63,7 @@ export default function AttendancePageAdmin() {
           duration: 3000
         });
         dayListQuery.refetch();
+        thenFn();
       })
       .catch((err) => {
         toast({

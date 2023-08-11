@@ -22,7 +22,7 @@ import { DateInput } from '~/components/DateInput';
 import { api } from '~/utils/api';
 
 interface AddDayModalProps {
-  addDay: (dayName: string, dayDate: Date) => void;
+  addDay: (dayName: string, dayDate: Date, thenFn: () => void) => void;
 }
 
 export const AddDayModal = ({ addDay }: AddDayModalProps) => {
@@ -56,7 +56,7 @@ export const AddDayModal = ({ addDay }: AddDayModalProps) => {
       return;
     }
 
-    addDay(dayNameInput, dayDateInput);
+    addDay(dayNameInput, dayDateInput, () => onClose());
   };
   return (
     <>

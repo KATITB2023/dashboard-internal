@@ -45,8 +45,10 @@ export const Recap = ({ dayId }: RecapProps) => {
 
   const [page, setPage] = useState<number>(1);
   const [rowPerPage, setRowPerPage] = useState<number>(5);
-  const [filterBy, setFilterBy] = useState<string>('');
+  const [filterBy, setFilterBy] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const [rowPerPageInput, setRowPerPageInput] = useState<number>(rowPerPage);
 
   const recordListQuery = api.attendance.adminGetAttendanceRecord.useQuery({
     dayId: dayId,
@@ -150,36 +152,36 @@ export const Recap = ({ dayId }: RecapProps) => {
     <Flex flexDir='column'>
       <Flex justifyContent='space-between'>
         <Flex alignItems='center' mt='1em'>
-          <>
-            <Button
-              variant='mono-outline'
-              w={{ base: '30%', lg: '4em' }}
+          <Menu>
+            <MenuButton
+              border='1px solid gray'
+              borderRadius='12px'
+              color='gray.600'
+              w={{ base: '30%', lg: '6em' }}
               h='2em'
-              onClick={onEditingRowPerPageOpen}
             >
               {rowPerPage}
-            </Button>
-            <Modal
-              isOpen={isEditingRowPerPageOpen}
-              onClose={() => {
-                onEditingRowPerPageClose();
-              }}
-            >
-              <ModalOverlay />
-              <ModalContent>
-                <ModalHeader>Change Row Per Page</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  <Input
-                    value={rowPerPage}
-                    onChange={(e) =>
-                      setRowPerPage(parseInt(e.target.value) | 0)
-                    }
-                  />
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-          </>
+            </MenuButton>
+            <MenuList px='1em' border='1px solid gray'>
+              <Flex alignItems='center'>
+                <Input
+                  value={rowPerPageInput}
+                  onChange={(e) =>
+                    parseInt(e.target.value) &&
+                    setRowPerPageInput(parseInt(e.target.value))
+                  }
+                />
+                <Button
+                  variant='mono-outline'
+                  w={{ base: '30%', lg: '4em' }}
+                  ml='1em'
+                  onClick={() => setRowPerPage(rowPerPageInput)}
+                >
+                  Set
+                </Button>
+              </Flex>
+            </MenuList>
+          </Menu>
           <Text ml='1em' fontWeight='bold' color='black'>
             Records per page
           </Text>
@@ -213,7 +215,13 @@ export const Recap = ({ dayId }: RecapProps) => {
               <option value={Status.IZIN_PENDING}>Izin Pending</option>
             </Select>
           ) : (
-            <InputGroup ml='1em' w='20em'>
+            <InputGroup
+              ml='1em'
+              w='20em'
+              visibility={
+                (filterBy === 'all') | (filterBy === '') ? 'hidden' : 'visible'
+              }
+            >
               <Input
                 placeholder='Search'
                 value={searchQuery}
