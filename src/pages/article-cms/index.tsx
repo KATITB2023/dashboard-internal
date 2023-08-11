@@ -41,7 +41,7 @@ export default function ArticleCMS() {
   const handleSearchQueryChange: React.ChangeEventHandler<HTMLInputElement> = (
     e
   ) => setSearchQuery(e.target.value);
-  const handleRecordsNumChange: React.ChangeEventHandler<HTMLInputElement> = (
+  const handleRecordsNumChange: React.ChangeEventHandler<HTMLSelectElement> = (
     e
   ) => setRecordsNum(parseInt(e.target.value));
   const handleCurrentPageNumChange: React.ChangeEventHandler<
@@ -119,7 +119,7 @@ export default function ArticleCMS() {
         </Link>
       </Flex>
       <Flex alignItems='center' justifyContent='flex-start'>
-        <InputGroup width='24' size='sm'>
+        {/* <InputGroup width='24' size='sm'>
           <Input
             variant='outline'
             borderColor='gray.400'
@@ -132,54 +132,79 @@ export default function ArticleCMS() {
           <InputRightElement pointerEvents='none'>
             <FiChevronRight />
           </InputRightElement>
-        </InputGroup>
+        </InputGroup> */}
+        <Select
+          placeholder=''
+          width='20'
+          borderColor='gray.400'
+          size='sm'
+          borderRadius='12'
+          mx='2'
+          value={recordsNum}
+          onChange={handleRecordsNumChange}
+        >
+          <option value={5} selected>
+            5
+          </option>
+          <option value={10}>10</option>
+          <option value={15}>15</option>
+        </Select>
         <Text> records per page</Text>
       </Flex>
 
-      {articlesList?.data.map((article, index: number) => {
-        return (
-          <Box
-            border='2px solid'
-            p='3'
-            borderRadius='md'
-            my='2'
-            borderColor='gray.300'
-            height='180'
-            key={index}
-          >
-            <Text fontFamily='SomarRounded-Bold'> {article.title}</Text>
+      <Flex
+        height='400'
+        flexDirection='column'
+        overflow='scroll'
+        paddingRight='10'
+        marginBottom='8'
+        overflowX='hidden'
+      >
+        {articlesList?.data.map((article, index: number) => {
+          return (
             <Box
-              height='108px'
-              overflow='hidden'
-              textOverflow='ellipsis'
-              whiteSpace='pre-line'
-              fontSize='sm'
+              border='2px solid'
+              p='3'
+              borderRadius='md'
+              my='2'
+              borderColor='gray.300'
+              height='180'
+              key={index}
             >
-              {ReactHtmlParser(article.html as string)}
+              <Text fontFamily='SomarRounded-Bold'> {article.title}</Text>
+              <Box
+                height='108px'
+                overflow='hidden'
+                textOverflow='ellipsis'
+                whiteSpace='pre-line'
+                fontSize='sm'
+              >
+                {ReactHtmlParser(article.html as string)}
+              </Box>
+              <Flex
+                textDecoration='underline'
+                justifyContent='flex-end'
+                fontSize='sm'
+              >
+                <Text
+                  mx='2'
+                  cursor='pointer'
+                  onClick={() => void handleEditArticle(article.id)}
+                >
+                  Edit
+                </Text>
+                <Text
+                  mx='2'
+                  cursor='pointer'
+                  onClick={() => void handleDeleteArticle(article.id)}
+                >
+                  Remove
+                </Text>
+              </Flex>
             </Box>
-            <Flex
-              textDecoration='underline'
-              justifyContent='flex-end'
-              fontSize='sm'
-            >
-              <Text
-                mx='2'
-                cursor='pointer'
-                onClick={() => void handleEditArticle(article.id)}
-              >
-                Edit
-              </Text>
-              <Text
-                mx='2'
-                cursor='pointer'
-                onClick={() => void handleDeleteArticle(article.id)}
-              >
-                Remove
-              </Text>
-            </Flex>
-          </Box>
-        );
-      })}
+          );
+        })}
+      </Flex>
 
       <Flex alignItems='center' justifyContent='flex-end'>
         {currentPageNum != 1 && (

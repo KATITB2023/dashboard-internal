@@ -42,8 +42,7 @@ export default function Layout({ title, children, type, fullBg }: Props) {
             bg='#F9F9F9'
             borderLeftRadius={25}
             borderRightRadius={fullBg ? 0 : 25}
-            minHeight={fullBg ? '100vh' : undefined}
-            height={fullBg ? undefined : '96vh'}
+            height={fullBg ? '100vh' : '96vh'}
             px='50px'
             py={fullBg ? '40px' : '30px'}
           >
