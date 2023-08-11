@@ -147,9 +147,6 @@ export const attendanceRouter = createTRPCRouter({
             },
             select: {
               id: true
-            },
-            where: {
-              role: 'STUDENT'
             }
           })
         ]);

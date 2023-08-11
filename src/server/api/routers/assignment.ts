@@ -416,9 +416,6 @@ export const assignmentRouter = createTRPCRouter({
             },
             select: {
               id: true
-            },
-            where: {
-              role: 'STUDENT'
             }
           })
         ]);
