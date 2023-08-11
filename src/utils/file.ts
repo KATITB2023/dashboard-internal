@@ -1,14 +1,13 @@
 import axios, { type AxiosProgressEvent } from 'axios';
 import sanitize from 'sanitize-filename';
 import { v4 as uuidv4 } from 'uuid';
-// import { env } from '~/env.cjs';
 import { env } from '~/env.mjs';
 
 export enum Lembaga {
   HMJ = 'HMJ',
   UKM = 'UKM',
-  PENGMAS = 'PENGMAS',
-  DLL = 'DLL'
+  BSO = 'BSO',
+  PUSAT = 'PUSAT'
 }
 
 export const sanitizeURL = (url: string) => {

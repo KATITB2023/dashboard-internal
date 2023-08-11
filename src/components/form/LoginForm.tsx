@@ -63,8 +63,8 @@ const LoginForm = ({
   const handleRedirect = () => {
     const role = session?.user.role;
     role === UserRole.MENTOR
-      ? void router.push('/attendance')
-      : void router.push('/live');
+      ? void router.push('/group-management')
+      : void router.push('/rekap-penilaian');
   };
 
   const handleError = (message: string) => {

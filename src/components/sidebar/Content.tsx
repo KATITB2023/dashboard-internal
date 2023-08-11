@@ -3,6 +3,7 @@ import { Box, Flex, Stack, Button } from '@chakra-ui/react';
 import Links from './Links';
 import Image from 'next/image';
 import { type SidebarProps } from '~/components/sidebar/Links';
+import { signOut } from 'next-auth/react';
 
 export function SidebarContent(props: SidebarProps) {
   const { routes } = props;
@@ -36,7 +37,11 @@ export function SidebarContent(props: SidebarProps) {
         flexDirection='column'
         my={20}
       >
-        <Button>
+        <Button
+          onClick={() =>
+            void signOut({ callbackUrl: `${window.location.origin}` })
+          }
+        >
           <Box mr={2}>
             <Image
               src='/images/sidebar/exit-icon.svg'

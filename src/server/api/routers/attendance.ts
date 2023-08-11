@@ -142,6 +142,9 @@ export const attendanceRouter = createTRPCRouter({
             }
           }),
           ctx.prisma.user.findMany({
+            where: {
+              role: 'STUDENT'
+            },
             select: {
               id: true
             }
@@ -172,7 +175,7 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminEditAttendanceEvent: adminProcedure
+  adminEditAttendanceEvent: protectedProcedure
     .input(
       z.object({
         eventId: z.string().uuid(),
@@ -386,8 +389,12 @@ export const attendanceRouter = createTRPCRouter({
       }
     }),
 
-  adminGetAttendanceDayList: adminProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.attendanceDay.findMany();
+  getAttendanceDayList: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.attendanceDay.findMany({
+      orderBy: {
+        name: 'asc'
+      }
+    });
   }),
 
   mentorGetAttendance: mentorProcedure
@@ -413,7 +420,10 @@ export const attendanceRouter = createTRPCRouter({
       });
 
       if (!groupId) {
-        return undefined;
+        return {
+          data: [],
+          metadata: {}
+        };
       }
 
       // mencari kehadiran dari anak didik mentor dan secara default menugurutkan berdasarkan
@@ -438,6 +448,7 @@ export const attendanceRouter = createTRPCRouter({
               }
             }
           },
+          id: true,
           date: true,
           status: true,
           reason: true
@@ -515,22 +526,17 @@ export const attendanceRouter = createTRPCRouter({
     }),
 
   mentorGetEventList: mentorProcedure.query(async ({ ctx }) => {
-    try {
-      const attendanceDaysWithEvents = await ctx.prisma.attendanceDay.findMany({
-        include: {
-          event: true
-        }
-      });
-      return attendanceDaysWithEvents;
-    } catch (error) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Failed to get event list.'
-      });
-    }
+    return await ctx.prisma.attendanceDay.findMany({
+      include: {
+        event: true
+      },
+      orderBy: {
+        name: 'asc'
+      }
+    });
   }),
 
-  editAttendanceRecord: protectedProcedure
+  editAttendanceRecord: mentorProcedure
     .input(
       z.object({
         attendanceId: z.string().uuid(),

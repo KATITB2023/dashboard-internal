@@ -1,5 +1,13 @@
-import Layout from '~/layout/index';
+import { useSession } from 'next-auth/react';
+import AttendancePageAdmin from '~/components/attendance/admin';
+import AdminRoute from '~/layout/AdminRoute';
 
 export default function RekapAbsensi() {
-  return <Layout type='admin' title='Rekap Absensi' fullBg={false}></Layout>;
+  const { data: session } = useSession();
+
+  return (
+    <AdminRoute session={session}>
+      <AttendancePageAdmin />
+    </AdminRoute>
+  );
 }
