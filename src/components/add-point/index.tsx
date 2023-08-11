@@ -185,6 +185,7 @@ export const AddPoint = () => {
             </Text>
             <Image
               src='/images/komet-absen.png'
+              alt='comet-image'
               position='absolute'
               right='-5%'
               w='25%'
@@ -238,13 +239,15 @@ export const AddPoint = () => {
               <option value='nim'>NIM</option>
               <option value='name'>Name</option>
             </Select>
-            <InputGroup ml='1em' w='20em'>
-              <Input
-                placeholder='Search'
-                value={searchQuery}
-                onChange={searchQueryChangeHandler}
-              />
-            </InputGroup>
+            {filterBy.length !== 0 && (
+              <InputGroup ml='1em' w='20em'>
+                <Input
+                  placeholder='Search'
+                  value={searchQuery}
+                  onChange={searchQueryChangeHandler}
+                />
+              </InputGroup>
+            )}
           </Flex>
         </Flex>
         {leaderboardQuery.isLoading ? (
@@ -296,7 +299,6 @@ export const AddPoint = () => {
             <Button
               variant='mono-outline'
               w={{ base: '30%', lg: '4em' }}
-              h='2em'
               mr='1em'
               onClick={prevPage}
             >
@@ -307,8 +309,7 @@ export const AddPoint = () => {
                 border='1px solid gray'
                 borderRadius='12px'
                 color='gray.600'
-                w={{ base: '30%', lg: '6em' }}
-                h='2.5em'
+                w={{ base: '30%', lg: '4em' }}
               >
                 {`${page}`}
               </MenuButton>
@@ -330,7 +331,6 @@ export const AddPoint = () => {
             <Button
               variant='mono-outline'
               w={{ base: '30%', lg: '4em' }}
-              h='2em'
               ml='1em'
               onClick={nextPage}
             >

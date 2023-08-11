@@ -62,7 +62,7 @@ export default function GroupManagement() {
   return (
     <MentorRoute session={session}>
       <Layout type='mentor' title='Group Management' fullBg={false}>
-        <Box height='100%' overflowY='scroll' p={1}>
+        <Box height='100%' p={1}>
           {/* Logo and kelompok, flex display  */}
           <Flex
             justifyContent='space-between'
@@ -109,7 +109,7 @@ export default function GroupManagement() {
             <Text color='#2D3648DE' fontWeight='700' fontSize='20px'>
               Mentor:
             </Text>
-            <Flex justifyContent='space-between' flexWrap='wrap'>
+            <Flex justifyContent='space-between' flexWrap='wrap' rowGap={4}>
               {mentorGroup
                 ?.filter((mentorGroup) => mentorGroup.user.role === 'MENTOR')
                 .map((mentorGroup, id) => (
@@ -155,79 +155,21 @@ export default function GroupManagement() {
               Anggota:
             </Text>
             <Container
-              border='5px solid black'
-              borderRadius='20px'
               minWidth='full'
               height='100%'
               px={0}
               overflowX={{ base: 'scroll', lg: 'visible' }}
             >
-              <Table variant='simple' color='white'>
+              <Table variant='black'>
                 <Thead>
-                  <Tr bg='black'>
-                    <Th
-                      fontFamily='SomarRounded-Regular'
-                      fontSize='16px'
-                      textAlign='center'
-                      color='white'
-                      textTransform='capitalize'
-                    >
-                      No
-                    </Th>
-                    <Th
-                      fontFamily='SomarRounded-Regular'
-                      fontSize='16px'
-                      textAlign='center'
-                      color='white'
-                      textTransform='capitalize'
-                    >
-                      NIM
-                    </Th>
-                    <Th
-                      fontFamily='SomarRounded-Regular'
-                      fontSize='16px'
-                      textAlign='center'
-                      color='white'
-                      textTransform='capitalize'
-                    >
-                      Nama
-                    </Th>
-                    <Th
-                      fontFamily='SomarRounded-Regular'
-                      fontSize='16px'
-                      textAlign='center'
-                      color='white'
-                      textTransform='capitalize'
-                    >
-                      Fakultas
-                    </Th>
-                    <Th
-                      fontFamily='SomarRounded-Regular'
-                      fontSize='16px'
-                      textAlign='center'
-                      color='white'
-                      textTransform='capitalize'
-                    >
-                      Kampus
-                    </Th>
-                    <Th
-                      fontFamily='SomarRounded-Regular'
-                      fontSize='16px'
-                      textAlign='center'
-                      color='white'
-                      textTransform='capitalize'
-                    >
-                      Tugas
-                    </Th>
-                    <Th
-                      fontFamily='SomarRounded-Regular'
-                      fontSize='16px'
-                      textAlign='center'
-                      color='white'
-                      textTransform='capitalize'
-                    >
-                      Absensi
-                    </Th>
+                  <Tr>
+                    <Th>No</Th>
+                    <Th>NIM</Th>
+                    <Th>Nama</Th>
+                    <Th>Fakultas</Th>
+                    <Th>Kampus</Th>
+                    <Th>Tugas</Th>
+                    <Th>Absensi</Th>
                   </Tr>
                 </Thead>
                 <Tbody fontSize={16}>

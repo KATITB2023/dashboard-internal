@@ -526,19 +526,14 @@ export const attendanceRouter = createTRPCRouter({
     }),
 
   mentorGetEventList: mentorProcedure.query(async ({ ctx }) => {
-    try {
-      const attendanceDaysWithEvents = await ctx.prisma.attendanceDay.findMany({
-        include: {
-          event: true
-        }
-      });
-      return attendanceDaysWithEvents;
-    } catch (error) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Failed to get event list.'
-      });
-    }
+    return await ctx.prisma.attendanceDay.findMany({
+      include: {
+        event: true
+      },
+      orderBy: {
+        name: 'asc'
+      }
+    });
   }),
 
   editAttendanceRecord: mentorProcedure

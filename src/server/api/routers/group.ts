@@ -12,6 +12,9 @@ export const groupRouter = createTRPCRouter({
       select: {
         id: true,
         group: true
+      },
+      orderBy: {
+        group: 'asc'
       }
     });
     return groups;
