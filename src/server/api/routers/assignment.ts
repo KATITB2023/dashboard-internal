@@ -217,8 +217,8 @@ export const assignmentRouter = createTRPCRouter({
       z.object({
         title: z.string(),
         type: z.nativeEnum(AssignmentType),
-        filePath: z.string(),
-        description: z.string(),
+        filePath: z.string().optional(),
+        description: z.string().optional(),
         startTime: z.coerce.date(),
         endTime: z.coerce.date()
       })
@@ -270,10 +270,11 @@ export const assignmentRouter = createTRPCRouter({
       z.object({
         assignmentId: z.string().uuid(),
         title: z.string().optional(),
+        type: z.nativeEnum(AssignmentType).optional(),
         filePath: z.string().optional(),
         description: z.string().optional(),
-        startTime: z.string().datetime().optional(),
-        endTime: z.string().datetime().optional()
+        startTime: z.coerce.date().optional(),
+        endTime: z.coerce.date().optional()
       })
     )
     .mutation(async ({ ctx, input }) => {

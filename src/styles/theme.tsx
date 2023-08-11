@@ -2,6 +2,7 @@ import { extendTheme } from '@chakra-ui/react';
 import { colors } from './component/colors';
 import { Button } from './component/button';
 import { Input } from './component/input';
+import { Table } from './component/table';
 import { Textarea } from './component/textarea';
 
 const theme = extendTheme({
@@ -36,6 +37,7 @@ const theme = extendTheme({
   components: {
     Button,
     Input,
+    Table,
     Textarea
   }
 });

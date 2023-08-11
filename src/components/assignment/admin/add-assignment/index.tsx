@@ -4,18 +4,16 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  HStack,
   Input,
-  Text,
   Select,
   Textarea,
   VStack,
   useToast
 } from '@chakra-ui/react';
 import { AssignmentType } from '@prisma/client';
-import { RouterInputs, RouterOutputs, api } from '~/utils/api';
+import { type RouterInputs, type RouterOutputs, api } from '~/utils/api';
 import { type SubmitHandler, useForm, Controller } from 'react-hook-form';
-import { BaseSyntheticEvent, useEffect, useState } from 'react';
+import { type BaseSyntheticEvent, useState } from 'react';
 import { TRPCError } from '@trpc/server';
 import { sanitizeURL, uploadFile } from '~/utils/file';
 import moment from 'moment';
@@ -46,7 +44,7 @@ export default function AddAssignment() {
       type: 'MANDATORY',
       startTime: new Date(),
       endTime: new Date(),
-      description: '',
+      description: undefined,
       filePath: undefined
     }
   });
@@ -62,6 +60,7 @@ export default function AddAssignment() {
   const submitAddNewAssignment: SubmitHandler<FormValues> = async (
     data: FormValues
   ) => {
+    setLoading(true);
     try {
       let additionalFilePath = '';
 
@@ -106,6 +105,7 @@ export default function AddAssignment() {
         position: 'top'
       });
     }
+    setLoading(false);
   };
 
   return (
@@ -126,7 +126,7 @@ export default function AddAssignment() {
               })}
               color={'white'}
               size={{ base: 'sm', md: 'md' }}
-            ></Input>
+            />
             {errors.title && (
               <FormErrorMessage>{errors.title.message}</FormErrorMessage>
             )}
@@ -242,9 +242,7 @@ export default function AddAssignment() {
             rows={6}
             color={'white'}
             placeholder='Masukkan deskripsi'
-            {...register('description', {
-              required: 'Deskripsi tugas tidak boleh kosong'
-            })}
+            {...register('description')}
           ></Textarea>
           {errors.description && (
             <FormErrorMessage>{errors.description.message}</FormErrorMessage>
@@ -252,13 +250,7 @@ export default function AddAssignment() {
         </FormControl>
         <FormControl>
           <FormLabel>File Terkait</FormLabel>
-          <Input
-            type='file'
-            variant='unstyled'
-            {...register('filePath', {
-              required: 'File terkait harus ada'
-            })}
-          />
+          <Input type='file' variant='unstyled' {...register('filePath')} />
           {errors.filePath && (
             <FormErrorMessage>{errors.filePath.message}</FormErrorMessage>
           )}
