@@ -4,7 +4,6 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  InputRightElement,
   Text,
   Flex,
   Select,
@@ -15,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
-import { FiArrowLeft, FiArrowRight, FiChevronRight } from 'react-icons/fi';
+import { FiArrowLeft, FiArrowRight } from 'react-icons/fi';
 import { api } from '~/utils/api';
 import { TRPCError } from '@trpc/server';
 import ReactHtmlParser from 'react-html-parser';
@@ -25,7 +24,7 @@ export default function ArticleCMS() {
   const toast = useToast();
   const router = useRouter();
   const [totalRecords, setTotalRecords] = useState<number>(0);
-  const [recordsNum, setRecordsNum] = useState<number>(3);
+  const [recordsNum, setRecordsNum] = useState<number>(5);
   const [currentPageNum, setCurrentPageNum] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -119,20 +118,6 @@ export default function ArticleCMS() {
         </Link>
       </Flex>
       <Flex alignItems='center' justifyContent='flex-start'>
-        {/* <InputGroup width='24' size='sm'>
-          <Input
-            variant='outline'
-            borderColor='gray.400'
-            borderRadius='12'
-            mr='2'
-            value={recordsNum}
-            onChange={handleRecordsNumChange}
-            defaultValue={3}
-          />
-          <InputRightElement pointerEvents='none'>
-            <FiChevronRight />
-          </InputRightElement>
-        </InputGroup> */}
         <Select
           placeholder=''
           width='20'
