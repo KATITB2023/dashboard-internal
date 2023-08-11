@@ -45,7 +45,7 @@ export const getServerSideProps = async (
 ) => {
   const csrfToken = await getCsrfToken(context);
   return {
-    props: { csrfToken }
+    props: { csrfToken: csrfToken ?? null }
   };
 };
 

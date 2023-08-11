@@ -49,14 +49,30 @@ export const authOptions: NextAuthOptions = {
     maxAge: env.SESSION_MAXAGE
   },
   callbacks: {
-    session: ({ session, token }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: token.id,
-        role: token.role
+    session: async ({ session, token, trigger }) => {
+      const payload = {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+          role: token.role
+        }
+      };
+
+      if (trigger === 'update') {
+        const profile = await prisma.profile.findUnique({
+          where: {
+            userId: session.user.id
+          }
+        });
+
+        payload.user.name = profile?.name;
+        payload.user.email = profile?.email;
+        payload.user.image = profile?.image;
       }
-    }),
+
+      return payload;
+    },
     jwt: ({ token, user }) => {
       if (user) {
         token.id = user.id;
@@ -134,9 +150,18 @@ export const authOptions: NextAuthOptions = {
           });
         }
 
+        const profile = await prisma.profile.findUnique({
+          where: {
+            userId: user.id
+          }
+        });
+
         return {
           id: user.id,
-          role: user.role
+          role: user.role,
+          name: profile?.name,
+          email: profile?.email,
+          image: profile?.image
         };
       }
     })

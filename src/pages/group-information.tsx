@@ -25,11 +25,14 @@ import Tooltip from '~/components/group-information-management/Tooltip';
 import { BsCheckCircle } from 'react-icons/bs';
 import AdminRoute from '~/layout/AdminRoute';
 import { useSession } from 'next-auth/react';
+import { withSession } from '~/server/auth/withSession';
 
 interface CellIdentifier {
   rowIndex: number;
   columnIndex: number;
 }
+
+export const getServerSideProps = withSession({ force: true });
 
 export default function GroupInformation() {
   const { data: session } = useSession();

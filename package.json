@@ -10,7 +10,7 @@
     "build:2-server": "rm -rf build && tsc --project tsconfig.server.json && tsc-alias -p tsconfig.server.json",
     "build": "run-s build:*",
     "dev:next": "next dev",
-    "dev": "yarn migrate-dev && env-cmd run-p dev:*",
+    "dev": "yarn migrate-deploy && env-cmd run-p dev:*",
     "lint": "next lint",
     "generate": "prisma generate",
     "seed-dev": "prisma db seed -- --environment development",
