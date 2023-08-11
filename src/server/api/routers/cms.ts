@@ -5,11 +5,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import {
-  adminProcedure,
-  createTRPCRouter,
-  publicProcedure
-} from '~/server/api/trpc';
+import { adminProcedure, createTRPCRouter } from '~/server/api/trpc';
 import GhostContentAPI from '@tryghost/content-api';
 // @ts-ignore
 import GhostAdminAPI from '@tryghost/admin-api';
@@ -28,7 +24,7 @@ const adminApi = new GhostAdminAPI({
 });
 
 export const cmsRouter = createTRPCRouter({
-  adminGetArticlesList: publicProcedure
+  adminGetArticlesList: adminProcedure
     .input(
       z.object({
         searchQuery: z.string().optional(),
@@ -55,17 +51,17 @@ export const cmsRouter = createTRPCRouter({
     }),
 
   adminGetArticlesById: adminProcedure
-    .input(z.object({ slug: z.string() }))
+    .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       return await contentApi.posts.read(
-        { slug: input.slug },
+        { id: input.id },
         {
           fields: ['id', 'slug', 'title', 'html', 'feature_image']
         }
       );
     }),
 
-  adminAddNewArticle: publicProcedure
+  adminAddNewArticle: adminProcedure
     .input(
       z.object({
         title: z.string(),
@@ -158,7 +154,7 @@ export const cmsRouter = createTRPCRouter({
       }
     }),
 
-  adminDeleteArticle: publicProcedure
+  adminDeleteArticle: adminProcedure
     .input(z.object({ articleId: z.string() }))
     .mutation(async ({ input }) => {
       try {
