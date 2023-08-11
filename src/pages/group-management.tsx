@@ -24,11 +24,6 @@ interface CellIdentifier {
   columnIndex: number;
 }
 
-enum TooltipType {
-  Task,
-  Attendance
-}
-
 export default function GroupManagement() {
   const mentorGroupQuery = api.group.mentorGetGroupData.useQuery();
   const mentorGroup = mentorGroupQuery.data;
@@ -45,7 +40,6 @@ export default function GroupManagement() {
   };
 
   // Tooltip
-  const [tooltipType, setTooltipType] = useState<TooltipType | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<CellIdentifier | null>(
     null
   );
@@ -255,7 +249,7 @@ export default function GroupManagement() {
                       (hadirCount / totalAttendance) * 100;
 
                     // Tooltip content
-                    const submissionTooltip = (submissionArray) => {
+                    const submissionTooltip = () => {
                       return mentorGroup.user.submission.map((task, index) => (
                         <Flex key={index} alignItems='center'>
                           {task.filePath != null ? (
@@ -276,7 +270,7 @@ export default function GroupManagement() {
                       ));
                     };
 
-                    const attendanceTooltip = (attendanceArray) => {
+                    const attendanceTooltip = () => {
                       return mentorGroup.user.attendance.map(
                         (attendance, index) => (
                           <Flex key={index} alignItems='center'>
@@ -339,9 +333,7 @@ export default function GroupManagement() {
                             {tooltipPosition &&
                               tooltipPosition.rowIndex === id &&
                               tooltipPosition.columnIndex === 5 && (
-                                <Tooltip
-                                  content={submissionTooltip(submissionArray)}
-                                />
+                                <Tooltip content={submissionTooltip()} />
                               )}
                           </Flex>
                         </Td>
@@ -366,9 +358,7 @@ export default function GroupManagement() {
                             {tooltipPosition &&
                               tooltipPosition.rowIndex === id &&
                               tooltipPosition.columnIndex === 6 && (
-                                <Tooltip
-                                  content={attendanceTooltip(attendanceArray)}
-                                />
+                                <Tooltip content={attendanceTooltip()} />
                               )}
                           </Flex>
                         </Td>

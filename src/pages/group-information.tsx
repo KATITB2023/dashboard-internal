@@ -29,11 +29,6 @@ interface CellIdentifier {
   columnIndex: number;
 }
 
-enum TooltipType {
-  Task,
-  Attendance
-}
-
 export default function GroupInformation() {
   // Mengambil data id kelompok
   const groupListQuery = api.group.adminGetGroupList.useQuery();
@@ -63,11 +58,6 @@ export default function GroupInformation() {
   });
   const groupData = groupDataQuery.data;
 
-  // Mengambil assignment
-  const assignmentTitleQuery =
-    api.assignment.mentorGetAssignmentTitleList.useQuery();
-  const assignmentTitle = assignmentTitleQuery.data;
-
   // Warna teks
   const getTextColor = (percentage: number): string => {
     if (percentage >= 100) {
@@ -80,7 +70,6 @@ export default function GroupInformation() {
   };
 
   // Tooltip
-  const [tooltipType, setTooltipType] = useState<TooltipType | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<CellIdentifier | null>(
     null
   );
@@ -308,7 +297,7 @@ export default function GroupInformation() {
                       (attendedCount / totalAttendance) * 100;
 
                     // Tooltip content
-                    const submissionTooltip = (submissionArray) => {
+                    const submissionTooltip = () => {
                       return groupData.user.submission.map((task, index) => (
                         <Flex key={index} alignItems='center'>
                           {task.filePath != null ? (
@@ -329,7 +318,7 @@ export default function GroupInformation() {
                       ));
                     };
 
-                    const attendanceTooltip = (attendanceArray) => {
+                    const attendanceTooltip = () => {
                       return groupData.user.attendance.map(
                         (attendance, index) => (
                           <Flex key={index} alignItems='center'>
@@ -392,9 +381,7 @@ export default function GroupInformation() {
                             {tooltipPosition &&
                               tooltipPosition.rowIndex === id &&
                               tooltipPosition.columnIndex === 5 && (
-                                <Tooltip
-                                  content={submissionTooltip(submissionArray)}
-                                />
+                                <Tooltip content={submissionTooltip()} />
                               )}
                           </Flex>
                         </Td>
@@ -419,9 +406,7 @@ export default function GroupInformation() {
                             {tooltipPosition &&
                               tooltipPosition.rowIndex === id &&
                               tooltipPosition.columnIndex === 6 && (
-                                <Tooltip
-                                  content={attendanceTooltip(attendanceArray)}
-                                />
+                                <Tooltip content={attendanceTooltip()} />
                               )}
                           </Flex>
                         </Td>
