@@ -52,6 +52,57 @@ const outlineButton: SystemStyleFunction = () => {
   };
 };
 
+const defaultBlueButton: SystemStyleFunction = () => {
+  return {
+    color: 'white',
+    borderRadius: '12',
+    bg: 'blue',
+    _hover: {
+      bg: 'blue',
+      shadow: '0 0 24px rgba(255,200,4,0.6)',
+      _disabled: {
+        bg: 'gray.400',
+        shadow: 'none'
+      }
+    },
+    _active: {
+      bg: 'yellow.4',
+      shadow: 'none'
+    },
+    _disabled: {
+      color: 'white',
+      bg: 'gray.400'
+    }
+  };
+};
+
+const outlineBlueButton: SystemStyleFunction = () => {
+  return {
+    color: 'blue',
+    borderWidth: '2px',
+    borderColor: 'blue',
+    bg: `white`,
+    borderRadius: '12',
+    _hover: {
+      shadow: '0 0 24px rgba(255,200,4,0.6)',
+      _disabled: {
+        bg: 'transparent',
+        shadow: 'none'
+      }
+    },
+    _active: {
+      bg: 'rgba(47, 46, 46, 0.6)',
+      shadow: 'none'
+    },
+    _disabled: {
+      color: 'gray.500',
+      bg: 'transparent',
+      borderColor: 'gray.400'
+    }
+  };
+};
+``;
+
 const monoBlackButton: SystemStyleFunction = () => {
   return {
     color: 'white',
@@ -131,6 +182,8 @@ export const Button: ComponentStyleConfig = {
   variants: {
     solid: defaultButton,
     outline: outlineButton,
+    solidBlue: defaultBlueButton,
+    outlineBlue: outlineBlueButton,
     'mono-black': monoBlackButton,
     'mono-gray': monoGrayButton,
     'mono-outline': monoOutlineButton
