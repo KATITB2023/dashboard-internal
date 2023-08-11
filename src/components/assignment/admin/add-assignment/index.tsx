@@ -11,7 +11,7 @@ import {
   useToast
 } from '@chakra-ui/react';
 import { AssignmentType } from '@prisma/client';
-import { type RouterInputs, type RouterOutputs, api } from '~/utils/api';
+import { type RouterInputs, api } from '~/utils/api';
 import { type SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { type BaseSyntheticEvent, useState } from 'react';
 import { sanitizeURL, uploadFile } from '~/utils/file';
@@ -49,10 +49,6 @@ export default function AddAssignment() {
     }
   });
 
-  const [startDate, setStartDate] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [endTime, setEndTime] = useState('');
   const [loading, setLoading] = useState(false);
 
   const addAssignment = api.assignment.adminAddNewAssignment.useMutation();
@@ -92,10 +88,6 @@ export default function AddAssignment() {
         position: 'top'
       });
       reset();
-      setStartDate('');
-      setStartTime('');
-      setEndDate('');
-      setEndTime('');
     } catch (error) {
       if (!(error instanceof TRPCClientError)) throw error;
 

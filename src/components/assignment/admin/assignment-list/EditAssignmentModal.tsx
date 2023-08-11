@@ -33,8 +33,8 @@ import { TRPCClientError } from '@trpc/client';
 interface FormValues {
   title: string;
   type: AssignmentType;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
   description: string;
   filePath: FileList;
 }
@@ -55,31 +55,24 @@ export default function EditAssignmentModal({ props, emit }: Props) {
     register,
     formState: { errors },
     setValue,
+    getValues,
     reset
   } = useForm<FormValues>({
     mode: 'onSubmit',
     defaultValues: {
       title: props.title,
       type: props.type,
-      startTime: props.startTime,
-      endTime: props.endTime,
+      startTime: undefined,
+      endTime: undefined,
       description: props.description ? props.description : '',
       filePath: undefined
     }
   });
 
-  const [startDate, setStartDate] = useState(
-    moment(new Date(props.startTime).toISOString()).format('YYYY-MM-DD')
-  );
-  const [startTime, setStartTime] = useState(
-    moment(new Date(props.startTime).toISOString()).format('hh:mm')
-  );
-  const [endDate, setEndDate] = useState(
-    moment(new Date(props.endTime).toISOString()).format('YYYY-MM-DD')
-  );
-  const [endTime, setEndTime] = useState(
-    moment(new Date(props.endTime).toISOString()).format('hh:mm')
-  );
+  const [startDate, setStartDate] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [loading, setLoading] = useState(false);
 
   const editAssignment = api.assignment.adminEditAssignment.useMutation();
@@ -103,11 +96,9 @@ export default function EditAssignmentModal({ props, emit }: Props) {
         title: data.title,
         type: data.type,
         startTime: new Date(
-          moment(startDate + ' ' + startTime, 'YYYY-MM-DD HH:mm').toDate()
+          moment(data.startTime, 'YYYY-MM-DD HH:mm').toDate()
         ),
-        endTime: new Date(
-          moment(endDate + ' ' + endTime, 'YYYY-MM-DD HH:mm').toDate()
-        ),
+        endTime: new Date(moment(data.endTime, 'YYYY-MM-DD HH:mm').toDate()),
         description: data.description,
         filePath: additionalFilePath.length > 0 ? additionalFilePath : undefined
       };
@@ -121,8 +112,7 @@ export default function EditAssignmentModal({ props, emit }: Props) {
         isClosable: true,
         position: 'top'
       });
-      emit(true);
-      onClose();
+      closeModal();
     } catch (error) {
       if (!(error instanceof TRPCClientError)) throw error;
 
@@ -138,8 +128,7 @@ export default function EditAssignmentModal({ props, emit }: Props) {
     setLoading(false);
   };
 
-  const closeModal = () => {
-    reset();
+  const openModal = () => {
     setStartDate(
       moment(new Date(props.startTime).toISOString()).format('YYYY-MM-DD')
     );
@@ -150,13 +139,22 @@ export default function EditAssignmentModal({ props, emit }: Props) {
       moment(new Date(props.endTime).toISOString()).format('YYYY-MM-DD')
     );
     setEndTime(moment(new Date(props.endTime).toISOString()).format('hh:mm'));
+    onOpen();
+  };
+
+  const closeModal = () => {
+    reset();
+    setStartDate('');
+    setStartTime('');
+    setEndDate('');
+    setEndTime('');
     emit(true);
     onClose();
   };
 
   return (
     <Td w='10%'>
-      <Button variant='outline' onClick={onOpen}>
+      <Button variant='outline' onClick={openModal}>
         <MdEdit fontSize='2rem' />
       </Button>
       <Modal isOpen={isOpen} onClose={closeModal} size={'3xl'} isCentered>
@@ -257,23 +255,45 @@ export default function EditAssignmentModal({ props, emit }: Props) {
                 <Flex width={'full'} columnGap={'2rem'}>
                   <FormControl>
                     <FormLabel>Mulai</FormLabel>
-                    <Flex columnGap={'1rem'}>
-                      <Input
-                        type='date'
-                        color={'white'}
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        size={{ base: 'sm', md: 'md' }}
-                      ></Input>
-                      <Input
-                        type='time'
-                        color={'white'}
-                        value={startTime}
-                        onChange={(e) => setStartTime(e.target.value)}
-                        size={{ base: 'sm', md: 'md' }}
-                        width={'50%'}
-                      ></Input>
-                    </Flex>
+                    <Controller
+                      control={control}
+                      name='startTime'
+                      rules={{
+                        required: {
+                          value: true,
+                          message: 'Waktu awal harus ada'
+                        }
+                      }}
+                      render={() => (
+                        <Flex columnGap={'1rem'}>
+                          <Input
+                            value={startDate}
+                            type='date'
+                            color={'white'}
+                            onChange={(e) => {
+                              setValue('startTime', e.target.value);
+                              setStartDate(e.target.value);
+                            }}
+                            size={{ base: 'sm', md: 'md' }}
+                          ></Input>
+                          <Input
+                            value={startTime}
+                            type='time'
+                            color={'white'}
+                            onChange={(e) => {
+                              setValue(
+                                'startTime',
+                                getValues('startTime') + ' ' + e.target.value
+                              );
+                              setStartTime(e.target.value);
+                            }}
+                            size={{ base: 'sm', md: 'md' }}
+                            width={'50%'}
+                          ></Input>
+                        </Flex>
+                      )}
+                    />
+
                     {errors.startTime && (
                       <FormErrorMessage>
                         {errors.startTime.message}
@@ -282,23 +302,45 @@ export default function EditAssignmentModal({ props, emit }: Props) {
                   </FormControl>
                   <FormControl>
                     <FormLabel>Selesai</FormLabel>
-                    <Flex columnGap={'1rem'}>
-                      <Input
-                        type='date'
-                        color={'white'}
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        size={{ base: 'sm', md: 'md' }}
-                      ></Input>
-                      <Input
-                        type='time'
-                        color={'white'}
-                        value={endTime}
-                        onChange={(e) => setEndTime(e.target.value)}
-                        size={{ base: 'sm', md: 'md' }}
-                        width={'50%'}
-                      ></Input>
-                    </Flex>
+                    <Controller
+                      control={control}
+                      name='endTime'
+                      rules={{
+                        required: {
+                          value: true,
+                          message: 'Waktu selesai harus ada'
+                        }
+                      }}
+                      render={() => (
+                        <Flex columnGap={'1rem'}>
+                          <Input
+                            value={endDate}
+                            type='date'
+                            color={'white'}
+                            onChange={(e) => {
+                              setValue('endTime', e.target.value);
+                              setEndDate(e.target.value);
+                            }}
+                            size={{ base: 'sm', md: 'md' }}
+                          ></Input>
+                          <Input
+                            value={endTime}
+                            type='time'
+                            color={'white'}
+                            onChange={(e) => {
+                              setValue(
+                                'endTime',
+                                getValues('endTime') + ' ' + e.target.value
+                              );
+                              setEndTime(e.target.value);
+                            }}
+                            size={{ base: 'sm', md: 'md' }}
+                            width={'50%'}
+                          ></Input>
+                        </Flex>
+                      )}
+                    />
+
                     {errors.endTime && (
                       <FormErrorMessage>
                         {errors.endTime.message}

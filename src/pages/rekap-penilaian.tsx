@@ -5,22 +5,49 @@ import { Header } from '~/components/Header';
 import Layout from '~/layout/index';
 import AdminAssignmentList from '~/components/assignment/admin/assignment-list';
 import AdminAddAssignment from '~/components/assignment/admin/add-assignment';
-// import { Redirect } from '~/components/Redirect';
-
+import React from 'react';
+import { Redirect } from '~/components/Redirect';
 import {
   TabList,
-  Tab,
   Tabs,
   Flex,
   TabPanels,
-  TabPanel
+  TabPanel,
+  type TabProps,
+  Button,
+  useTab,
+  useMultiStyleConfig
 } from '@chakra-ui/react';
 
 export default function RekapPenilaian() {
   const { data: session } = useSession();
   const router = useRouter();
 
-  // if (!session) return <Redirect />;
+  if (!session) return <Redirect />;
+
+  // eslint-disable-next-line react/display-name
+  const Tab = React.forwardRef((props: TabProps, ref) => {
+    const tabProps = useTab({ ...props });
+    const isSelected = !!tabProps['aria-selected'];
+
+    const styles = useMultiStyleConfig('Tabs', tabProps);
+
+    return (
+      <Button
+        __css={styles.tab}
+        {...tabProps}
+        bgImage={isSelected ? '/images/bg-bar.png' : 'none'}
+        bgRepeat='no-repeat'
+        bgColor={isSelected ? 'black' : 'none'}
+        borderRadius='2xl'
+        border='none'
+        color={isSelected ? 'white' : 'black'}
+        fontWeight='bold'
+      >
+        {tabProps.children}
+      </Button>
+    );
+  });
 
   if (session?.user.role === UserRole.ADMIN) {
     return (

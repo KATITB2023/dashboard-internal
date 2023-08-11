@@ -110,7 +110,7 @@ export default function AssignmentList() {
       </TableContainer>
       <Flex justifyContent={'space-between'}>
         <Text>
-          Showing row {(page - 1) * 5 + 1} to{' '}
+          Showing rows {(page - 1) * 5 + 1} to{' '}
           {page * 5 > (metadata?.total as number) ? metadata?.total : page * 5}{' '}
           of {metadata?.total} entries
         </Text>
