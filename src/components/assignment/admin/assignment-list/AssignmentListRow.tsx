@@ -3,12 +3,15 @@ import { type RouterOutputs, api } from '~/utils/api';
 import EditAssignmentModal from './EditAssignmentModal';
 
 interface Props {
-  data: RouterOutputs['assignment']['adminGetAssignment'][0];
+  data: RouterOutputs['assignment']['adminGetAssignment']['data'][0];
   index: number;
+  page: number;
 }
 
-export default function AssignmentListRow({ data, index }: Props) {
-  const assignmentQuery = api.assignment.adminGetAssignment.useQuery();
+export default function AssignmentListRow({ data, index, page }: Props) {
+  const assignmentQuery = api.assignment.adminGetAssignment.useQuery({
+    currentPage: page
+  });
 
   return (
     <Tr>

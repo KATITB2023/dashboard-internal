@@ -21,8 +21,8 @@ import { TRPCClientError } from '@trpc/client';
 interface FormValues {
   title: string;
   type: AssignmentType;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
   description: string;
   filePath: FileList;
 }
@@ -35,14 +35,15 @@ export default function AddAssignment() {
     register,
     formState: { errors },
     setValue,
+    getValues,
     reset
   } = useForm<FormValues>({
     mode: 'onSubmit',
     defaultValues: {
       title: '',
       type: 'MANDATORY',
-      startTime: new Date(),
-      endTime: new Date(),
+      startTime: undefined,
+      endTime: undefined,
       description: undefined,
       filePath: undefined
     }
@@ -74,11 +75,9 @@ export default function AddAssignment() {
         title: data.title,
         type: data.type,
         startTime: new Date(
-          moment(startDate + ' ' + startTime, 'YYYY-MM-DD HH:mm').toDate()
+          moment(data.startTime, 'YYYY-MM-DD HH:mm').toDate()
         ),
-        endTime: new Date(
-          moment(endDate + ' ' + endTime, 'YYYY-MM-DD HH:mm').toDate()
-        ),
+        endTime: new Date(moment(data.endTime, 'YYYY-MM-DD HH:mm').toDate()),
         description: data.description,
         filePath: additionalFilePath
       };
@@ -93,6 +92,10 @@ export default function AddAssignment() {
         position: 'top'
       });
       reset();
+      setStartDate('');
+      setStartTime('');
+      setEndDate('');
+      setEndTime('');
     } catch (error) {
       if (!(error instanceof TRPCClientError)) throw error;
 
@@ -195,42 +198,78 @@ export default function AddAssignment() {
         <Flex width={'full'} columnGap={'2rem'}>
           <FormControl>
             <FormLabel>Mulai</FormLabel>
-            <Flex columnGap={'1rem'}>
-              <Input
-                type='date'
-                color={'white'}
-                onChange={(e) => setStartDate(e.target.value)}
-                size={{ base: 'sm', md: 'md' }}
-              ></Input>
-              <Input
-                type='time'
-                color={'white'}
-                onChange={(e) => setStartTime(e.target.value)}
-                size={{ base: 'sm', md: 'md' }}
-                width={'50%'}
-              ></Input>
-            </Flex>
+            <Controller
+              control={control}
+              name='startTime'
+              rules={{
+                required: {
+                  value: true,
+                  message: 'Waktu awal harus ada'
+                }
+              }}
+              render={() => (
+                <Flex columnGap={'1rem'}>
+                  <Input
+                    type='date'
+                    color={'white'}
+                    onChange={(e) => setValue('startTime', e.target.value)}
+                    size={{ base: 'sm', md: 'md' }}
+                  ></Input>
+                  <Input
+                    type='time'
+                    color={'white'}
+                    onChange={(e) =>
+                      setValue(
+                        'startTime',
+                        getValues('startTime') + ' ' + e.target.value
+                      )
+                    }
+                    size={{ base: 'sm', md: 'md' }}
+                    width={'50%'}
+                  ></Input>
+                </Flex>
+              )}
+            />
+
             {errors.startTime && (
               <FormErrorMessage>{errors.startTime.message}</FormErrorMessage>
             )}
           </FormControl>
           <FormControl>
             <FormLabel>Selesai</FormLabel>
-            <Flex columnGap={'1rem'}>
-              <Input
-                type='date'
-                color={'white'}
-                onChange={(e) => setEndDate(e.target.value)}
-                size={{ base: 'sm', md: 'md' }}
-              ></Input>
-              <Input
-                type='time'
-                color={'white'}
-                onChange={(e) => setEndTime(e.target.value)}
-                size={{ base: 'sm', md: 'md' }}
-                width={'50%'}
-              ></Input>
-            </Flex>
+            <Controller
+              control={control}
+              name='endTime'
+              rules={{
+                required: {
+                  value: true,
+                  message: 'Waktu selesai harus ada'
+                }
+              }}
+              render={() => (
+                <Flex columnGap={'1rem'}>
+                  <Input
+                    type='date'
+                    color={'white'}
+                    onChange={(e) => setValue('endTime', e.target.value)}
+                    size={{ base: 'sm', md: 'md' }}
+                  ></Input>
+                  <Input
+                    type='time'
+                    color={'white'}
+                    onChange={(e) =>
+                      setValue(
+                        'endTime',
+                        getValues('endTime') + ' ' + e.target.value
+                      )
+                    }
+                    size={{ base: 'sm', md: 'md' }}
+                    width={'50%'}
+                  ></Input>
+                </Flex>
+              )}
+            />
+
             {errors.endTime && (
               <FormErrorMessage>{errors.endTime.message}</FormErrorMessage>
             )}
