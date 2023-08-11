@@ -1,11 +1,21 @@
-import { Box, Flex, HStack, Text, Link, VStack, Icon } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  HStack,
+  Text,
+  Link,
+  VStack,
+  Icon,
+  Center
+} from '@chakra-ui/react';
 import { useRouter } from 'next/router';
+import { IconType } from 'react-icons/lib';
 
 export interface SidebarRoute {
   name: string;
   path: string;
   component: React.ReactNode;
-  icon: React.ReactNode;
+  icon: IconType;
 }
 
 export interface SidebarProps {
@@ -53,15 +63,19 @@ export function SidebarLinks(props: SidebarProps) {
                 >
                   <Flex w='100%' alignItems='center' justifyContent='center'>
                     <Box me='18px'>
-                      <Icon
-                        viewBox='0 0 33 33'
-                        color={
-                          activeRoute(route.path.toLowerCase()) ? purple : white
-                        }
-                        _groupHover={{ color: purple }}
-                      >
-                        {route.icon}
-                      </Icon>
+                      <Center>
+                        <Icon
+                          as={route.icon}
+                          color={
+                            activeRoute(route.path.toLowerCase())
+                              ? purple
+                              : white
+                          }
+                          _groupHover={{ color: purple }}
+                          width='18px'
+                          height='18px'
+                        ></Icon>
+                      </Center>
                     </Box>
                     <Text me='auto' fontWeight='bold'>
                       {route.name}

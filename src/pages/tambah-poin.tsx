@@ -1,5 +1,14 @@
-import Layout from '~/layout/index';
+import { useSession } from 'next-auth/react';
+import React from 'react';
+import { AddPoint } from '~/components/add-point';
+import MentorRoute from '~/layout/MentorRoute';
 
-export default function TambahPoin() {
-  return <Layout type='mentor' title='Tambah Poin' fullBg={false}></Layout>;
+export default function AddPointPage() {
+  const { data: session } = useSession();
+
+  return (
+    <MentorRoute session={session}>
+      <AddPoint />
+    </MentorRoute>
+  );
 }

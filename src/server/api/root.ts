@@ -5,6 +5,7 @@ import { groupRouter } from '~/server/api/routers/group';
 import { leaderboardRouter } from '~/server/api/routers/leaderboard';
 import { cmsRouter } from '~/server/api/routers/cms';
 import { csvRouter } from '~/server/api/routers/csv';
+import { feedsRouter } from './routers/feeds';
 /**
  * This is the primary router for your server.
  *
@@ -16,7 +17,8 @@ export const appRouter = createTRPCRouter({
   group: groupRouter,
   leaderboard: leaderboardRouter,
   cms: cmsRouter,
-  csv: csvRouter
+  csv: csvRouter,
+  feeds: feedsRouter
 });
 
 // export type definition of API

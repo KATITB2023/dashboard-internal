@@ -8,6 +8,7 @@ const variantDark: SystemStyleFunction = () => {
       border: '2px solid',
       borderColor: 'gray.400',
       bg: 'gray.600',
+      color: 'white',
       _hover: {
         borderColor: 'gray.500'
       },
