@@ -278,8 +278,15 @@ export const assignmentRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { assignmentId, title, filePath, description, startTime, endTime } =
-        input;
+      const {
+        assignmentId,
+        title,
+        type,
+        filePath,
+        description,
+        startTime,
+        endTime
+      } = input;
 
       try {
         // Prepare the update data with only defined properties (skip undefined)
@@ -288,6 +295,7 @@ export const assignmentRouter = createTRPCRouter({
           where: { id: assignmentId },
           data: {
             title: title,
+            type: type,
             filePath: filePath,
             description: description,
             startTime: startTime,

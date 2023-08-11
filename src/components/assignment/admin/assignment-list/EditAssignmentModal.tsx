@@ -40,9 +40,10 @@ interface FormValues {
 
 interface Props {
   props: Assignment;
+  emit: (data: boolean) => void;
 }
 
-export default function EditAssignmentModal({ props }: Props) {
+export default function EditAssignmentModal({ props, emit }: Props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const toast = useToast();
@@ -119,6 +120,7 @@ export default function EditAssignmentModal({ props }: Props) {
         isClosable: true,
         position: 'top'
       });
+      emit(true);
       onClose();
     } catch (error) {
       if (!(error instanceof TRPCError)) throw error;
@@ -147,6 +149,7 @@ export default function EditAssignmentModal({ props }: Props) {
       moment(new Date(props.endTime).toISOString()).format('YYYY-MM-DD')
     );
     setEndTime(moment(new Date(props.endTime).toISOString()).format('hh:mm'));
+    emit(true);
     onClose();
   };
 
@@ -235,6 +238,7 @@ export default function EditAssignmentModal({ props }: Props) {
                               }}
                               key={index}
                               value={type}
+                              selected={type === props.type}
                             >
                               {type.includes('_')
                                 ? type.split('_').join(' ')

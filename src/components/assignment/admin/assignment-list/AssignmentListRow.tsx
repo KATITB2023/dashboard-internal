@@ -1,13 +1,4 @@
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Button
-} from '@chakra-ui/react';
+import { Tr, Td, Button } from '@chakra-ui/react';
 import { type RouterOutputs, api } from '~/utils/api';
 import EditAssignmentModal from './EditAssignmentModal';
 
@@ -18,7 +9,6 @@ interface Props {
 
 export default function AssignmentListRow({ data, index }: Props) {
   const assignmentQuery = api.assignment.adminGetAssignment.useQuery();
-  const assignmentData = assignmentQuery.data;
 
   return (
     <Tr>
@@ -50,7 +40,10 @@ export default function AssignmentListRow({ data, index }: Props) {
       <Td w='10%'>
         <Button variant='outline'>Unduh</Button>
       </Td>
-      <EditAssignmentModal props={data} />
+      <EditAssignmentModal
+        props={data}
+        emit={() => void assignmentQuery.refetch()}
+      />
     </Tr>
   );
 }
