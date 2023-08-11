@@ -81,7 +81,7 @@ export const groupRouter = createTRPCRouter({
     });
 
     if (!groupRelation) {
-      return {};
+      return [];
     }
 
     const group = await ctx.prisma.groupRelation.findMany({
