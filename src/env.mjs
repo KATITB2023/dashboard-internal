@@ -53,7 +53,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+    NEXT_PUBLIC_BUCKET_API_KEY: z.string().min(1)
   },
 
   /**
@@ -70,7 +70,8 @@ export const env = createEnv({
     STALE_WHILE_REVALIDATE: process.env.STALE_WHILE_REVALIDATE,
     SAMPLER_RATIO: process.env.SAMPLER_RATIO,
     GHOST_CONTENT_API: process.env.GHOST_CONTENT_API,
-    GHOST_ADMIN_API: process.env.GHOST_ADMIN_API
+    GHOST_ADMIN_API: process.env.GHOST_ADMIN_API,
+    NEXT_PUBLIC_BUCKET_API_KEY: process.env.NEXT_PUBLIC_BUCKET_API_KEY
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

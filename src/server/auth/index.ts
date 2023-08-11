@@ -124,6 +124,7 @@ export const authOptions: NextAuthOptions = {
           });
         }
         console.log('user:', user);
+        console.log('user:', user);
 
         const isValid = await compare(password, user.passwordHash);
         if (!isValid) {

@@ -33,7 +33,7 @@ const students = [
     faculty: 'FTI',
     gender: 'FEMALE',
     campus: 'GANESHA',
-    email: 'zumij@wa.et',
+    email: 'tigawu@noirko.sn',
     bio: 'BIO 13523001'
   },
   {
@@ -150,27 +150,62 @@ const mentors = [
   {
     nim: '13520101',
     passwordHash: '13520101',
-    role: 'MENTOR'
+    role: 'MENTOR',
+    name: 'Winifred McLaughlin',
+    pin: '000011',
+    faculty: 'FTI',
+    gender: 'FEMALE',
+    campus: 'GANESHA',
+    email: 'gotsadot@ip.bi',
+    bio: 'BIO 13523101'
   },
   {
     nim: '13520102',
     passwordHash: '13520102',
-    role: 'MENTOR'
+    role: 'MENTOR',
+    name: 'Jerome Jones',
+    pin: '000012',
+    faculty: 'FTI',
+    gender: 'FEMALE',
+    campus: 'GANESHA',
+    email: 'kevek@osiwi.bh',
+    bio: 'BIO 13523102'
   },
   {
     nim: '13520103',
     passwordHash: '13520103',
-    role: 'MENTOR'
+    role: 'MENTOR',
+    name: 'Gabriel Manning',
+    pin: '000013',
+    faculty: 'FTI',
+    gender: 'FEMALE',
+    campus: 'GANESHA',
+    email: 'meholenu@paob.kp',
+    bio: 'BIO 13523103'
   },
   {
     nim: '13520104',
     passwordHash: '13520104',
-    role: 'MENTOR'
+    role: 'MENTOR',
+    name: 'Jorge Fitzgerald',
+    pin: '000014',
+    faculty: 'FTI',
+    gender: 'FEMALE',
+    campus: 'GANESHA',
+    email: 'cotelec@sic.as',
+    bio: 'BIO 13520104'
   },
   {
     nim: '13520105',
     passwordHash: '13520105',
-    role: 'MENTOR'
+    role: 'MENTOR',
+    name: 'Paul Richards',
+    pin: '000015',
+    faculty: 'FTI',
+    gender: 'FEMALE',
+    campus: 'GANESHA',
+    email: 'zitako@dutadwav.pn',
+    bio: 'BIO 13520105'
   }
 ];
 
@@ -178,17 +213,38 @@ const admins = [
   {
     nim: '13520001',
     passwordHash: '13520001',
-    role: 'ADMIN'
+    role: 'ADMIN',
+    name: 'Lulu Byrd',
+    pin: '000016',
+    faculty: 'FTI',
+    gender: 'FEMALE',
+    campus: 'GANESHA',
+    email: 'bo@lohdas.ar',
+    bio: 'BIO 13520001'
   },
   {
     nim: '13520002',
     passwordHash: '13520002',
-    role: 'ADMIN'
+    role: 'ADMIN',
+    name: 'Lulu Woods',
+    pin: '000017',
+    faculty: 'FTI',
+    gender: 'FEMALE',
+    campus: 'GANESHA',
+    email: 'luc@izgadbu.ws',
+    bio: 'BIO 13520002'
   },
   {
     nim: '13520003',
     passwordHash: '13520003',
-    role: 'ADMIN'
+    role: 'ADMIN',
+    name: 'Carlos Holmes',
+    pin: '000018',
+    faculty: 'FTI',
+    gender: 'FEMALE',
+    campus: 'GANESHA',
+    email: 'jilapip@lajir.bo',
+    bio: 'BIO 13520003'
   }
 ];
 
@@ -196,17 +252,38 @@ const eos = [
   {
     nim: '13521001',
     passwordHash: '13521001',
-    role: 'EO'
+    role: 'EO',
+    name: 'Cecilia Matthews',
+    pin: '000019',
+    faculty: 'FTI',
+    gender: 'FEMALE',
+    campus: 'GANESHA',
+    email: 'ipto@dow.ee',
+    bio: 'BIO 13521001'
   },
   {
     nim: '13521002',
     passwordHash: '13521002',
-    role: 'EO'
+    role: 'EO',
+    name: 'Alma Franklin',
+    pin: '000020',
+    faculty: 'FTI',
+    gender: 'FEMALE',
+    campus: 'GANESHA',
+    email: 'lohew@bi.gm',
+    bio: 'BIO 13521002'
   },
   {
     nim: '13521003',
     passwordHash: '13521003',
-    role: 'EO'
+    role: 'EO',
+    name: 'Carlos Walters',
+    pin: '000021',
+    faculty: 'FTI',
+    gender: 'FEMALE',
+    campus: 'GANESHA',
+    email: 'pize@fiwuka.tp',
+    bio: 'BIO 13521003'
   }
 ];
 
@@ -254,7 +331,18 @@ async function main() {
         data: {
           nim: mentor.nim,
           passwordHash: await hash(mentor.passwordHash, 10),
-          role: mentor.role as UserRole
+          role: mentor.role as UserRole,
+          profile: {
+            create: {
+              name: mentor.name,
+              pin: mentor.pin,
+              faculty: mentor.faculty,
+              gender: mentor.gender as Gender,
+              campus: mentor.campus as Campus,
+              email: mentor.email,
+              bio: mentor.bio
+            }
+          }
         }
       });
     })
@@ -266,7 +354,18 @@ async function main() {
         data: {
           nim: admin.nim,
           passwordHash: await hash(admin.passwordHash, 10),
-          role: admin.role as UserRole
+          role: admin.role as UserRole,
+          profile: {
+            create: {
+              name: admin.name,
+              pin: admin.pin,
+              faculty: admin.faculty,
+              gender: admin.gender as Gender,
+              campus: admin.campus as Campus,
+              email: admin.email,
+              bio: admin.bio
+            }
+          }
         }
       });
     })
@@ -278,7 +377,18 @@ async function main() {
         data: {
           nim: eo.nim,
           passwordHash: await hash(eo.passwordHash, 10),
-          role: eo.role as UserRole
+          role: eo.role as UserRole,
+          profile: {
+            create: {
+              name: eo.name,
+              pin: eo.pin,
+              faculty: eo.faculty,
+              gender: eo.gender as Gender,
+              campus: eo.campus as Campus,
+              email: eo.email,
+              bio: eo.bio
+            }
+          }
         }
       });
     })
