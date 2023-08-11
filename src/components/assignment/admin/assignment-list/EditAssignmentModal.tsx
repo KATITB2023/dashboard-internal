@@ -139,6 +139,18 @@ export default function EditAssignmentModal({ props, emit }: Props) {
       moment(new Date(props.endTime).toISOString()).format('YYYY-MM-DD')
     );
     setEndTime(moment(new Date(props.endTime).toISOString()).format('hh:mm'));
+    setValue(
+      'startTime',
+      moment(new Date(props.startTime).toISOString()).format('YYYY-MM-DD') +
+        ' ' +
+        moment(new Date(props.startTime).toISOString()).format('hh:mm')
+    );
+    setValue(
+      'endTime',
+      moment(new Date(props.endTime).toISOString()).format('YYYY-MM-DD') +
+        ' ' +
+        moment(new Date(props.endTime).toISOString()).format('hh:mm')
+    );
     onOpen();
   };
 
