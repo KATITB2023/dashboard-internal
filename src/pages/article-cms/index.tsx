@@ -19,6 +19,9 @@ import { api } from '~/utils/api';
 import { TRPCError } from '@trpc/server';
 import ReactHtmlParser from 'react-html-parser';
 import { useRouter } from 'next/router';
+import { withSession } from '~/server/auth/withSession';
+
+export const getServerSideProps = withSession({ force: true });
 
 export default function ArticleCMS() {
   const toast = useToast();

@@ -21,6 +21,9 @@ import { TRPCError } from '@trpc/server';
 import { uploadFile, sanitizeURL } from '~/utils/file';
 import ReactHtmlParser from 'react-html-parser';
 import { useRouter } from 'next/router';
+import { withSession } from '~/server/auth/withSession';
+
+export const getServerSideProps = withSession({ force: true });
 
 interface FormValue {
   title: string;
