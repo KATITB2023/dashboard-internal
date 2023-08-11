@@ -51,10 +51,10 @@ export const cmsRouter = createTRPCRouter({
     }),
 
   adminGetArticlesById: adminProcedure
-    .input(z.object({ slug: z.string() }))
+    .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       return await contentApi.posts.read(
-        { slug: input.slug },
+        { id: input.id },
         {
           fields: ['id', 'slug', 'title', 'html', 'feature_image']
         }

@@ -71,7 +71,7 @@ export const env = createEnv({
     SAMPLER_RATIO: process.env.SAMPLER_RATIO,
     GHOST_CONTENT_API: process.env.GHOST_CONTENT_API,
     GHOST_ADMIN_API: process.env.GHOST_ADMIN_API,
-    NEXT_PUBLIC_BUCKET_API_KEY: process.env.NEXT_PUBLIC_BUCKET_API_KEY
+    NEXT_PUBLIC_BUCKET_API_KEY: process.env.NEXT_PUBLIC_BUCKET_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
