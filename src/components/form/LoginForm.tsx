@@ -57,15 +57,11 @@ const LoginForm = ({
       isClosable: true,
       position: 'top'
     });
-    console.log(session);
     handleRedirect();
   };
 
   const handleRedirect = () => {
-    const role = session?.user.role;
-    role === UserRole.MENTOR
-      ? void router.push('/group-management')
-      : void router.push('/rekap-penilaian');
+    void router.push('/welcome');
   };
 
   const handleError = (message: string) => {
