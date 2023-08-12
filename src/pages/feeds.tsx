@@ -37,8 +37,8 @@ export const getServerSideProps = withSession({ force: true });
 export interface FeedProps {
   id: number;
   content: string;
-  url?: string | undefined;
-  filePath?: any;
+  url?: string;
+  filePath?: FileList;
 }
 
 // eslint-disable-next-line react/display-name

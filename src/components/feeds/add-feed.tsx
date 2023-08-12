@@ -24,10 +24,10 @@ import { type BaseSyntheticEvent, useState } from 'react';
 import { SlPicture } from 'react-icons/sl';
 import { type FeedProps } from '~/pages/feeds';
 import { type SubmitHandler, useForm } from 'react-hook-form';
-import { TRPCError } from '@trpc/server';
 import { api } from '~/utils/api';
 import { AiOutlineLink } from 'react-icons/ai';
 import { sanitizeURL, uploadFile } from '~/utils/file';
+import { TRPCClientError } from '@trpc/client';
 
 const AddFeed = ({ feedChange }: { feedChange: () => void }) => {
   const toast = useToast();
@@ -36,23 +36,16 @@ const AddFeed = ({ feedChange }: { feedChange: () => void }) => {
     onOpen: onPostOpen,
     onClose: onPostClose
   } = useDisclosure();
-  const {
-    register,
-    formState,
-    handleSubmit,
-    reset,
-    setValue,
-    getValues,
-    unregister
-  } = useForm<FeedProps>({
-    mode: 'onSubmit',
-    defaultValues: {
-      id: undefined,
-      content: '',
-      url: '',
-      filePath: undefined
-    }
-  });
+  const { register, formState, handleSubmit, reset, unregister } =
+    useForm<FeedProps>({
+      mode: 'onSubmit',
+      defaultValues: {
+        id: undefined,
+        content: '',
+        url: '',
+        filePath: undefined
+      }
+    });
   const [isAttachFile, setIsAttachFile] = useState<boolean>(false);
   const [isAttachUrl, setIsAttachUrl] = useState<boolean>(false);
   const createFeed = api.feeds.adminPostFeed.useMutation();
@@ -76,30 +69,28 @@ const AddFeed = ({ feedChange }: { feedChange: () => void }) => {
     }
   };
   const submitContent: SubmitHandler<FeedProps> = async (data: FeedProps) => {
-    if (data.filePath) {
-      setValue('filePath', data.filePath[0]);
-    }
-    const fileStr: File = getValues('filePath');
     try {
-      if (fileStr) {
-        const fileName = `${fileStr.name.replace(' ', '-').split('.')[0]}`;
-        const extension = fileStr.name.split('.').pop() as string;
+      if (data.filePath && data.filePath[0]) {
+        const fileName = data.filePath[0]?.name
+          .replace(' ', '-')
+          .split('.')[0] as string;
+        const extension = data.filePath[0]?.name.split('.').pop() as string;
         const imagePath = sanitizeURL(
           `https://cdn.oskmitb.com/attachment-feeds/${fileName}.${extension}`
         );
-        await uploadFile(imagePath, fileStr);
-        const res = createFeed.mutateAsync({
+        await uploadFile(imagePath, data.filePath[0]);
+        await createFeed.mutateAsync({
           body: data.content,
           attachment: imagePath
         });
       } else {
         if (data.url) {
-          const res = createFeed.mutateAsync({
+          await createFeed.mutateAsync({
             body: data.content,
             attachment: data.url
           });
         } else {
-          const res = createFeed.mutateAsync({
+          await createFeed.mutateAsync({
             body: data.content
           });
         }
@@ -113,7 +104,7 @@ const AddFeed = ({ feedChange }: { feedChange: () => void }) => {
         position: 'top'
       });
     } catch (error) {
-      if (!(error instanceof TRPCError)) throw error;
+      if (!(error instanceof TRPCClientError)) throw error;
       toast({
         title: 'Failed',
         status: 'error',

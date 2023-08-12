@@ -28,7 +28,7 @@ import { api } from '~/utils/api';
 import { AiOutlineLink } from 'react-icons/ai';
 import { sanitizeURL } from '~/utils/file';
 import { deleteFile, uploadFile } from '~/utils/file';
-import { TRPCError } from '@trpc/server';
+import { TRPCClientError } from '@trpc/client';
 
 interface EditFeedProp extends FeedProps {
   feedChange: () => void;
@@ -51,7 +51,7 @@ const EditFeed = ({ id, content, url, feedChange }: EditFeedProp) => {
       id: id,
       content: content,
       url: '',
-      filePath: ''
+      filePath: undefined
     }
   });
 
@@ -109,40 +109,36 @@ const EditFeed = ({ id, content, url, feedChange }: EditFeedProp) => {
   };
 
   const handleSubmitEdit = async (data: FeedProps) => {
-    if (data.filePath) {
-      setValue('filePath', data.filePath[0]);
-    }
     try {
       if (getValues('url')) {
-        const res = editFeeds.mutateAsync({
+        await editFeeds.mutateAsync({
           feedId: getValues('id'),
           body: getValues('content'),
           attachment: getValues('url')
         });
-      } else if (getValues('filePath')) {
-        const fileStr: File = getValues('filePath');
-        if (fileStr) {
-          const fileName = `${fileStr.name.replace(' ', '-').split('.')[0]}`;
-          const extension = fileStr.name.split('.').pop() as string;
-          const imagePath = sanitizeURL(
-            `https://cdn.oskmitb.com/attachment-feeds/${fileName}.${extension}`
-          );
-          await uploadFile(imagePath, fileStr);
-          const res = editFeeds.mutateAsync({
-            feedId: getValues('id'),
-            body: getValues('content'),
-            attachment: imagePath
-          });
-        }
+      } else if (data.filePath && data.filePath[0]) {
+        const fileName = data.filePath[0]?.name
+          .replace(' ', '-')
+          .split('.')[0] as string;
+        const extension = data.filePath[0]?.name.split('.').pop() as string;
+        const imagePath = sanitizeURL(
+          `https://cdn.oskmitb.com/attachment-feeds/${fileName}.${extension}`
+        );
+        await uploadFile(imagePath, data.filePath[0]);
+        await editFeeds.mutateAsync({
+          feedId: getValues('id'),
+          body: getValues('content'),
+          attachment: imagePath
+        });
       } else {
-        const res = editFeeds.mutateAsync({
+        await editFeeds.mutateAsync({
           feedId: getValues('id'),
           body: getValues('content'),
           attachment: ''
         });
       }
     } catch (error) {
-      if (!(error instanceof TRPCError)) throw error;
+      if (!(error instanceof TRPCClientError)) throw error;
       toast({
         title: 'Failed',
         status: 'error',
@@ -157,6 +153,7 @@ const EditFeed = ({ id, content, url, feedChange }: EditFeedProp) => {
     onEditClose();
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   const handleRemoveAttach: MouseEventHandler<HTMLButtonElement> = async () => {
     if (url) {
       try {
@@ -166,7 +163,7 @@ const EditFeed = ({ id, content, url, feedChange }: EditFeedProp) => {
       }
     }
     setValue('url', '');
-    setValue('filePath', '');
+    setValue('filePath', undefined);
     setIsAttachUrl(false);
     setIsAttachFile(false);
     setIsUrlTag(false);
@@ -190,7 +187,7 @@ const EditFeed = ({ id, content, url, feedChange }: EditFeedProp) => {
     <>
       <HStack
         onClick={() => {
-          onEditOpen(), handleEdit(id, url!, content), handleTag();
+          onEditOpen(), handleEdit(id, url as string, content), handleTag();
         }}
       >
         <Icon as={SlPencil} boxSize={6} />
