@@ -117,7 +117,6 @@ export default function AddArticle() {
 
   useEffect(() => {
     if (file) {
-      console.log('tes');
       try {
         const handleUploadFile = async () => {
           const fileName = `article-${file.name.replace(' ', '')}`;

@@ -88,7 +88,6 @@ export default function EditArticle() {
     try {
       let imagePath = articleData?.feature_image as string;
       if (data.featureImage && data.featureImage[0]) {
-        console.log('hii');
         const fileName = `article-feature-img-${data.featureImage[0].name.replace(
           ' ',
           ''
@@ -131,7 +130,6 @@ export default function EditArticle() {
 
   useEffect(() => {
     if (file) {
-      console.log('tes');
       try {
         const handleUploadFile = async () => {
           const fileName = `article-${file.name.replace(' ', '')}`;
