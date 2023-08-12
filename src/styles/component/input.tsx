@@ -8,6 +8,7 @@ const variantDark: SystemStyleFunction = () => {
       border: '2px solid',
       borderColor: 'gray.400',
       bg: 'gray.600',
+      color: 'white',
       _hover: {
         borderColor: 'gray.500'
       },
@@ -50,10 +51,10 @@ const variantSolidLight: SystemStyleFunction = () => {
       border: '1px solid black',
       _invalid: {
         borderColor: 'oranye'
-      },
+      }
     }
-  }
-}
+  };
+};
 
 const variantUnstyled: SystemStyleFunction = () => {
   return {

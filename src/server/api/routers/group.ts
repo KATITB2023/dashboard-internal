@@ -12,6 +12,9 @@ export const groupRouter = createTRPCRouter({
       select: {
         id: true,
         group: true
+      },
+      orderBy: {
+        group: 'asc'
       }
     });
     return groups;
@@ -81,7 +84,7 @@ export const groupRouter = createTRPCRouter({
     });
 
     if (!groupRelation) {
-      return {};
+      return [];
     }
 
     const group = await ctx.prisma.groupRelation.findMany({

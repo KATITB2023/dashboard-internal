@@ -61,10 +61,7 @@ const LoginForm = ({
   };
 
   const handleRedirect = () => {
-    const role = session?.user.role;
-    role === UserRole.MENTOR
-      ? void router.push('/attendance')
-      : void router.push('/live');
+    void router.push('/welcome');
   };
 
   const handleError = (message: string) => {
@@ -98,7 +95,7 @@ const LoginForm = ({
     reset();
   };
 
-  // if (session) handleRedirect();
+  if (session) handleRedirect();
 
   return (
     <Flex
@@ -118,7 +115,11 @@ const LoginForm = ({
         LOGIN
       </Heading>
       <form onSubmit={(e) => void handleSubmit(login)(e)}>
-        <input name='csrfToken' type='hidden' defaultValue={csrfToken} />
+        <input
+          name='csrfToken'
+          type='hidden'
+          defaultValue={csrfToken ?? undefined}
+        />
         <VStack spacing={4}>
           <FormControl isInvalid={!!errors.nim}>
             <Input

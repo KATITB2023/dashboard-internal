@@ -7,7 +7,9 @@ export const feedsRouter = createTRPCRouter({
   adminGetFeeds: adminProcedure.query(async ({ ctx }) => {
     // Get list semua feeds
     try {
-      const feeds = await ctx.prisma.feed.findMany();
+      const feeds = await ctx.prisma.feed.findMany({
+        orderBy: {}
+      });
 
       return feeds;
     } catch (err) {
