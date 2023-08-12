@@ -139,8 +139,6 @@ export const authOptions: NextAuthOptions = {
             message: 'User not found'
           });
         }
-        console.log('user:', user);
-        console.log('user:', user);
 
         const isValid = await compare(password, user.passwordHash);
         if (!isValid) {
