@@ -188,7 +188,7 @@ export default function AddAssignment() {
           </FormControl>
         </Flex>
         <Flex width={'full'} columnGap={'2rem'}>
-          <FormControl>
+          <FormControl isInvalid={!!errors.startTime}>
             <FormLabel>Mulai</FormLabel>
             <Controller
               control={control}
@@ -227,7 +227,7 @@ export default function AddAssignment() {
               <FormErrorMessage>{errors.startTime.message}</FormErrorMessage>
             )}
           </FormControl>
-          <FormControl>
+          <FormControl isInvalid={!!errors.endTime}>
             <FormLabel>Selesai</FormLabel>
             <Controller
               control={control}
@@ -267,8 +267,8 @@ export default function AddAssignment() {
             )}
           </FormControl>
         </Flex>
-        <FormControl>
-          <FormLabel>Deskripsi Tugas</FormLabel>
+        <FormControl isInvalid={!!errors.description}>
+          <FormLabel>Deskripsi Tugas (Opsional)</FormLabel>
           <Textarea
             rows={6}
             color={'white'}
@@ -279,8 +279,8 @@ export default function AddAssignment() {
             <FormErrorMessage>{errors.description.message}</FormErrorMessage>
           )}
         </FormControl>
-        <FormControl>
-          <FormLabel>File Terkait</FormLabel>
+        <FormControl isInvalid={!!errors.filePath}>
+          <FormLabel>File Terkait (Opsional)</FormLabel>
           <Input type='file' variant='unstyled' {...register('filePath')} />
           {errors.filePath && (
             <FormErrorMessage>{errors.filePath.message}</FormErrorMessage>

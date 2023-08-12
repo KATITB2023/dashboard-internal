@@ -39,6 +39,23 @@ const variantLight: SystemStyleFunction = () => {
   };
 };
 
+const variantSolidLight: SystemStyleFunction = () => {
+  return {
+    field: {
+      px: '0.5rem',
+      py: '0.25rem',
+      width: '100%',
+      bgColor: 'white',
+      focusBorderColor: 'none',
+      borderRadius: '8px',
+      border: '1px solid black',
+      _invalid: {
+        borderColor: 'oranye'
+      }
+    }
+  };
+};
+
 const variantUnstyled: SystemStyleFunction = () => {
   return {
     field: {
@@ -53,6 +70,7 @@ export const Input: ComponentStyleConfig = {
   variants: {
     filledDark: variantDark,
     filledLight: variantLight,
+    solidLight: variantSolidLight,
     unstyled: variantUnstyled
   },
   defaultProps: {
