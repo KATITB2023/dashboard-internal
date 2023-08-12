@@ -265,7 +265,7 @@ export default function EditAssignmentModal({ props, emit }: Props) {
                   </FormControl>
                 </Flex>
                 <Flex width={'full'} columnGap={'2rem'}>
-                  <FormControl>
+                  <FormControl isInvalid={!!errors.startTime}>
                     <FormLabel>Mulai</FormLabel>
                     <Controller
                       control={control}
@@ -312,7 +312,7 @@ export default function EditAssignmentModal({ props, emit }: Props) {
                       </FormErrorMessage>
                     )}
                   </FormControl>
-                  <FormControl>
+                  <FormControl isInvalid={!!errors.endTime}>
                     <FormLabel>Selesai</FormLabel>
                     <Controller
                       control={control}
@@ -360,8 +360,8 @@ export default function EditAssignmentModal({ props, emit }: Props) {
                     )}
                   </FormControl>
                 </Flex>
-                <FormControl>
-                  <FormLabel>Deskripsi Tugas</FormLabel>
+                <FormControl isInvalid={!!errors.description}>
+                  <FormLabel>Deskripsi Tugas (Opsional)</FormLabel>
                   <Textarea
                     rows={6}
                     color={'white'}
@@ -374,8 +374,8 @@ export default function EditAssignmentModal({ props, emit }: Props) {
                     </FormErrorMessage>
                   )}
                 </FormControl>
-                <FormControl>
-                  <FormLabel>File Terkait</FormLabel>
+                <FormControl isInvalid={!!errors.filePath}>
+                  <FormLabel>File Terkait (Opsional)</FormLabel>
                   <Input
                     type='file'
                     variant='unstyled'

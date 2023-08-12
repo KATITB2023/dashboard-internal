@@ -2,6 +2,7 @@ import ArticleCMS from '../pages/article-cms';
 import GroupInformation from '~/pages/group-information';
 import RekapAbsensi from '~/pages/rekap-absensi';
 import RekapPenilaian from '~/pages/rekap-penilaian';
+import Feeds from '~/pages/feeds';
 
 import Absensi from '../pages/absensi';
 import GroupManagement from '~/pages/group-management';
@@ -15,6 +16,7 @@ import { FaFileInvoice } from 'react-icons/fa';
 import { LuClipboardList } from 'react-icons/lu';
 import { RiMailSettingsFill } from 'react-icons/ri';
 import { BiSolidCalendarStar } from 'react-icons/bi';
+import { BsGrid3X3GapFill } from 'react-icons/bs';
 
 export const adminRoutes: SidebarRoute[] = [
   {
@@ -40,6 +42,12 @@ export const adminRoutes: SidebarRoute[] = [
     path: '/article-cms',
     icon: RiMailSettingsFill,
     component: <ArticleCMS />
+  },
+  {
+    name: 'Feeds',
+    path: '/feeds',
+    icon: BsGrid3X3GapFill,
+    component: <Feeds />
   }
 ];
 
