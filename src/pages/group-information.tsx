@@ -234,20 +234,21 @@ export default function GroupInformation() {
                     ?.filter((groupData) => groupData.user.role === 'STUDENT')
                     .map((groupData, id) => {
                       // submisi Tugas
-                      const totalAssignment = assignment?.length; // Banyak total assignment
+                      const totalAssignment = assignment?.length as number; // Banyak total assignment
                       const allAssignmentTitles: string[] = assignment?.map(
                         (assignment) => assignment.title
-                      ); // Mengambil array judul assignment
+                      ) as string[]; // Mengambil array judul assignment
                       const studentAssignmentTitles: string[] =
                         groupData.user.submission.map(
                           (submission) => submission.assignment.title
                         ); // Mengambil array judul assignment yang sudah dikerjakan
                       const completedAssignment =
                         groupData.user.submission.length;
-                      const assignmentPercentage = (
-                        (completedAssignment / totalAssignment) *
-                        100
-                      ).toFixed(2);
+                      const assignmentPercentage = parseFloat(
+                        ((completedAssignment / totalAssignment) * 100).toFixed(
+                          2
+                        )
+                      );
 
                       // presensi
                       const attendanceArray = groupData.user.attendance;
@@ -255,10 +256,9 @@ export default function GroupInformation() {
                       const attendedCount = attendanceArray.filter(
                         (item) => item.status === 'HADIR'
                       ).length;
-                      const attendancePercentage = (
-                        (attendedCount / totalAttendance) *
-                        100
-                      ).toFixed(2);
+                      const attendancePercentage = parseFloat(
+                        ((attendedCount / totalAttendance) * 100).toFixed(2)
+                      );
 
                       // Tooltip content
                       const submissionTooltip = () => {
