@@ -34,6 +34,11 @@ export default function GroupManagement() {
   const mentorGroupQuery = api.group.mentorGetGroupData.useQuery();
   const mentorGroup = mentorGroupQuery.data;
 
+  // Mengambil assignment
+  const assignmentQuery =
+    api.assignment.mentorGetAssignmentTitleList.useQuery();
+  const assignment = assignmentQuery.data;
+
   // Warna teks
   const getTextColor = (percentage: number): string => {
     if (percentage >= 100) {
@@ -181,14 +186,19 @@ export default function GroupManagement() {
                       (mentorGroup) => mentorGroup.user.role === 'STUDENT'
                     )
                     .map((mentorGroup, id) => {
-                      // submisi tugas
-                      const submissionArray = mentorGroup.user.submission;
-                      const totalSubmission = submissionArray.length;
-                      const completedCount = submissionArray.filter(
-                        (item) => item.filePath != null
-                      ).length;
-                      const completedPercentage = (
-                        (completedCount / totalSubmission) *
+                      // submisi Tugas
+                      const totalAssignment = assignment?.length; // Banyak total assignment
+                      const allAssignmentTitles: string[] = assignment?.map(
+                        (assignment) => assignment.title
+                      ); // Mengambil array judul assignment
+                      const studentAssignmentTitles: string[] =
+                        mentorGroup.user.submission.map(
+                          (submission) => submission.assignment.title
+                        ); // Mengambil array judul assignment yang sudah dikerjakan
+                      const completedAssignment =
+                        mentorGroup.user.submission.length;
+                      const assignmentPercentage = (
+                        (completedAssignment / totalAssignment) *
                         100
                       ).toFixed(2);
 
@@ -205,10 +215,13 @@ export default function GroupManagement() {
 
                       // Tooltip content
                       const submissionTooltip = () => {
-                        return mentorGroup.user.submission.map(
-                          (task, index) => (
+                        return allAssignmentTitles.map((title, index) => {
+                          const isCompleted =
+                            studentAssignmentTitles.includes(title);
+
+                          return (
                             <Flex key={index} alignItems='center'>
-                              {task.filePath != null ? (
+                              {isCompleted ? (
                                 <BsCheckCircle size={24} color='#4909B3' />
                               ) : (
                                 <BsCheckCircle size={24} color='#9B9B9B' />
@@ -216,17 +229,15 @@ export default function GroupManagement() {
                               <Text
                                 textAlign='center'
                                 textDecoration={
-                                  task.filePath != null
-                                    ? 'line-through'
-                                    : undefined
+                                  isCompleted ? 'line-through' : undefined
                                 }
                                 marginLeft='2px'
                               >
-                                {`Task ${index + 1}`}
+                                {allAssignmentTitles[index]}
                               </Text>
                             </Flex>
-                          )
-                        );
+                          );
+                        });
                       };
 
                       const attendanceTooltip = () => {
@@ -278,8 +289,8 @@ export default function GroupManagement() {
                               justifyContent='space-evenly'
                               position='relative'
                             >
-                              <Text color={getTextColor(completedPercentage)}>
-                                {`${completedCount} / ${totalSubmission}`}
+                              <Text color={getTextColor(assignmentPercentage)}>
+                                {`${completedAssignment} / ${totalAssignment}`}
                               </Text>
                               <FaEye
                                 size={24}
