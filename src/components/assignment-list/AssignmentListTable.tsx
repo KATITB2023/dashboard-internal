@@ -6,7 +6,7 @@ import {
   Flex,
   Icon,
   Tbody,
-  Link,
+  Button,
   Input,
   Spinner,
   useToast
@@ -75,6 +75,23 @@ const AssignmentListTable = ({
       setActiveScoreBar(null);
     }
   });
+
+  const downloadFile = (url: string) => {
+    void fetch(url)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const blobURL = window.URL.createObjectURL(new Blob([blob]));
+        const fileName = url.split('/').pop();
+        const aTag = document.createElement('a');
+        aTag.href = blobURL;
+        if (fileName) {
+          aTag.setAttribute('download', fileName);
+          document.body.appendChild(aTag);
+          aTag.click();
+          aTag.remove();
+        }
+      });
+  };
 
   return (
     // table wrapper
@@ -349,10 +366,15 @@ const AssignmentListTable = ({
                         />
                       </Flex>
                     </Td>
-                    <Td width='9%' textAlign='center'>
-                      <Link download href={item.filePath as string}>
-                        <Icon as={FiDownload} />
-                      </Link>
+                    <Td
+                      width='9%'
+                      textAlign='center'
+                      _hover={{ cursor: 'pointer' }}
+                    >
+                      <Icon
+                        as={FiDownload}
+                        onClick={() => downloadFile(item.filePath as string)}
+                      />
                     </Td>
                   </Tr>
                 );
