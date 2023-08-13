@@ -21,7 +21,9 @@ import { TRPCClientError } from '@trpc/client';
 interface FormValues {
   title: string;
   type: AssignmentType;
+  startDate: string;
   startTime: string;
+  endDate: string;
   endTime: string;
   description: string;
   filePath: FileList;
@@ -35,14 +37,15 @@ export default function AddAssignment() {
     register,
     formState: { errors },
     setValue,
-    getValues,
     reset
   } = useForm<FormValues>({
     mode: 'onSubmit',
     defaultValues: {
       title: '',
       type: 'MANDATORY',
+      startDate: undefined,
       startTime: undefined,
+      endDate: undefined,
       endTime: undefined,
       description: undefined,
       filePath: undefined
@@ -63,17 +66,24 @@ export default function AddAssignment() {
       if (data.filePath[0]) {
         const fileName = `assignment-${data.title}-${data.type}`;
         const extension = data.filePath[0]?.name.split('.').pop() as string;
-        additionalFilePath = `https://cdn.oskmitb.com/assignment-description/${fileName}.${extension}`;
-        await uploadFile(sanitizeURL(additionalFilePath), data.filePath[0]);
+        additionalFilePath = sanitizeURL(
+          `https://cdn.oskmitb.com/assignment-description/${fileName}.${extension}`
+        );
+        await uploadFile(additionalFilePath, data.filePath[0]);
       }
 
       const payload: RouterInputs['assignment']['adminAddNewAssignment'] = {
         title: data.title,
         type: data.type,
         startTime: new Date(
-          moment(data.startTime, 'YYYY-MM-DD HH:mm').toDate()
+          moment(
+            data.startDate + ' ' + data.startTime,
+            'YYYY-MM-DD HH:mm'
+          ).toDate()
         ),
-        endTime: new Date(moment(data.endTime, 'YYYY-MM-DD HH:mm').toDate()),
+        endTime: new Date(
+          moment(data.endDate + ' ' + data.endTime, 'YYYY-MM-DD HH:mm').toDate()
+        ),
         description: data.description,
         filePath: additionalFilePath
       };
@@ -204,20 +214,15 @@ export default function AddAssignment() {
                   <Input
                     type='date'
                     color={'white'}
-                    onChange={(e) => setValue('startTime', e.target.value)}
                     size={{ base: 'sm', md: 'md' }}
+                    {...register('startDate')}
                   ></Input>
                   <Input
                     type='time'
                     color={'white'}
-                    onChange={(e) =>
-                      setValue(
-                        'startTime',
-                        getValues('startTime') + ' ' + e.target.value
-                      )
-                    }
                     size={{ base: 'sm', md: 'md' }}
                     width={'50%'}
+                    {...register('startTime')}
                   ></Input>
                 </Flex>
               )}
@@ -243,20 +248,15 @@ export default function AddAssignment() {
                   <Input
                     type='date'
                     color={'white'}
-                    onChange={(e) => setValue('endTime', e.target.value)}
                     size={{ base: 'sm', md: 'md' }}
+                    {...register('endDate')}
                   ></Input>
                   <Input
                     type='time'
                     color={'white'}
-                    onChange={(e) =>
-                      setValue(
-                        'endTime',
-                        getValues('endTime') + ' ' + e.target.value
-                      )
-                    }
                     size={{ base: 'sm', md: 'md' }}
                     width={'50%'}
+                    {...register('endTime')}
                   ></Input>
                 </Flex>
               )}
