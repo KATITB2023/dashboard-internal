@@ -22,7 +22,7 @@ export const AlertModal = ({ content, title, isOpen, onYes, onNo }: Props) => {
 
   return (
     <AlertDialog isOpen={isOpen} onClose={onNo} leastDestructiveRef={cancelRef}>
-      <AlertDialogOverlay>
+      <AlertDialogOverlay bg='blackAlpha.100' backdropFilter='blur(4px)'>
         <AlertDialogContent>
           <AlertDialogHeader fontSize='lg' fontWeight='bold'>
             {title}
