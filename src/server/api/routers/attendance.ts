@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { Status } from '@prisma/client';
+import { AttendanceDay, Status } from '@prisma/client';
 import { z } from 'zod';
 import {
   createTRPCRouter,
@@ -390,9 +390,12 @@ export const attendanceRouter = createTRPCRouter({
     }),
 
   getAttendanceDayList: protectedProcedure.query(async ({ ctx }) => {
+    if ((await ctx.prisma.attendanceDay.count()) === 0) {
+      return [] as AttendanceDay[];
+    }
     return await ctx.prisma.attendanceDay.findMany({
       orderBy: {
-        name: 'asc'
+        time: 'desc'
       }
     });
   }),

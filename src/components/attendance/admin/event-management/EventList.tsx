@@ -27,10 +27,9 @@ import { TRPCClientError } from '@trpc/client';
 
 interface EventListProps {
   day: AttendanceDay;
-  dayList: AttendanceDay[];
 }
 
-export const EventList = ({ day, dayList }: EventListProps) => {
+export const EventList = ({ day }: EventListProps) => {
   const toast = useToast();
   const eventListQuery = api.attendance.adminGetAttendanceEventList.useQuery({
     dayId: day.id
