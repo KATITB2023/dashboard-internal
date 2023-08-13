@@ -155,10 +155,10 @@ export const cmsRouter = createTRPCRouter({
     }),
 
   adminDeleteArticle: adminProcedure
-    .input(z.object({ slug: z.string() }))
+    .input(z.object({ articleId: z.string() }))
     .mutation(async ({ input }) => {
       try {
-        await adminApi.posts.delete({ slug: input.slug });
+        await adminApi.posts.delete({ id: input.articleId });
 
         return {
           message: 'Article deleted successfully'

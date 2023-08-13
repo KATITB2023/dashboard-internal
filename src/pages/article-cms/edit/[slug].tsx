@@ -22,6 +22,7 @@ import { uploadFile, sanitizeURL } from '~/utils/file';
 import ReactHtmlParser from 'react-html-parser';
 import { useRouter } from 'next/router';
 import { withSession } from '~/server/auth/withSession';
+import { TRPCClientError } from '@trpc/client';
 
 export const getServerSideProps = withSession({ force: true });
 
@@ -34,16 +35,16 @@ interface FormValue {
 export default function EditArticle() {
   const toast = useToast();
   const router = useRouter();
-  const { id } = router.query;
-  const articleId: string = id as string;
+  const { slug } = router.query;
+  const articleSlug: string = slug as string;
   const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>('');
   const editArticleMutation = api.cms.adminEditArticle.useMutation();
-  const getArticlesByIdMutation = api.cms.adminGetArticlesById.useQuery({
-    id: articleId
+  const getArticlesBySlugMutation = api.cms.adminGetArticlesBySlug.useQuery({
+    slug: articleSlug
   });
-  const articleData = getArticlesByIdMutation.data;
+  const articleData = getArticlesBySlugMutation.data;
 
   const { register, formState, getValues, handleSubmit, reset, setValue } =
     useForm<FormValue>({
@@ -97,7 +98,7 @@ export default function EditArticle() {
       }
 
       const payload: RouterInputs['cms']['adminEditArticle'] = {
-        articleId: id as string,
+        slug: articleSlug,
         title: data.title,
         body: data.body,
         featureImage: imagePath
@@ -114,9 +115,11 @@ export default function EditArticle() {
         position: 'top'
       });
 
+      void router.push('/article-cms');
       reset();
     } catch (error: unknown) {
-      if (!(error instanceof TRPCError)) throw error;
+      if (!(error instanceof TRPCError || error instanceof TRPCClientError))
+        throw error;
       toast({
         title: 'Failed',
         status: 'error',
@@ -204,10 +207,6 @@ export default function EditArticle() {
                   variant='unstyled'
                   display={isPreviewMode ? 'none' : undefined}
                   {...register('featureImage', {
-                    required: {
-                      value: true,
-                      message: 'Feature Image tidak boleh kosong'
-                    },
                     validate: (value) => {
                       const file: File | undefined = value[0];
                       if (
@@ -237,6 +236,8 @@ export default function EditArticle() {
             <>
               <FormControl isInvalid={!!formState.errors.body}>
                 <Textarea
+                  px='2'
+                  variant='unstyled'
                   placeholder='Lorem ipsum dolor sit amet, consectetur adipiscing elit...'
                   marginTop='4'
                   height='300px'

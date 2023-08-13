@@ -20,6 +20,7 @@ import { TRPCError } from '@trpc/server';
 import ReactHtmlParser from 'react-html-parser';
 import { useRouter } from 'next/router';
 import { withSession } from '~/server/auth/withSession';
+import { TRPCClientError } from '@trpc/client';
 
 export const getServerSideProps = withSession({ force: true });
 
@@ -80,7 +81,8 @@ export default function ArticleCMS() {
       });
       setTotalRecords(totalRecords - 1);
     } catch (error: unknown) {
-      if (!(error instanceof TRPCError)) throw error;
+      if (!(error instanceof TRPCError || error instanceof TRPCClientError))
+        throw error;
 
       toast({
         title: 'Failed',
@@ -93,8 +95,8 @@ export default function ArticleCMS() {
     }
   };
 
-  const handleEditArticle = (id: string) => {
-    void router.push(`/article-cms/edit/${id}`);
+  const handleEditArticle = (slug: string) => {
+    void router.push(`/article-cms/edit/${slug}`);
   };
 
   return (
@@ -177,7 +179,7 @@ export default function ArticleCMS() {
                 <Text
                   mx='2'
                   cursor='pointer'
-                  onClick={() => void handleEditArticle(article.id)}
+                  onClick={() => void handleEditArticle(article.slug)}
                 >
                   Edit
                 </Text>
