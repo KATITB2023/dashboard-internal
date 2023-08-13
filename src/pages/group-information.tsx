@@ -233,8 +233,10 @@ export default function GroupInformation() {
                       const completedCount = submissionArray.filter(
                         (item) => item.filePath != null
                       ).length;
-                      const completedPercentage =
-                        (completedCount / totalSubmission) * 100;
+                      const completedPercentage = (
+                        (completedCount / totalSubmission) *
+                        100
+                      ).toFixed(2);
 
                       // presensi
                       const attendanceArray = groupData.user.attendance;
@@ -242,8 +244,10 @@ export default function GroupInformation() {
                       const attendedCount = attendanceArray.filter(
                         (item) => item.status === 'HADIR'
                       ).length;
-                      const attendancePercentage =
-                        (attendedCount / totalAttendance) * 100;
+                      const attendancePercentage = (
+                        (attendedCount / totalAttendance) *
+                        100
+                      ).toFixed(2);
 
                       // Tooltip content
                       const submissionTooltip = () => {

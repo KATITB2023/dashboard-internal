@@ -187,8 +187,10 @@ export default function GroupManagement() {
                       const completedCount = submissionArray.filter(
                         (item) => item.filePath != null
                       ).length;
-                      const completedPercentage =
-                        (completedCount / totalSubmission) * 100;
+                      const completedPercentage = (
+                        (completedCount / totalSubmission) *
+                        100
+                      ).toFixed(2);
 
                       // presensi
                       const attendanceArray = mentorGroup.user.attendance;
@@ -196,8 +198,10 @@ export default function GroupManagement() {
                       const hadirCount = attendanceArray.filter(
                         (item) => item.status === 'HADIR'
                       ).length;
-                      const attendancePercentage =
-                        (hadirCount / totalAttendance) * 100;
+                      const attendancePercentage = (
+                        (hadirCount / totalAttendance) *
+                        100
+                      ).toFixed(2);
 
                       // Tooltip content
                       const submissionTooltip = () => {
