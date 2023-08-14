@@ -69,7 +69,7 @@ export const cmsRouter = createTRPCRouter({
         featureImage: z.string()
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
       try {
         await adminApi.posts.add(
           {
@@ -80,6 +80,21 @@ export const cmsRouter = createTRPCRouter({
           },
           { source: 'html' }
         );
+
+        const post = await contentApi.posts.read(
+          {
+            slug: input.title.toLowerCase().split(' ').join('-')
+          },
+          {
+            fields: ['id']
+          }
+        );
+
+        await ctx.prisma.article.create({
+          data: {
+            id: post.id
+          }
+        });
 
         return {
           message: 'Article added successfully'
