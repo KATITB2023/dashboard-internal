@@ -70,7 +70,7 @@ export default function GroupManagement() {
   return (
     <MentorRoute session={session}>
       <Layout type='mentor' title='Group Management' fullBg={false}>
-        <Box height='100%' p={1}>
+        <Box height='100%' p={1} overflowY={'auto'}>
           {/* Logo and kelompok, flex display  */}
           <Flex
             justifyContent='space-between'

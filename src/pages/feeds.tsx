@@ -117,7 +117,7 @@ export default function Feeds() {
 
   return (
     <AdminRoute session={session}>
-      <Layout type='admin' title='Feeds' fullBg={true}>
+      <Layout type='admin' title='Feeds' fullBg={false}>
         <Box width='100%'>
           <Header title='Feeds' />
           <Box

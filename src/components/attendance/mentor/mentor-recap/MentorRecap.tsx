@@ -16,6 +16,7 @@ import {
   ModalOverlay,
   Select,
   Table,
+  TableContainer,
   Tbody,
   Td,
   Text,
@@ -153,7 +154,11 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
 
   return (
     <Flex flexDir='column'>
-      <Flex justifyContent='space-between'>
+      <Flex
+        justifyContent='space-between'
+        direction={{ base: 'column', lg: 'row' }}
+        rowGap={'1rem'}
+      >
         <Flex alignItems='center' mt='1em'>
           <Menu>
             <MenuButton
@@ -247,27 +252,29 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
           borderLeft='1px solid'
           borderColor='gray.400'
         >
-          <Table w='100%' variant='black'>
-            <Thead>
-              <Td w='5%'>No.</Td>
-              <Td w='10%'>NIM</Td>
-              <Td w='15%'>Nama</Td>
-              <Td w='10%'>Tanggal</Td>
-              <Td w='10%'>Jam</Td>
-              <Td w='15%'>Status</Td>
-              <Td w='20%'>Keterangan</Td>
-            </Thead>
-            <Tbody>
-              {recordList.map((record, index) => (
-                <MentorRecapRow
-                  key={index}
-                  record={record}
-                  num={rowPerPage * (page - 1) + index + 1}
-                  editRecord={editRecord}
-                />
-              ))}
-            </Tbody>
-          </Table>
+          <TableContainer>
+            <Table w='100%' variant='black'>
+              <Thead>
+                <Td w='5%'>No.</Td>
+                <Td w='10%'>NIM</Td>
+                <Td w='15%'>Nama</Td>
+                <Td w='10%'>Tanggal</Td>
+                <Td w='10%'>Jam</Td>
+                <Td w='15%'>Status</Td>
+                <Td w='20%'>Keterangan</Td>
+              </Thead>
+              <Tbody>
+                {recordList.map((record, index) => (
+                  <MentorRecapRow
+                    key={index}
+                    record={record}
+                    num={rowPerPage * (page - 1) + index + 1}
+                    editRecord={editRecord}
+                  />
+                ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
         </Box>
       )}
 

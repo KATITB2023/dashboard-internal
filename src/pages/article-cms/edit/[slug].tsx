@@ -153,7 +153,7 @@ export default function EditArticle() {
   });
 
   return (
-    <Layout type='admin' title='Article Management' fullBg={true}>
+    <Layout type='admin' title='Article Management' fullBg={false}>
       <Header title='Edit Article' />
       <Flex marginY='10px'>
         <Spacer />
