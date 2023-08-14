@@ -1,11 +1,12 @@
 import { TRPCError } from '@trpc/server';
-import { AttendanceDay, Status } from '@prisma/client';
+import { type AttendanceDay, Status } from '@prisma/client';
 import { z } from 'zod';
 import {
   createTRPCRouter,
   mentorProcedure,
   adminProcedure,
-  protectedProcedure
+  protectedProcedure,
+  adminAndMentorProcedure
 } from '~/server/api/trpc';
 
 export const attendanceRouter = createTRPCRouter({
@@ -539,7 +540,7 @@ export const attendanceRouter = createTRPCRouter({
     });
   }),
 
-  editAttendanceRecord: mentorProcedure
+  editAttendanceRecord: adminAndMentorProcedure
     .input(
       z.object({
         attendanceId: z.string().uuid(),
