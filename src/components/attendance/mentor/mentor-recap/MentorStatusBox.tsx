@@ -55,6 +55,7 @@ export const MentorStatusBox = ({ record, editRecord }: StatusBoxProps) => {
         bg={bg}
         h='2.5em'
         w='12em'
+        fontSize='xs'
       >
         {text}
       </MenuButton>
@@ -69,12 +70,20 @@ export const MentorStatusBox = ({ record, editRecord }: StatusBoxProps) => {
         <Button
           border='1px solid gray'
           borderRadius='2em'
-          color='green.600'
+          color='green.100'
           h='2em'
           w='100%'
-          bg='green.100'
+          bg='green.500'
           onClick={() => editRecordStatus(Status.HADIR)}
           mt='1em'
+          _hover={{
+            bg: 'green.600',
+            shadow: '0 0 24px rgba(255,200,4,0.6)',
+            _disabled: {
+              bg: 'gray.400',
+              shadow: 'none'
+            }
+          }}
         >
           Hadir
         </Button>
@@ -140,7 +149,7 @@ export const MentorStatusBox = ({ record, editRecord }: StatusBoxProps) => {
   const generateBox: () => JSX.Element = () => {
     switch (record.status) {
       case Status.HADIR:
-        return statusBoxMenu('green.600', 'green.100', 'Hadir');
+        return statusBoxMenu('green.100', 'green.500', 'Hadir');
       case Status.TIDAK_HADIR:
         return statusBoxMenu('red.600', 'red.100', 'Tidak Hadir');
       case Status.IZIN_PENDING:
