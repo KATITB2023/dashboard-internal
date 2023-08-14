@@ -9,11 +9,11 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  useDisclosure,
+  type useDisclosure,
   useToast
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { RouterOutputs } from '~/utils/api';
+import { type RouterOutputs } from '~/utils/api';
 
 type getAttendanceRecordOutput =
   RouterOutputs['attendance']['mentorGetAttendance']['data'][0];
@@ -30,7 +30,6 @@ export const MentorEditDescModal = ({
   disclosure
 }: EditDescModalProps) => {
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [desc, setDesc] = useState<string>(record.reason || '');
   const saveHandler = () => {
@@ -42,9 +41,8 @@ export const MentorEditDescModal = ({
       });
       return;
     }
-
     editDesc(desc);
-    onClose();
+    disclosure.onClose();
   };
 
   const descChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,7 +51,7 @@ export const MentorEditDescModal = ({
 
   return (
     <>
-      <Modal isOpen={disclosure.isOpen} onClose={disclosure.onClose}>
+      <Modal isOpen={disclosure.isOpen} onClose={disclosure.onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Masukkan Keterangan</ModalHeader>
@@ -72,7 +70,11 @@ export const MentorEditDescModal = ({
             >
               Simpan
             </Button>
-            <Button variant='mono-outline' onClick={onClose} ml='1em'>
+            <Button
+              variant='mono-outline'
+              onClick={disclosure.onClose}
+              ml='1em'
+            >
               Batal
             </Button>
           </ModalFooter>

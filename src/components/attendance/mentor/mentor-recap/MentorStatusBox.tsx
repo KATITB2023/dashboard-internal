@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { Status } from '@prisma/client';
 import { useState } from 'react';
-import { RouterOutputs } from '~/utils/api';
+import { type RouterOutputs } from '~/utils/api';
 import { MentorEditDescModal } from './MentorEditDescModal';
 
 type getAttendanceRecordOutput =
@@ -36,7 +36,13 @@ export const MentorStatusBox = ({ record, editRecord }: StatusBoxProps) => {
   };
 
   const editRecordStatus = (status: Status) => {
-    modalDisclosure.onOpen();
+    if (status !== Status.HADIR) {
+      modalDisclosure.onOpen();
+    } else {
+      editRecord(record, { newStatus: status, newDesc: '' }, () =>
+        modalDisclosure.onClose()
+      );
+    }
     setStatus(status);
   };
 

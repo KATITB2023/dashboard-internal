@@ -25,7 +25,7 @@ import {
   useToast
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { RouterInputs, RouterOutputs, api } from '~/utils/api';
+import { RouterInputs, type RouterOutputs, api } from '~/utils/api';
 import { MentorRecapRow } from './MentorRecapRow';
 import { Status } from '@prisma/client';
 import { TRPCClientError } from '@trpc/client';
@@ -138,6 +138,7 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
           status: 'success',
           duration: 3000
         });
+        await recordListQuery.refetch();
         await recordListQuery.refetch();
       })
       .catch((err) => {

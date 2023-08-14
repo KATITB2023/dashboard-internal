@@ -84,6 +84,7 @@ export const EventList = ({ day }: EventListProps) => {
           position: 'top'
         });
         await eventListQuery.refetch();
+        await eventListQuery.refetch();
       })
       .catch((error) => {
         if (!(error instanceof TRPCClientError)) throw error;
@@ -149,6 +150,7 @@ export const EventList = ({ day }: EventListProps) => {
           isClosable: true,
           position: 'top'
         });
+        await eventListQuery.refetch();
         await eventListQuery.refetch();
       })
       .catch(async (error) => {
