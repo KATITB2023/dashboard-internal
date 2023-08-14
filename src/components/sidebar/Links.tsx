@@ -6,7 +6,8 @@ import {
   Link,
   VStack,
   Icon,
-  Center
+  Center,
+  useBreakpointValue
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { IconType } from 'react-icons/lib';
@@ -32,6 +33,8 @@ export function SidebarLinks(props: SidebarProps) {
     return router.pathname.includes(routeName);
   };
 
+  const isLg = useBreakpointValue({ base: false, lg: true });
+
   const createLinks = (routes: SidebarRoute[]) => {
     return (
       <VStack spacing={1} alignItems={'start'}>
@@ -48,6 +51,7 @@ export function SidebarLinks(props: SidebarProps) {
                   activeRoute(route.path.toLowerCase()) ? white : 'transparent'
                 }
                 borderLeftRadius={25}
+                borderRightRadius={isLg ? 0 : 25}
                 pl={2}
                 color={activeRoute(route.path.toLowerCase()) ? purple : white}
                 _hover={{ bg: white, color: purple }}
