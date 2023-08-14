@@ -404,7 +404,7 @@ export const attendanceRouter = createTRPCRouter({
   mentorGetAttendance: mentorProcedure
     .input(
       z.object({
-        eventId: z.string().uuid().optional(),
+        dayId: z.string().uuid().optional(),
         filterBy: z.string().optional(),
         searchQuery: z.string().optional(),
         currentPage: z.number(),
@@ -473,7 +473,9 @@ export const attendanceRouter = createTRPCRouter({
               }
             }
           },
-          eventId: input.eventId,
+          event: {
+            dayId: input.dayId
+          },
           date: input.filterBy === 'date' ? input.searchQuery : undefined
         },
         skip: (input.currentPage - 1) * input.limitPerPage,
@@ -506,7 +508,9 @@ export const attendanceRouter = createTRPCRouter({
               }
             }
           },
-          eventId: input.eventId,
+          event: {
+            dayId: input.dayId
+          },
           date: input.filterBy === 'date' ? input.searchQuery : undefined
         }
       });
@@ -535,7 +539,7 @@ export const attendanceRouter = createTRPCRouter({
         event: true
       },
       orderBy: {
-        name: 'asc'
+        time: 'desc'
       }
     });
   }),

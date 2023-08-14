@@ -50,7 +50,7 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
   const [rowPerPageInput, setRowPerPageInput] = useState<number>(rowPerPage);
 
   const recordListQuery = api.attendance.mentorGetAttendance.useQuery({
-    /* dayId: dayId, */
+    dayId,
     currentPage: page,
     limitPerPage: rowPerPage,
     filterBy: filterBy,
