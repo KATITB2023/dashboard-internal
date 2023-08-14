@@ -101,7 +101,7 @@ export default function GroupInformation() {
   return (
     <AdminRoute session={session}>
       <Layout type='admin' title='Group Information' fullBg={false}>
-        <Box height='100%' p={1}>
+        <Box height='100%' p={1} overflowY={'auto'}>
           {/* Logo and dropdown, flex display  */}
           <Flex
             justifyContent='space-between'

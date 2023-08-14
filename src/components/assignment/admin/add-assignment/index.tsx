@@ -197,7 +197,11 @@ export default function AddAssignment() {
             )}
           </FormControl>
         </Flex>
-        <Flex width={'full'} columnGap={'2rem'}>
+        <Flex
+          width={'full'}
+          columnGap={'2rem'}
+          direction={{ base: 'column', lg: 'row' }}
+        >
           <FormControl isInvalid={!!errors.startTime}>
             <FormLabel>Mulai</FormLabel>
             <Controller

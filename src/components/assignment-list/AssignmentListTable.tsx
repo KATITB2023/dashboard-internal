@@ -9,7 +9,8 @@ import {
   Button,
   Input,
   Spinner,
-  useToast
+  useToast,
+  TableContainer
 } from '@chakra-ui/react';
 import {
   FiChevronDown,
@@ -119,85 +120,87 @@ const AssignmentListTable = ({
         {/* sticky table header */}
         <Box position='sticky' top='0' backgroundColor='gray.200' zIndex={1}>
           <Box borderRadius='2rem 2rem 0 0' overflow='hidden'>
-            <Table whiteSpace='normal'>
-              <Tbody backgroundColor='black' color='white'>
-                <Tr
-                  sx={{
-                    '& > td': {
-                      textAlign: 'center',
-                      paddingInline: '1rem'
-                    }
-                  }}
-                >
-                  <Td width='6.75%'>No</Td>
-                  <Td width='18%'>
-                    <Flex
-                      alignItems='center'
-                      justifyContent='center'
-                      cursor='pointer'
-                      onClick={() => {
-                        if (sortParams.params === 'title') {
+            <TableContainer>
+              <Table whiteSpace='normal'>
+                <Tbody backgroundColor='black' color='white'>
+                  <Tr
+                    sx={{
+                      '& > td': {
+                        textAlign: 'center',
+                        paddingInline: '1rem'
+                      }
+                    }}
+                  >
+                    <Td width='6.75%'>No</Td>
+                    <Td width='18%'>
+                      <Flex
+                        alignItems='center'
+                        justifyContent='center'
+                        cursor='pointer'
+                        onClick={() => {
+                          if (sortParams.params === 'title') {
+                            setSortParams({
+                              params: 'title',
+                              order: sortParams.order === 1 ? -1 : 1
+                            });
+                            return;
+                          }
                           setSortParams({
                             params: 'title',
-                            order: sortParams.order === 1 ? -1 : 1
+                            order: 1
                           });
-                          return;
-                        }
-                        setSortParams({
-                          params: 'title',
-                          order: 1
-                        });
-                      }}
-                    >
-                      Tugas{' '}
-                      <Icon
-                        as={FiChevronDown}
-                        marginLeft='.5rem'
-                        transform={
-                          sortParams.params === 'title' &&
-                          sortParams.order === -1
-                            ? 'rotate(180deg)'
-                            : 'rotate(0deg)'
-                        }
-                        transitionDuration='.2s'
-                      />
-                    </Flex>
-                  </Td>
-                  <Td width='12%'>NIM</Td>
-                  <Td width='18%'>Nama</Td>
-                  <Td>Timestamp</Td>
-                  <Td width='12%'>
-                    <Flex
-                      alignItems='center'
-                      justifyContent='center'
-                      cursor='pointer'
-                      onClick={() => {
-                        if (sortParams.params === 'status') {
+                        }}
+                      >
+                        Tugas{' '}
+                        <Icon
+                          as={FiChevronDown}
+                          marginLeft='.5rem'
+                          transform={
+                            sortParams.params === 'title' &&
+                            sortParams.order === -1
+                              ? 'rotate(180deg)'
+                              : 'rotate(0deg)'
+                          }
+                          transitionDuration='.2s'
+                        />
+                      </Flex>
+                    </Td>
+                    <Td width='12%'>NIM</Td>
+                    <Td width='18%'>Nama</Td>
+                    <Td>Timestamp</Td>
+                    <Td width='12%'>
+                      <Flex
+                        alignItems='center'
+                        justifyContent='center'
+                        cursor='pointer'
+                        onClick={() => {
+                          if (sortParams.params === 'status') {
+                            setSortParams({
+                              params: 'status',
+                              order: sortParams.order === 1 ? -1 : 1
+                            });
+                            return;
+                          }
                           setSortParams({
                             params: 'status',
-                            order: sortParams.order === 1 ? -1 : 1
+                            order: 1
                           });
-                          return;
-                        }
-                        setSortParams({
-                          params: 'status',
-                          order: 1
-                        });
-                      }}
-                    >
-                      Status{' '}
-                      <Icon
-                        as={FiChevronDown}
-                        marginLeft='.5rem'
-                        transitionDuration='.2s'
-                      />
-                    </Flex>
-                  </Td>
-                  <Td width='11%'>Nilai</Td>
-                  <Td width='9%'>Action</Td>
-                </Tr>
-              </Tbody>
-            </Table>
+                        }}
+                      >
+                        Status{' '}
+                        <Icon
+                          as={FiChevronDown}
+                          marginLeft='.5rem'
+                          transitionDuration='.2s'
+                        />
+                      </Flex>
+                    </Td>
+                    <Td width='11%'>Nilai</Td>
+                    <Td width='9%'>Action</Td>
+                  </Tr>
+                </Tbody>
+              </Table>
+            </TableContainer>
           </Box>
         </Box>
 
@@ -208,179 +211,191 @@ const AssignmentListTable = ({
           borderInline='1px'
           borderBottom='1px'
         >
-          <Table whiteSpace='normal'>
-            <Tbody>
-              {filteredData.map((item: AssignmentListProps, index: number) => {
-                const bottom =
-                  index === filteredData.length - 1 ? 'none' : '1px';
+          <TableContainer>
+            <Table whiteSpace='normal'>
+              <Tbody>
+                {filteredData.map(
+                  (item: AssignmentListProps, index: number) => {
+                    const bottom =
+                      index === filteredData.length - 1 ? 'none' : '1px';
 
-                return (
-                  <Tr
-                    key={index}
-                    sx={{
-                      '& > td': {
-                        paddingInline: '1rem',
-                        borderBottom: `${bottom}`,
-                        borderRight: `1px`,
+                    return (
+                      <Tr
+                        key={index}
+                        sx={{
+                          '& > td': {
+                            paddingInline: '1rem',
+                            borderBottom: `${bottom}`,
+                            borderRight: `1px`,
 
-                        '&:last-child': {
-                          borderRight: 'none'
-                        }
-                      }
-                    }}
-                  >
-                    <Td width='6.75%' textAlign='center'>
-                      {index + recordPerPage * (page - 1) + 1}
-                    </Td>
-                    <Td width='18%'>{item.title}</Td>
-                    <Td width='12%' textAlign='center'>
-                      {item.nim}
-                    </Td>
-                    <Td width='18%'>{item.name}</Td>
-                    <Td textAlign='center'>
-                      {item.time.toLocaleDateString('id') +
-                        ' ' +
-                        item.time.toLocaleTimeString('id')}
-                    </Td>
-                    <Td width='12%' textAlign='center'>
-                      {item.status}
-                    </Td>
-                    <Td width='11%' textAlign='center'>
-                      <Flex
-                        position='relative'
-                        justifyContent='center'
-                        alignItems='center'
-                        zIndex={activeScoreBar === index && isEditing ? 10 : 0}
-                      >
-                        {mutation.isLoading && activeScoreBar === index ? (
-                          <Spinner
-                            size='xs'
-                            thickness='1px'
-                            marginRight='.5rem'
-                          />
-                        ) : item.score ||
-                          (isEditing && activeScoreBar === index) ? (
-                          <Input
-                            readOnly={!isEditing}
-                            type='number'
-                            ref={(el) =>
-                              (scoreRef.current[index] = el as HTMLInputElement)
+                            '&:last-child': {
+                              borderRight: 'none'
                             }
-                            defaultValue={item.score?.toString()}
-                            textAlign='center'
-                            cursor={isEditing ? 'auto' : 'not-allowed'}
-                            outline='1px solid grey'
-                            marginRight='.5rem'
-                            variant='unstyled'
-                          />
-                        ) : undefined}
-                        {isEditing && activeScoreBar === index ? (
-                          <Icon
-                            as={FiCheck}
-                            cursor='pointer'
-                            onClick={() => {
-                              if (
-                                scoreRef.current[index]?.value ===
-                                item.score?.toString()
-                              ) {
-                                setIsEditing(false);
-                                return;
-                              } else if (
-                                scoreRef.current[index]?.value === ''
-                              ) {
-                                toast({
-                                  title: 'Nilai tidak boleh kosong',
-                                  status: 'warning',
-                                  duration: 2000,
-                                  isClosable: true,
-                                  position: 'top'
-                                });
-                                scoreRef.current[index]?.focus();
-                                return;
-                              } else if (
-                                Number(scoreRef.current[index]?.value) < 0 ||
-                                Number(scoreRef.current[index]?.value) > 100
-                              ) {
-                                toast({
-                                  title:
-                                    'Nilai harus berada di antara 0 dan 100',
-                                  status: 'warning',
-                                  duration: 2000,
-                                  isClosable: true,
-                                  position: 'top'
-                                });
-                                scoreRef.current[index]?.focus();
-                                return;
-                              } else {
-                                setIsEditing(false);
-                                mutation.mutate({
-                                  score: Number(scoreRef.current[index]?.value),
-                                  submissionId: item.id
-                                });
-                                item.score = Number(
-                                  scoreRef.current[index]?.value
-                                );
-                              }
-                            }}
-                          />
-                        ) : item.score ? (
-                          <Icon
-                            as={FiEdit2}
-                            cursor='pointer'
-                            onClick={() => {
-                              scoreRef.current[index]?.focus();
-                              setIsEditing(true);
-                              setActiveScoreBar(index);
-                            }}
-                          />
-                        ) : (
-                          <Icon
-                            as={FiPlus}
-                            cursor='pointer'
-                            onClick={() => {
-                              scoreRef.current[index]?.focus();
-                              setIsEditing(true);
-                              setActiveScoreBar(index);
-                            }}
-                          />
-                        )}
-                        <Box
-                          display={
-                            activeScoreBar === index && isEditing
-                              ? 'block'
-                              : 'none'
                           }
-                          zIndex='-1'
-                          position='fixed'
-                          inset='0'
-                          onClick={() => {
-                            scoreRef.current[index]?.focus();
-                            toast({
-                              title: 'Mohon selesaikan pengeditan nilai',
-                              status: 'warning',
-                              duration: 2000,
-                              isClosable: true,
-                              position: 'top'
-                            });
-                          }}
-                        />
-                      </Flex>
-                    </Td>
-                    <Td
-                      width='9%'
-                      textAlign='center'
-                      _hover={{ cursor: 'pointer' }}
-                    >
-                      <Icon
-                        as={FiDownload}
-                        onClick={() => downloadFile(item.filePath as string)}
-                      />
-                    </Td>
-                  </Tr>
-                );
-              })}
-            </Tbody>
-          </Table>
+                        }}
+                      >
+                        <Td width='6.75%' textAlign='center'>
+                          {index + recordPerPage * (page - 1) + 1}
+                        </Td>
+                        <Td width='18%'>{item.title}</Td>
+                        <Td width='12%' textAlign='center'>
+                          {item.nim}
+                        </Td>
+                        <Td width='18%'>{item.name}</Td>
+                        <Td textAlign='center'>
+                          {item.time.toLocaleDateString('id') +
+                            ' ' +
+                            item.time.toLocaleTimeString('id')}
+                        </Td>
+                        <Td width='12%' textAlign='center'>
+                          {item.status}
+                        </Td>
+                        <Td width='11%' textAlign='center'>
+                          <Flex
+                            position='relative'
+                            justifyContent='center'
+                            alignItems='center'
+                            zIndex={
+                              activeScoreBar === index && isEditing ? 10 : 0
+                            }
+                          >
+                            {mutation.isLoading && activeScoreBar === index ? (
+                              <Spinner
+                                size='xs'
+                                thickness='1px'
+                                marginRight='.5rem'
+                              />
+                            ) : item.score ||
+                              (isEditing && activeScoreBar === index) ? (
+                              <Input
+                                readOnly={!isEditing}
+                                type='number'
+                                ref={(el) =>
+                                  (scoreRef.current[index] =
+                                    el as HTMLInputElement)
+                                }
+                                defaultValue={item.score?.toString()}
+                                textAlign='center'
+                                cursor={isEditing ? 'auto' : 'not-allowed'}
+                                outline='1px solid grey'
+                                marginRight='.5rem'
+                                variant='unstyled'
+                              />
+                            ) : undefined}
+                            {isEditing && activeScoreBar === index ? (
+                              <Icon
+                                as={FiCheck}
+                                cursor='pointer'
+                                onClick={() => {
+                                  if (
+                                    scoreRef.current[index]?.value ===
+                                    item.score?.toString()
+                                  ) {
+                                    setIsEditing(false);
+                                    return;
+                                  } else if (
+                                    scoreRef.current[index]?.value === ''
+                                  ) {
+                                    toast({
+                                      title: 'Nilai tidak boleh kosong',
+                                      status: 'warning',
+                                      duration: 2000,
+                                      isClosable: true,
+                                      position: 'top'
+                                    });
+                                    scoreRef.current[index]?.focus();
+                                    return;
+                                  } else if (
+                                    Number(scoreRef.current[index]?.value) <
+                                      0 ||
+                                    Number(scoreRef.current[index]?.value) > 100
+                                  ) {
+                                    toast({
+                                      title:
+                                        'Nilai harus berada di antara 0 dan 100',
+                                      status: 'warning',
+                                      duration: 2000,
+                                      isClosable: true,
+                                      position: 'top'
+                                    });
+                                    scoreRef.current[index]?.focus();
+                                    return;
+                                  } else {
+                                    setIsEditing(false);
+                                    mutation.mutate({
+                                      score: Number(
+                                        scoreRef.current[index]?.value
+                                      ),
+                                      submissionId: item.id
+                                    });
+                                    item.score = Number(
+                                      scoreRef.current[index]?.value
+                                    );
+                                  }
+                                }}
+                              />
+                            ) : item.score ? (
+                              <Icon
+                                as={FiEdit2}
+                                cursor='pointer'
+                                onClick={() => {
+                                  scoreRef.current[index]?.focus();
+                                  setIsEditing(true);
+                                  setActiveScoreBar(index);
+                                }}
+                              />
+                            ) : (
+                              <Icon
+                                as={FiPlus}
+                                cursor='pointer'
+                                onClick={() => {
+                                  scoreRef.current[index]?.focus();
+                                  setIsEditing(true);
+                                  setActiveScoreBar(index);
+                                }}
+                              />
+                            )}
+                            <Box
+                              display={
+                                activeScoreBar === index && isEditing
+                                  ? 'block'
+                                  : 'none'
+                              }
+                              zIndex='-1'
+                              position='fixed'
+                              inset='0'
+                              onClick={() => {
+                                scoreRef.current[index]?.focus();
+                                toast({
+                                  title: 'Mohon selesaikan pengeditan nilai',
+                                  status: 'warning',
+                                  duration: 2000,
+                                  isClosable: true,
+                                  position: 'top'
+                                });
+                              }}
+                            />
+                          </Flex>
+                        </Td>
+                        <Td
+                          width='9%'
+                          textAlign='center'
+                          _hover={{ cursor: 'pointer' }}
+                        >
+                          <Icon
+                            as={FiDownload}
+                            onClick={() =>
+                              downloadFile(item.filePath as string)
+                            }
+                          />
+                        </Td>
+                      </Tr>
+                    );
+                  }
+                )}
+              </Tbody>
+            </Table>
+          </TableContainer>
         </Box>
       </Box>
       <Box

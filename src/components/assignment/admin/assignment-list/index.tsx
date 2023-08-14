@@ -109,7 +109,11 @@ export default function AssignmentList() {
         </Table>
       </TableContainer>
       {!assignmentQuery.isLoading && (
-        <Flex justifyContent={'space-between'} flexDir={'row-reverse'}>
+        <Flex
+          justifyContent={'space-between'}
+          flexDir={{ base: 'column-reverse', lg: 'row-reverse' }}
+          rowGap={'1rem'}
+        >
           {metadata && metadata.total > 0 && (
             <Flex>
               <Button

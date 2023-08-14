@@ -53,52 +53,54 @@ export default function RekapPenilaian() {
   return (
     <AdminRoute session={session}>
       <Layout type='admin' title='Tugas dan Penilaian' fullBg={false}>
-        <Header title='Tugas dan Penilaian' />
-        <Tabs
-          variant='soft-rounded'
-          colorScheme='green'
-          align='center'
-          w='100%'
-          isLazy={true}
-        >
-          <TabList w='initial' px='0'>
-            <Flex
-              border='4px solid black'
-              borderRadius='3xl'
-              w='100%'
-              flexDir={{
-                base: 'column',
-                md: 'row'
-              }}
-              alignItems='center'
-            >
-              <Tab
-                w={{
-                  base: '100%',
-                  md: '50%'
+        <Flex w={'full'} h={'100%'} direction={'column'} overflowY={'auto'}>
+          <Header title='Tugas dan Penilaian' />
+          <Tabs
+            variant='soft-rounded'
+            colorScheme='green'
+            align='center'
+            w='100%'
+            isLazy={true}
+          >
+            <TabList w='initial' px='0'>
+              <Flex
+                border='4px solid black'
+                borderRadius='3xl'
+                w='100%'
+                flexDir={{
+                  base: 'column',
+                  md: 'row'
                 }}
+                alignItems='center'
               >
-                Daftar Tugas
-              </Tab>
-              <Tab
-                w={{
-                  base: '100%',
-                  md: '50%'
-                }}
-              >
-                Tambah Tugas
-              </Tab>
-            </Flex>
-          </TabList>
-          <TabPanels mt='2em'>
-            <TabPanel>
-              <AdminAssignmentList />
-            </TabPanel>
-            <TabPanel>
-              <AdminAddAssignment />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+                <Tab
+                  w={{
+                    base: '100%',
+                    md: '50%'
+                  }}
+                >
+                  Daftar Tugas
+                </Tab>
+                <Tab
+                  w={{
+                    base: '100%',
+                    md: '50%'
+                  }}
+                >
+                  Tambah Tugas
+                </Tab>
+              </Flex>
+            </TabList>
+            <TabPanels mt='2em'>
+              <TabPanel>
+                <AdminAssignmentList />
+              </TabPanel>
+              <TabPanel>
+                <AdminAddAssignment />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </Flex>
       </Layout>
     </AdminRoute>
   );

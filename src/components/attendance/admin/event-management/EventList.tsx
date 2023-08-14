@@ -8,6 +8,7 @@ import {
   MenuList,
   Select,
   Table,
+  TableContainer,
   Tbody,
   Td,
   Text,
@@ -237,31 +238,33 @@ export const EventList = ({ day }: EventListProps) => {
           borderLeft='1px solid'
           borderColor='gray.400'
         >
-          <Table w='100%' variant='black'>
-            <Thead>
-              <Tr>
-                <Th w='10%'>No.</Th>
-                <Th w='30%'>Keterangan</Th>
-                <Th w='20%'>Tanggal</Th>
-                <Th w='15%'>Waktu Mulai</Th>
-                <Th w='15%'>Waktu Selesai</Th>
-                <Th w='10%'>Edit</Th>
-              </Tr>
-            </Thead>
-            <Tbody borderRadius='0 0 12px 12px'>
-              {eventList
-                .slice(rowPerPage * (page - 1), rowPerPage * page)
-                .map((event, idx) => (
-                  <EventListRow
-                    event={event}
-                    key={idx}
-                    num={rowPerPage * (page - 1) + idx + 1}
-                    editEvent={editEvent}
-                    deleteEvent={deleteEvent}
-                  />
-                ))}
-            </Tbody>
-          </Table>
+          <TableContainer>
+            <Table w='100%' variant='black'>
+              <Thead>
+                <Tr>
+                  <Th w='10%'>No.</Th>
+                  <Th w='30%'>Keterangan</Th>
+                  <Th w='20%'>Tanggal</Th>
+                  <Th w='15%'>Waktu Mulai</Th>
+                  <Th w='15%'>Waktu Selesai</Th>
+                  <Th w='10%'>Edit</Th>
+                </Tr>
+              </Thead>
+              <Tbody borderRadius='0 0 12px 12px'>
+                {eventList
+                  .slice(rowPerPage * (page - 1), rowPerPage * page)
+                  .map((event, idx) => (
+                    <EventListRow
+                      event={event}
+                      key={idx}
+                      num={rowPerPage * (page - 1) + idx + 1}
+                      editEvent={editEvent}
+                      deleteEvent={deleteEvent}
+                    />
+                  ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
         </Box>
       )}
 

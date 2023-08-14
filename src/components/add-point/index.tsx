@@ -17,6 +17,7 @@ import {
   ModalOverlay,
   Select,
   Table,
+  TableContainer,
   Tbody,
   Td,
   Text,
@@ -193,7 +194,12 @@ export const AddPoint = () => {
             />
           </Flex>
         </Flex>
-        <Flex justifyContent='space-between' mt='2em'>
+        <Flex
+          justifyContent='space-between'
+          mt='2em'
+          direction={{ base: 'column', lg: 'row' }}
+          rowGap={'1rem'}
+        >
           <Flex alignItems='center' mt='1em'>
             <>
               <Button
@@ -269,24 +275,26 @@ export const AddPoint = () => {
             borderLeft='1px solid'
             borderColor='gray.400'
           >
-            <Table w='100%' variant='black'>
-              <Thead>
-                <Td w='10%'>No.</Td>
-                <Td w='20%'>NIM</Td>
-                <Td w='20%'>Nama</Td>
-                <Td w='50%'>Poin</Td>
-              </Thead>
-              <Tbody>
-                {leaderboardList.map((data, index) => (
-                  <AddPointRow
-                    data={data}
-                    num={rowPerPage * (page - 1) + index + 1}
-                    key={index}
-                    editPoint={editPoint}
-                  />
-                ))}
-              </Tbody>
-            </Table>
+            <TableContainer>
+              <Table w='100%' variant='black'>
+                <Thead>
+                  <Td w='10%'>No.</Td>
+                  <Td w='20%'>NIM</Td>
+                  <Td w='20%'>Nama</Td>
+                  <Td w='50%'>Poin</Td>
+                </Thead>
+                <Tbody>
+                  {leaderboardList.map((data, index) => (
+                    <AddPointRow
+                      data={data}
+                      num={rowPerPage * (page - 1) + index + 1}
+                      key={index}
+                      editPoint={editPoint}
+                    />
+                  ))}
+                </Tbody>
+              </Table>
+            </TableContainer>
           </Box>
         )}
 
