@@ -82,6 +82,21 @@ export const authOptions: NextAuthOptions = {
     }
   },
   adapter: PrismaAdapter(prisma),
+  cookies: {
+    sessionToken: {
+      name:
+        env.NODE_ENV === 'development'
+          ? 'next-auth.session-token'
+          : '__Secure-next-auth.session-token',
+      options: {
+        domain: env.SESSION_COOKIE_DOMAIN,
+        httpOnly: true,
+        maxAge: env.SESSION_MAXAGE,
+        path: '/',
+        secure: true
+      }
+    }
+  },
   providers: [
     /**
      * ...add more providers here.

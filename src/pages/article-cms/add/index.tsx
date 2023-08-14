@@ -135,7 +135,7 @@ export default function AddArticle() {
   });
 
   return (
-    <Layout type='admin' title='Article Management' fullBg={false}>
+    <Layout type='admin' title='Article Management' fullBg={true}>
       <Header title='Add Article' />
       <Flex marginY='10px'>
         <Spacer />

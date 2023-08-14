@@ -109,7 +109,7 @@ export default function ArticleCMS() {
   };
 
   return (
-    <Layout type='admin' title='Article CMS' fullBg={false}>
+    <Layout type='admin' title='Article CMS' fullBg={true}>
       <Header title='Article CMS' />
       <Flex>
         <InputGroup my='4'>
