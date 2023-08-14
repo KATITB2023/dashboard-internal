@@ -129,7 +129,11 @@ export default function GroupInformation() {
                   color='white'
                 >
                   <Avatar name={groupNumber.toString()} boxSize='70px' mr={4} />
-                  <Text fontWeight='bold' fontSize='24px' marginX='30px'>
+                  <Text
+                    fontWeight='bold'
+                    fontSize={{ base: '16px', lg: '24px' }}
+                    marginX={{ base: '10px', lg: '30px' }}
+                  >
                     Kelompok {groupNumber}
                   </Text>
                   <MenuButton

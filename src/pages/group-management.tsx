@@ -103,7 +103,11 @@ export default function GroupManagement() {
                   boxSize='70px'
                   mr={4}
                 />
-                <Text fontWeight='bold' fontSize='24px' color='white'>
+                <Text
+                  fontWeight='bold'
+                  fontSize={{ base: '12px', lg: '24px' }}
+                  color='white'
+                >
                   Kelompok {mentorGroup ? mentorGroup[0]?.group.group : []}
                 </Text>
               </Flex>

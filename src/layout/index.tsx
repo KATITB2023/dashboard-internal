@@ -80,13 +80,11 @@ export default function Layout({
                 ? '0 0 0 0'
                 : '2vh 1.5rem 2vh 0'
             }
-            mr={fullBg ? 0 : 6}
-            my={fullBg ? 0 : '2vh'}
             bg='#F9F9F9'
             borderLeftRadius={25}
             borderRightRadius={fullBg ? 0 : 25}
             minHeight={fullBg ? '100vh' : undefined}
-            height={fullBg ? undefined : '96vh'}
+            height={fullBg ? undefined : isLg ? '96vh' : '100%'}
             px={{ base: '20px', lg: '50px' }}
             py={fullBg ? '40px' : '30px'}
           >
