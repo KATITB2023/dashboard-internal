@@ -61,6 +61,9 @@ const LoginForm = ({
   };
 
   const handleRedirect = () => {
+    if (session?.user.role === 'STUDENT') {
+      window.location.href = 'https://oskmitb.com';
+    }
     void router.push('/welcome');
   };
 

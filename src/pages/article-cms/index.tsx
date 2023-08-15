@@ -22,10 +22,13 @@ import ReactHtmlParser from 'react-html-parser';
 import { useRouter } from 'next/router';
 import { withSession } from '~/server/auth/withSession';
 import { TRPCClientError } from '@trpc/client';
+import AdminRoute from '~/layout/AdminRoute';
+import { useSession } from 'next-auth/react';
 
 export const getServerSideProps = withSession({ force: true });
 
 export default function ArticleCMS() {
+  const { data: session } = useSession();
   const toast = useToast();
   const router = useRouter();
   const [totalRecords, setTotalRecords] = useState<number>(0);
@@ -109,143 +112,145 @@ export default function ArticleCMS() {
   };
 
   return (
-    <Layout type='admin' title='Article CMS' fullBg={true}>
-      <Header title='Article CMS' />
-      <Flex>
-        <InputGroup my='4'>
-          <Input
-            variant='outline'
-            size='md'
-            placeholder='Search'
-            width='48'
+    <AdminRoute session={session}>
+      <Layout type='admin' title='Article CMS' fullBg={true}>
+        <Header title='Article CMS' />
+        <Flex>
+          <InputGroup my='4'>
+            <Input
+              variant='outline'
+              size='md'
+              placeholder='Search'
+              width='48'
+              borderColor='gray.400'
+              borderRadius='12'
+              value={searchQuery}
+              onChange={handleSearchQueryChange}
+            />
+            <InputLeftElement pointerEvents='none'>
+              <FaSearch />
+            </InputLeftElement>
+          </InputGroup>
+          <Link href='/article-cms/add'>
+            <Button>Add Article</Button>
+          </Link>
+        </Flex>
+        <Flex alignItems='center' justifyContent='flex-start'>
+          <Select
+            placeholder=''
+            width='20'
             borderColor='gray.400'
+            size='sm'
             borderRadius='12'
-            value={searchQuery}
-            onChange={handleSearchQueryChange}
-          />
-          <InputLeftElement pointerEvents='none'>
-            <FaSearch />
-          </InputLeftElement>
-        </InputGroup>
-        <Link href='/article-cms/add'>
-          <Button>Add Article</Button>
-        </Link>
-      </Flex>
-      <Flex alignItems='center' justifyContent='flex-start'>
-        <Select
-          placeholder=''
-          width='20'
-          borderColor='gray.400'
-          size='sm'
-          borderRadius='12'
-          mx='2'
-          value={recordsNum}
-          onChange={handleRecordsNumChange}
-        >
-          <option value={5} selected>
-            5
-          </option>
-          <option value={10}>10</option>
-          <option value={15}>15</option>
-        </Select>
-        <Text> records per page</Text>
-      </Flex>
-
-      <Flex
-        height='400'
-        flexDirection='column'
-        overflow='scroll'
-        paddingRight='10'
-        marginBottom='8'
-        overflowX='hidden'
-      >
-        {articlesList?.data.map((article, index: number) => {
-          return (
-            <Box
-              border='2px solid'
-              p='3'
-              borderRadius='md'
-              my='2'
-              borderColor='gray.300'
-              height='180'
-              key={index}
-            >
-              <Text fontFamily='SomarRounded-Bold'> {article.title}</Text>
-              <Box
-                height='108px'
-                overflow='hidden'
-                textOverflow='ellipsis'
-                whiteSpace='pre-line'
-                fontSize='sm'
-              >
-                {ReactHtmlParser(article.html as string)}
-              </Box>
-              <Flex
-                textDecoration='underline'
-                justifyContent='flex-end'
-                fontSize='sm'
-              >
-                <Text
-                  mx='2'
-                  cursor='pointer'
-                  onClick={() => void handleEditArticle(article.slug)}
-                >
-                  Edit
-                </Text>
-                <Text
-                  mx='2'
-                  cursor='pointer'
-                  onClick={() => void handleClickDelete(article.id)}
-                >
-                  Remove
-                </Text>
-                <AlertModal
-                  title='Delete Article'
-                  content='Are you sure you want to delete this article?'
-                  isOpen={showAlertModal}
-                  onYes={() => void handleDeleteArticle()}
-                  onNo={() => setShowAlertModal(false)}
-                />
-              </Flex>
-            </Box>
-          );
-        })}
-      </Flex>
-
-      <Flex alignItems='center' justifyContent='flex-end'>
-        {currentPageNum != 1 && (
-          <Button
-            variant='outlineBlue'
-            onClick={() => handlePageChange(currentPageNum - 1)}
+            mx='2'
+            value={recordsNum}
+            onChange={handleRecordsNumChange}
           >
-            <FiArrowLeft />
-          </Button>
-        )}
-        <Select
-          placeholder=''
-          width='20'
-          borderColor='gray.400'
-          size='sm'
-          borderRadius='12'
-          mx='2'
-          value={currentPageNum}
-          onChange={handleCurrentPageNumChange}
-        >
-          {options.map((page) => (
-            <option key={page} value={page}>
-              {page}
+            <option value={5} selected>
+              5
             </option>
-          ))}
-        </Select>
-        {currentPageNum != totalPages && (
-          <Button
-            variant='outlineBlue'
-            onClick={() => handlePageChange(currentPageNum + 1)}
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+          </Select>
+          <Text> records per page</Text>
+        </Flex>
+
+        <Flex
+          height='400'
+          flexDirection='column'
+          overflow='scroll'
+          paddingRight='10'
+          marginBottom='8'
+          overflowX='hidden'
+        >
+          {articlesList?.data.map((article, index: number) => {
+            return (
+              <Box
+                border='2px solid'
+                p='3'
+                borderRadius='md'
+                my='2'
+                borderColor='gray.300'
+                height='180'
+                key={index}
+              >
+                <Text fontFamily='SomarRounded-Bold'> {article.title}</Text>
+                <Box
+                  height='108px'
+                  overflow='hidden'
+                  textOverflow='ellipsis'
+                  whiteSpace='pre-line'
+                  fontSize='sm'
+                >
+                  {ReactHtmlParser(article.html as string)}
+                </Box>
+                <Flex
+                  textDecoration='underline'
+                  justifyContent='flex-end'
+                  fontSize='sm'
+                >
+                  <Text
+                    mx='2'
+                    cursor='pointer'
+                    onClick={() => void handleEditArticle(article.slug)}
+                  >
+                    Edit
+                  </Text>
+                  <Text
+                    mx='2'
+                    cursor='pointer'
+                    onClick={() => void handleClickDelete(article.id)}
+                  >
+                    Remove
+                  </Text>
+                  <AlertModal
+                    title='Delete Article'
+                    content='Are you sure you want to delete this article?'
+                    isOpen={showAlertModal}
+                    onYes={() => void handleDeleteArticle()}
+                    onNo={() => setShowAlertModal(false)}
+                  />
+                </Flex>
+              </Box>
+            );
+          })}
+        </Flex>
+
+        <Flex alignItems='center' justifyContent='flex-end'>
+          {currentPageNum != 1 && (
+            <Button
+              variant='outlineBlue'
+              onClick={() => handlePageChange(currentPageNum - 1)}
+            >
+              <FiArrowLeft />
+            </Button>
+          )}
+          <Select
+            placeholder=''
+            width='20'
+            borderColor='gray.400'
+            size='sm'
+            borderRadius='12'
+            mx='2'
+            value={currentPageNum}
+            onChange={handleCurrentPageNumChange}
           >
-            <FiArrowRight />
-          </Button>
-        )}
-      </Flex>
-    </Layout>
+            {options.map((page) => (
+              <option key={page} value={page}>
+                {page}
+              </option>
+            ))}
+          </Select>
+          {currentPageNum != totalPages && (
+            <Button
+              variant='outlineBlue'
+              onClick={() => handlePageChange(currentPageNum + 1)}
+            >
+              <FiArrowRight />
+            </Button>
+          )}
+        </Flex>
+      </Layout>
+    </AdminRoute>
   );
 }
