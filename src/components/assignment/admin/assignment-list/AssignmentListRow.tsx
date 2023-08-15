@@ -6,9 +6,19 @@ interface Props {
   data: RouterOutputs['assignment']['adminGetAssignment']['data'][0];
   index: number;
   page: number;
+  loading: boolean;
+  assignmentId: string;
+  downloadCSV: (id: string, title: string) => void;
 }
 
-export default function AssignmentListRow({ data, index, page }: Props) {
+export default function AssignmentListRow({
+  data,
+  index,
+  page,
+  loading,
+  assignmentId,
+  downloadCSV
+}: Props) {
   const assignmentQuery = api.assignment.adminGetAssignment.useQuery({
     currentPage: page
   });
@@ -41,7 +51,14 @@ export default function AssignmentListRow({ data, index, page }: Props) {
         })}
       </Td>
       <Td w='10%'>
-        <Button variant='outline'>Unduh</Button>
+        <Button
+          variant='outline'
+          onClick={() => void downloadCSV(data.id, data.title)}
+          isLoading={assignmentId === data.id && loading}
+          isDisabled={assignmentId !== data.id && loading}
+        >
+          Unduh
+        </Button>
       </Td>
       <EditAssignmentModal
         props={data}

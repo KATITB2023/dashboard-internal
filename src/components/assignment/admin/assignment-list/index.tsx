@@ -14,15 +14,23 @@ import {
   MenuButton,
   useToast
 } from '@chakra-ui/react';
-import { api } from '~/utils/api';
+import { type RouterOutputs, api } from '~/utils/api';
 import AssignmentListRow from './AssignmentListRow';
 import { useState } from 'react';
+import _ from 'lodash';
+import * as XLSX from 'xlsx';
+import FileSaver from 'file-saver';
 
 export default function AssignmentList() {
   const [page, setPage] = useState(1);
   const [jumpInput, setJumpInput] = useState(page.toString());
+  const [assignmentId, setAssignmentId] = useState('');
+  const [loading, setLoading] = useState(false);
   const assignmentQuery = api.assignment.adminGetAssignment.useQuery({
     currentPage: page
+  });
+  const csvQuery = api.csv.adminGetCSVAssignment.useQuery({
+    assignmentId
   });
   const toast = useToast();
   const assignmentData = assignmentQuery.data?.data;
@@ -35,6 +43,126 @@ export default function AssignmentList() {
     { w: '15%', title: 'Berakhir' },
     { w: '10%', title: 'Rekap Nilai' },
     { w: '10%', title: 'Edit' }
+  ];
+
+  const downloadCSV = async (id: string, title: string) => {
+    setLoading(true);
+    setAssignmentId(id);
+    const curData: RouterOutputs['csv']['adminGetCSVAssignment'] | undefined = (
+      await csvQuery.refetch()
+    ).data;
+
+    // GWS LINTER
+    if (curData && !curData[0]) {
+      toast({
+        description: 'No data found',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'top'
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (curData) {
+      const toParse = curData[0];
+
+      if (toParse?.submission.length === 0) {
+        toast({
+          description: 'No one submitted yet',
+          status: 'warning',
+          duration: 3000,
+          isClosable: true,
+          position: 'top'
+        });
+        setLoading(false);
+        return;
+      }
+
+      const csv = toParse?.submission.map((item) => {
+        const { nim, profile, groupRelation } = item.student;
+
+        return {
+          nim,
+          name: profile?.name,
+          faculty: profile?.faculty,
+          campus: profile?.campus,
+          score: item.score,
+          filePath: item.filePath,
+          group: groupRelation[0]?.group.group
+        };
+      });
+
+      const csvByGroup = _.groupBy(csv, 'group');
+
+      const header = [['NIM', 'Nama', 'Fakultas', 'Kampus', 'Nilai', 'Link']];
+      const fileType =
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+      const fileExtension = '.xlsx';
+      const fileName = `Rekap Nilai ${title}`;
+      const wb = XLSX.utils.book_new();
+
+      Object.keys(csvByGroup).forEach((key) => {
+        const ws = XLSX.utils.aoa_to_sheet(header);
+        const res = csvByGroup[key]?.map((item) => {
+          return {
+            nim: item.nim,
+            name: item.name,
+            faculty: item.faculty,
+            campus: item.campus,
+            score: item.score,
+            link: item.filePath
+          };
+        });
+
+        ws['!cols'] = [
+          { wch: 20 },
+          { wch: 50 },
+          { wch: 30 },
+          { wch: 30 },
+          { wch: 20 },
+          { wch: 50 }
+        ];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        XLSX.utils.sheet_add_json(ws, res as any[], {
+          skipHeader: true,
+          origin: 'A2'
+        });
+        XLSX.utils.book_append_sheet(wb, ws, `Kelompok ${key}`);
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([excelBuffer], { type: fileType });
+      FileSaver.saveAs(blob, fileName + fileExtension);
+    }
+
+    setLoading(false);
+  };
+
+  [
+    {
+      filePath:
+        'https://cdn.oskmitb.com/861a0126-a9cb-40cf-9ae8-f50282c016bc-KLMPK MENTOR AGAMA.png',
+      score: 30,
+      createdAt: '2023-08-15T06:17:17.073Z',
+      student: {
+        nim: '13523009',
+        profile: {
+          name: 'Raymond Elliott',
+          faculty: 'FTSL',
+          campus: 'CIREBON'
+        },
+        groupRelation: [
+          {
+            group: {
+              group: 1
+            }
+          }
+        ]
+      }
+    }
   ];
 
   const prevPage = () => {
@@ -102,6 +230,9 @@ export default function AssignmentList() {
                     index={(page - 1) * 5 + index + 1}
                     page={page}
                     key={item.id}
+                    loading={loading}
+                    assignmentId={assignmentId}
+                    downloadCSV={() => void downloadCSV(item.id, item.title)}
                   />
                 );
               })}

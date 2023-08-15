@@ -65,12 +65,12 @@ export default function Layout({
           float='right'
           minHeight='100vh'
           height='100%'
-          overflow='auto'
+          // overflow='auto'
           position='relative'
           maxHeight='100%'
           w={{ base: '100%', lg: 'calc( 100% - 298px )' }}
           maxWidth={{ base: '100%', lg: 'calc( 100% - 290px )' }}
-          overflowX={!isLg ? 'hidden' : undefined}
+          // overflowX={!isLg ? 'hidden' : undefined}
         >
           <Box
             m={
@@ -87,6 +87,7 @@ export default function Layout({
             height={fullBg ? undefined : isLg ? '96vh' : '100%'}
             px={{ base: '20px', lg: '50px' }}
             py={fullBg ? '40px' : '30px'}
+            overflow='auto'
           >
             {children}
           </Box>
