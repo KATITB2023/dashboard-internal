@@ -34,9 +34,15 @@ const AdminRoute = ({ children, session, allowEO = false }: Props) => {
   const authCheck = () => {
     if (!session) {
       void router.push('/');
-    } else if (session && session.user.role !== UserRole.ADMIN && !allowEO) {
-      void router.push('/group-management');
-    } else {
+    } else if (session && session.user.role !== UserRole.ADMIN) {
+      if (session.user.role === UserRole.MENTOR) {
+        void router.push('/group-management');
+      } else if (session.user.role === UserRole.EO && allowEO) {
+        setAuthorized(true);
+      } else if (session.user.role === UserRole.EO && !allowEO) {
+        void router.push('/welcome');
+      }
+    } else if (session && session.user.role === UserRole.ADMIN) {
       setAuthorized(true);
     }
   };
