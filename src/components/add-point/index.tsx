@@ -27,7 +27,7 @@ import {
   useToast
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { RouterOutputs, api } from '~/utils/api';
+import { type RouterOutputs, api } from '~/utils/api';
 import { Status } from '@prisma/client';
 import { AddPointRow } from './AddPointRow';
 import Layout from '~/layout';

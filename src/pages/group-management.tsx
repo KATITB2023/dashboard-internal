@@ -83,7 +83,6 @@ export default function GroupManagement() {
             {/* Kelompok */}
             <Box
               width='auto'
-              height='96px'
               bgImage='/images/comet_container.png'
               backgroundSize='cover'
               borderRadius='25px'
@@ -100,7 +99,6 @@ export default function GroupManagement() {
                     ? mentorGroup[0]?.group.group
                     : []
                   )?.toString()}
-                  boxSize='70px'
                   mr={4}
                 />
                 <Text
@@ -136,16 +134,8 @@ export default function GroupManagement() {
                     color='white'
                     alignItems='center'
                   >
-                    <Avatar
-                      name={mentorGroup.user.profile?.name}
-                      boxSize='70px'
-                      mr={4}
-                    />
-                    <Flex
-                      flexDirection='column'
-                      height='74px'
-                      justifyContent='center'
-                    >
+                    <Avatar name={mentorGroup.user.profile?.name} mr={4} />
+                    <Flex flexDirection='column' justifyContent='center'>
                       <Text fontSize='16px' fontWeight='700'>
                         {mentorGroup.user.profile?.name}
                       </Text>

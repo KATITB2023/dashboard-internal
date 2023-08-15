@@ -158,10 +158,8 @@ export default function ArticleCMS() {
         <Flex
           height='400'
           flexDirection='column'
-          overflow='scroll'
           paddingRight='10'
           marginBottom='8'
-          overflowX='hidden'
         >
           {articlesList?.data.map((article, index: number) => {
             return (
