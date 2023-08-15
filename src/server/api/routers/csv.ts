@@ -24,6 +24,15 @@ export const csvRouter = createTRPCRouter({
                       faculty: true,
                       campus: true
                     }
+                  },
+                  groupRelation: {
+                    select: {
+                      group: {
+                        select: {
+                          group: true
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -59,6 +68,15 @@ export const csvRouter = createTRPCRouter({
                           name: true,
                           faculty: true,
                           campus: true
+                        }
+                      },
+                      groupRelation: {
+                        select: {
+                          group: {
+                            select: {
+                              group: true
+                            }
+                          }
                         }
                       }
                     }
