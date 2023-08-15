@@ -219,6 +219,8 @@ export default function AddArticle() {
             <>
               <FormControl isInvalid={!!formState.errors.body}>
                 <Textarea
+                  px='2'
+                  variant='unstyled'
                   placeholder='Lorem ipsum dolor sit amet, consectetur adipiscing elit...'
                   marginTop='4'
                   height='300px'

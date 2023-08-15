@@ -44,7 +44,8 @@ export const env = createEnv({
       z.number().positive().min(0).max(1)
     ),
     GHOST_CONTENT_API: z.string().min(1),
-    GHOST_ADMIN_API: z.string().min(1)
+    GHOST_ADMIN_API: z.string().min(1),
+    SESSION_COOKIE_DOMAIN: z.string().default('localhost')
   },
 
   /**
@@ -72,6 +73,7 @@ export const env = createEnv({
     GHOST_CONTENT_API: process.env.GHOST_CONTENT_API,
     GHOST_ADMIN_API: process.env.GHOST_ADMIN_API,
     NEXT_PUBLIC_BUCKET_API_KEY: process.env.NEXT_PUBLIC_BUCKET_API_KEY,
+    SESSION_COOKIE_DOMAIN: process.env.SESSION_COOKIE_DOMAIN
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

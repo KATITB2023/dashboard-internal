@@ -50,11 +50,11 @@ export const cmsRouter = createTRPCRouter({
       return { data, meta: data.meta };
     }),
 
-  adminGetArticlesById: adminProcedure
-    .input(z.object({ id: z.string() }))
+  adminGetArticlesBySlug: adminProcedure
+    .input(z.object({ slug: z.string() }))
     .query(async ({ input }) => {
       return await contentApi.posts.read(
-        { id: input.id },
+        { slug: input.slug },
         {
           fields: ['id', 'slug', 'title', 'html', 'feature_image']
         }
@@ -69,7 +69,7 @@ export const cmsRouter = createTRPCRouter({
         featureImage: z.string()
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
       try {
         await adminApi.posts.add(
           {
@@ -80,6 +80,21 @@ export const cmsRouter = createTRPCRouter({
           },
           { source: 'html' }
         );
+
+        const post = await contentApi.posts.read(
+          {
+            slug: input.title.toLowerCase().split(' ').join('-')
+          },
+          {
+            fields: ['id']
+          }
+        );
+
+        await ctx.prisma.article.create({
+          data: {
+            id: post.id
+          }
+        });
 
         return {
           message: 'Article added successfully'
@@ -95,7 +110,7 @@ export const cmsRouter = createTRPCRouter({
   adminEditArticle: adminProcedure
     .input(
       z.object({
-        articleId: z.string(),
+        slug: z.string(),
         title: z.string().optional(),
         body: z.string().optional(),
         featureImage: z.string().optional()
@@ -104,7 +119,7 @@ export const cmsRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       try {
         const data = await contentApi.posts.read(
-          { id: input.articleId },
+          { slug: input.slug },
           {
             fields: [
               'id',
@@ -131,7 +146,7 @@ export const cmsRouter = createTRPCRouter({
 
         await adminApi.posts.edit(
           {
-            id: input.articleId,
+            id: data.id,
             title: input.title ? input.title : data.title,
             slug: slug,
             html: input.body ? input.body : data.html,

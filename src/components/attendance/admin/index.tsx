@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { type AttendanceDay } from '@prisma/client';
 import { TRPCClientError } from '@trpc/client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Header } from '~/components/Header';
 import { DayManagementModal } from '~/components/attendance/admin/day-management/DayManagementModal';
 import { EventList } from '~/components/attendance/admin/event-management/EventList';
@@ -26,6 +26,7 @@ export default function AttendancePageAdmin() {
   const toast = useToast();
 
   const dayListQuery = api.attendance.getAttendanceDayList.useQuery();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const dayList: AttendanceDay[] = dayListQuery.data || [];
 
   const addDayMutation = api.attendance.adminAddAttendanceDay.useMutation();
@@ -37,6 +38,12 @@ export default function AttendancePageAdmin() {
   const dayChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setDayId(e.target.value);
   };
+
+  useEffect(() => {
+    if (dayList.length > 0 && !dayId) {
+      setDayId(dayList[0]?.id);
+    }
+  }, [dayId, dayList]);
 
   const addDay = (dayName: string, dayDate: Date, thenFn: () => void) => {
     if (dayName in (dayList?.map((day) => day.name) || [])) {
@@ -195,7 +202,6 @@ export default function AttendancePageAdmin() {
           </TabList>
           <Flex w='100%' ml='1em' mt='2em'>
             <Select
-              placeholder='Select Day'
               color='white'
               borderRadius='md'
               bg='black'
@@ -228,8 +234,8 @@ export default function AttendancePageAdmin() {
               <TabPanels mt='2em'>
                 <TabPanel>
                   <EventList
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     day={dayList.find((d) => d.id == dayId) || dayList[0]!}
-                    dayList={dayList}
                   />
                 </TabPanel>
                 <TabPanel>

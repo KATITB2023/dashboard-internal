@@ -16,6 +16,7 @@ import {
   ModalOverlay,
   Select,
   Table,
+  TableContainer,
   Tbody,
   Td,
   Text,
@@ -25,7 +26,7 @@ import {
   useToast
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { RouterInputs, RouterOutputs, api } from '~/utils/api';
+import { RouterInputs, type RouterOutputs, api } from '~/utils/api';
 import { MentorRecapRow } from './MentorRecapRow';
 import { Status } from '@prisma/client';
 import { TRPCClientError } from '@trpc/client';
@@ -50,7 +51,7 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
   const [rowPerPageInput, setRowPerPageInput] = useState<number>(rowPerPage);
 
   const recordListQuery = api.attendance.mentorGetAttendance.useQuery({
-    /* dayId: dayId, */
+    dayId,
     currentPage: page,
     limitPerPage: rowPerPage,
     filterBy: filterBy,
@@ -139,6 +140,7 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
           duration: 3000
         });
         await recordListQuery.refetch();
+        await recordListQuery.refetch();
       })
       .catch((err) => {
         if (!(err instanceof TRPCClientError)) throw err;
@@ -152,7 +154,11 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
 
   return (
     <Flex flexDir='column'>
-      <Flex justifyContent='space-between'>
+      <Flex
+        justifyContent='space-between'
+        direction={{ base: 'column', lg: 'row' }}
+        rowGap={'1rem'}
+      >
         <Flex alignItems='center' mt='1em'>
           <Menu>
             <MenuButton
@@ -246,27 +252,29 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
           borderLeft='1px solid'
           borderColor='gray.400'
         >
-          <Table w='100%' variant='black'>
-            <Thead>
-              <Td w='5%'>No.</Td>
-              <Td w='10%'>NIM</Td>
-              <Td w='15%'>Nama</Td>
-              <Td w='10%'>Tanggal</Td>
-              <Td w='10%'>Jam</Td>
-              <Td w='15%'>Status</Td>
-              <Td w='20%'>Keterangan</Td>
-            </Thead>
-            <Tbody>
-              {recordList.map((record, index) => (
-                <MentorRecapRow
-                  key={index}
-                  record={record}
-                  num={rowPerPage * (page - 1) + index + 1}
-                  editRecord={editRecord}
-                />
-              ))}
-            </Tbody>
-          </Table>
+          <TableContainer>
+            <Table w='100%' variant='black'>
+              <Thead>
+                <Td w='5%'>No.</Td>
+                <Td w='10%'>NIM</Td>
+                <Td w='15%'>Nama</Td>
+                <Td w='10%'>Tanggal</Td>
+                <Td w='10%'>Jam</Td>
+                <Td w='15%'>Status</Td>
+                <Td w='20%'>Keterangan</Td>
+              </Thead>
+              <Tbody>
+                {recordList.map((record, index) => (
+                  <MentorRecapRow
+                    key={index}
+                    record={record}
+                    num={rowPerPage * (page - 1) + index + 1}
+                    editRecord={editRecord}
+                  />
+                ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
         </Box>
       )}
 

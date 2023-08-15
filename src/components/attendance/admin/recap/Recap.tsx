@@ -118,7 +118,7 @@ export const Recap = ({ dayId }: RecapProps) => {
     }
   };
 
-  const editRecord = async (
+  const editRecord = (
     record: recordListQueryOutput,
     { newStatus, newDesc }: { newStatus: Status; newDesc: string },
     successFn: () => void
@@ -126,36 +126,29 @@ export const Recap = ({ dayId }: RecapProps) => {
     if (newStatus === record.status) {
       return;
     }
-
-    try {
-      const result = await editRecordMutation.mutateAsync({
+    editRecordMutation
+      .mutateAsync({
         attendanceId: record.id,
         kehadiran: newStatus,
         reason: newDesc
+      })
+      .then(async (res) => {
+        toast({
+          title: res.message,
+          status: 'success',
+          duration: 3000
+        });
+        await recordListQuery.refetch();
+        await recordListQuery.refetch();
+      })
+      .catch((err) => {
+        if (!(err instanceof TRPCClientError)) throw err;
+        toast({
+          title: err.message,
+          status: 'error',
+          duration: 3000
+        });
       });
-
-      toast({
-        title: 'Success',
-        description: result.message,
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-        position: 'top'
-      });
-      successFn();
-      await recordListQuery.refetch();
-    } catch (error) {
-      if (!(error instanceof TRPCClientError)) throw error;
-
-      toast({
-        title: 'Error',
-        description: error.message,
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-        position: 'top'
-      });
-    }
   };
 
   return (
@@ -263,7 +256,7 @@ export const Recap = ({ dayId }: RecapProps) => {
                   key={index}
                   record={record}
                   num={rowPerPage * (page - 1) + index + 1}
-                  editRecord={() => void editRecord}
+                  editRecord={editRecord}
                 />
               ))}
             </Tbody>

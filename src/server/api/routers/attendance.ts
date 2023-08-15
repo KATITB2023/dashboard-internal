@@ -1,11 +1,12 @@
 import { TRPCError } from '@trpc/server';
-import { Status } from '@prisma/client';
+import { type AttendanceDay, Status } from '@prisma/client';
 import { z } from 'zod';
 import {
   createTRPCRouter,
   mentorProcedure,
   adminProcedure,
-  protectedProcedure
+  protectedProcedure,
+  adminAndMentorProcedure
 } from '~/server/api/trpc';
 
 export const attendanceRouter = createTRPCRouter({
@@ -390,9 +391,12 @@ export const attendanceRouter = createTRPCRouter({
     }),
 
   getAttendanceDayList: protectedProcedure.query(async ({ ctx }) => {
+    if ((await ctx.prisma.attendanceDay.count()) === 0) {
+      return [] as AttendanceDay[];
+    }
     return await ctx.prisma.attendanceDay.findMany({
       orderBy: {
-        name: 'asc'
+        time: 'desc'
       }
     });
   }),
@@ -400,7 +404,7 @@ export const attendanceRouter = createTRPCRouter({
   mentorGetAttendance: mentorProcedure
     .input(
       z.object({
-        eventId: z.string().uuid().optional(),
+        dayId: z.string().uuid().optional(),
         filterBy: z.string().optional(),
         searchQuery: z.string().optional(),
         currentPage: z.number(),
@@ -469,7 +473,9 @@ export const attendanceRouter = createTRPCRouter({
               }
             }
           },
-          eventId: input.eventId,
+          event: {
+            dayId: input.dayId
+          },
           date: input.filterBy === 'date' ? input.searchQuery : undefined
         },
         skip: (input.currentPage - 1) * input.limitPerPage,
@@ -502,7 +508,9 @@ export const attendanceRouter = createTRPCRouter({
               }
             }
           },
-          eventId: input.eventId,
+          event: {
+            dayId: input.dayId
+          },
           date: input.filterBy === 'date' ? input.searchQuery : undefined
         }
       });
@@ -531,12 +539,12 @@ export const attendanceRouter = createTRPCRouter({
         event: true
       },
       orderBy: {
-        name: 'asc'
+        time: 'desc'
       }
     });
   }),
 
-  editAttendanceRecord: mentorProcedure
+  editAttendanceRecord: adminAndMentorProcedure
     .input(
       z.object({
         attendanceId: z.string().uuid(),

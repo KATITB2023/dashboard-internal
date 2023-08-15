@@ -399,37 +399,16 @@ export const assignmentRouter = createTRPCRouter({
       }
 
       try {
-        const [assignment, users] = await Promise.all([
-          ctx.prisma.assignment.create({
-            data: {
-              title: input.title,
-              type: input.type,
-              filePath: input.filePath,
-              description: input.description,
-              startTime: input.startTime,
-              endTime: input.endTime
-            }
-          }),
-          ctx.prisma.user.findMany({
-            where: {
-              role: 'STUDENT'
-            },
-            select: {
-              id: true
-            }
-          })
-        ]);
-
-        await Promise.all(
-          users.map(async (user) => {
-            await ctx.prisma.assignmentSubmission.create({
-              data: {
-                studentId: user.id,
-                assignmentId: assignment.id
-              }
-            });
-          })
-        );
+        await ctx.prisma.assignment.create({
+          data: {
+            title: input.title,
+            type: input.type,
+            filePath: input.filePath,
+            description: input.description,
+            startTime: input.startTime,
+            endTime: input.endTime
+          }
+        });
 
         return {
           message: 'Assignment added successfully'

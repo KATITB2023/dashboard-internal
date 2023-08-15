@@ -1,5 +1,5 @@
 import { Box, Flex, Image, Select, Text, useToast } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '~/layout';
 import { api } from '~/utils/api';
 import { MentorRecap } from './mentor-recap/MentorRecap';
@@ -18,6 +18,12 @@ export default function AttendancePageMentor() {
   const dayChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setDayId(e.target.value);
   };
+
+  useEffect(() => {
+    if (dayList.length > 0 && !dayId) {
+      setDayId(dayList[0]?.id);
+    }
+  }, [dayId, dayList]);
 
   return (
     <Layout title='Attendance Page' type='mentor' fullBg>
@@ -58,13 +64,12 @@ export default function AttendancePageMentor() {
 
       <Flex w='100%' mt='2em'>
         <Select
-          placeholder='Select Day'
           color='white'
           borderRadius='md'
           bg='black'
           w='10em'
           onChange={dayChangeHandler}
-          defaultValue={dayList.length > 0 ? dayList[0]?.id : undefined} // P benerin
+          defaultValue={dayId} // P benerin
         >
           {dayList.map((day, i) => (
             <option value={day.id} key={i} style={{ color: 'black' }}>

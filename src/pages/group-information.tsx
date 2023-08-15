@@ -39,6 +39,12 @@ export default function GroupInformation() {
   // Mengambil data id kelompok
   const groupListQuery = api.group.adminGetGroupList.useQuery();
   const groupList = groupListQuery.data;
+  console.log(groupList);
+
+  // Mengambil assignment
+  const assignmentQuery =
+    api.assignment.mentorGetAssignmentTitleList.useQuery();
+  const assignment = assignmentQuery.data;
 
   // Untuk dropdown
   const [selectedOption, setSelectedOption] = useState<string | undefined>(
@@ -95,7 +101,7 @@ export default function GroupInformation() {
   return (
     <AdminRoute session={session}>
       <Layout type='admin' title='Group Information' fullBg={false}>
-        <Box height='100%' p={1}>
+        <Box height='100%' p={1} overflowY={'auto'}>
           {/* Logo and dropdown, flex display  */}
           <Flex
             justifyContent='space-between'
@@ -123,7 +129,11 @@ export default function GroupInformation() {
                   color='white'
                 >
                   <Avatar name={groupNumber.toString()} boxSize='70px' mr={4} />
-                  <Text fontWeight='bold' fontSize='24px' marginX='30px'>
+                  <Text
+                    fontWeight='bold'
+                    fontSize={{ base: '16px', lg: '24px' }}
+                    marginX={{ base: '10px', lg: '30px' }}
+                  >
                     Kelompok {groupNumber}
                   </Text>
                   <MenuButton
@@ -227,14 +237,22 @@ export default function GroupInformation() {
                   {groupData
                     ?.filter((groupData) => groupData.user.role === 'STUDENT')
                     .map((groupData, id) => {
-                      // submisi tugas
-                      const submissionArray = groupData.user.submission;
-                      const totalSubmission = submissionArray.length;
-                      const completedCount = submissionArray.filter(
-                        (item) => item.filePath != null
-                      ).length;
-                      const completedPercentage =
-                        (completedCount / totalSubmission) * 100;
+                      // submisi Tugas
+                      const totalAssignment = assignment?.length as number; // Banyak total assignment
+                      const allAssignmentTitles: string[] = assignment?.map(
+                        (assignment) => assignment.title
+                      ) as string[]; // Mengambil array judul assignment
+                      const studentAssignmentTitles: string[] =
+                        groupData.user.submission.map(
+                          (submission) => submission.assignment.title
+                        ); // Mengambil array judul assignment yang sudah dikerjakan
+                      const completedAssignment =
+                        groupData.user.submission.length;
+                      const assignmentPercentage = parseFloat(
+                        ((completedAssignment / totalAssignment) * 100).toFixed(
+                          2
+                        )
+                      );
 
                       // presensi
                       const attendanceArray = groupData.user.attendance;
@@ -242,31 +260,35 @@ export default function GroupInformation() {
                       const attendedCount = attendanceArray.filter(
                         (item) => item.status === 'HADIR'
                       ).length;
-                      const attendancePercentage =
-                        (attendedCount / totalAttendance) * 100;
+                      const attendancePercentage = parseFloat(
+                        ((attendedCount / totalAttendance) * 100).toFixed(2)
+                      );
 
                       // Tooltip content
                       const submissionTooltip = () => {
-                        return groupData.user.submission.map((task, index) => (
-                          <Flex key={index} alignItems='center'>
-                            {task.filePath != null ? (
-                              <BsCheckCircle size={24} color='#4909B3' />
-                            ) : (
-                              <BsCheckCircle size={24} color='#9B9B9B' />
-                            )}
-                            <Text
-                              textAlign='center'
-                              textDecoration={
-                                task.filePath != null
-                                  ? 'line-through'
-                                  : undefined
-                              }
-                              marginLeft='2px'
-                            >
-                              {`Task ${index + 1}`}
-                            </Text>
-                          </Flex>
-                        ));
+                        return allAssignmentTitles.map((title, index) => {
+                          const isCompleted =
+                            studentAssignmentTitles.includes(title);
+
+                          return (
+                            <Flex key={index} alignItems='center'>
+                              {isCompleted ? (
+                                <BsCheckCircle size={24} color='#4909B3' />
+                              ) : (
+                                <BsCheckCircle size={24} color='#9B9B9B' />
+                              )}
+                              <Text
+                                textAlign='center'
+                                textDecoration={
+                                  isCompleted ? 'line-through' : undefined
+                                }
+                                marginLeft='2px'
+                              >
+                                {allAssignmentTitles[index]}
+                              </Text>
+                            </Flex>
+                          );
+                        });
                       };
 
                       const attendanceTooltip = () => {
@@ -318,8 +340,8 @@ export default function GroupInformation() {
                               justifyContent='space-evenly'
                               position='relative'
                             >
-                              <Text color={getTextColor(completedPercentage)}>
-                                {`${completedCount} / ${totalSubmission}`}
+                              <Text color={getTextColor(assignmentPercentage)}>
+                                {`${completedAssignment} / ${totalAssignment}`}
                               </Text>
                               <FaEye
                                 size={24}

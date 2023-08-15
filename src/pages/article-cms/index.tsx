@@ -12,6 +12,7 @@ import {
   useToast,
   Link
 } from '@chakra-ui/react';
+import { AlertModal } from '~/components/AlertModal';
 import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { FiArrowLeft, FiArrowRight } from 'react-icons/fi';
@@ -20,6 +21,7 @@ import { TRPCError } from '@trpc/server';
 import ReactHtmlParser from 'react-html-parser';
 import { useRouter } from 'next/router';
 import { withSession } from '~/server/auth/withSession';
+import { TRPCClientError } from '@trpc/client';
 
 export const getServerSideProps = withSession({ force: true });
 
@@ -31,6 +33,8 @@ export default function ArticleCMS() {
   const [currentPageNum, setCurrentPageNum] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedId, setSelectedId] = useState<string>('');
+  const [showAlertModal, setShowAlertModal] = useState<boolean>(false);
   const options = Array.from({ length: totalPages }, (_, index) => index + 1);
   const getArticlesListQuery = api.cms.adminGetArticlesList.useQuery({
     currentPage: currentPageNum,
@@ -64,10 +68,15 @@ export default function ArticleCMS() {
     setTotalRecords(articlesList?.meta.pagination.total as number);
   }, [articlesList]);
 
-  const handleDeleteArticle = async (id: string) => {
+  const handleClickDelete = (id: string) => {
+    setShowAlertModal(true);
+    setSelectedId(id);
+  };
+
+  const handleDeleteArticle = async () => {
     try {
       const res = await deleteArticleMutation.mutateAsync({
-        articleId: id
+        articleId: selectedId
       });
 
       toast({
@@ -80,7 +89,8 @@ export default function ArticleCMS() {
       });
       setTotalRecords(totalRecords - 1);
     } catch (error: unknown) {
-      if (!(error instanceof TRPCError)) throw error;
+      if (!(error instanceof TRPCError || error instanceof TRPCClientError))
+        throw error;
 
       toast({
         title: 'Failed',
@@ -91,10 +101,11 @@ export default function ArticleCMS() {
         position: 'top'
       });
     }
+    setShowAlertModal(false);
   };
 
-  const handleEditArticle = (id: string) => {
-    void router.push(`/article-cms/edit/${id}`);
+  const handleEditArticle = (slug: string) => {
+    void router.push(`/article-cms/edit/${slug}`);
   };
 
   return (
@@ -177,17 +188,24 @@ export default function ArticleCMS() {
                 <Text
                   mx='2'
                   cursor='pointer'
-                  onClick={() => void handleEditArticle(article.id)}
+                  onClick={() => void handleEditArticle(article.slug)}
                 >
                   Edit
                 </Text>
                 <Text
                   mx='2'
                   cursor='pointer'
-                  onClick={() => void handleDeleteArticle(article.id)}
+                  onClick={() => void handleClickDelete(article.id)}
                 >
                   Remove
                 </Text>
+                <AlertModal
+                  title='Delete Article'
+                  content='Are you sure you want to delete this article?'
+                  isOpen={showAlertModal}
+                  onYes={() => void handleDeleteArticle()}
+                  onNo={() => setShowAlertModal(false)}
+                />
               </Flex>
             </Box>
           );

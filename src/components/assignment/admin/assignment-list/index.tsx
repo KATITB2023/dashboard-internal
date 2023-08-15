@@ -77,7 +77,7 @@ export default function AssignmentList() {
 
   return assignmentQuery.isLoading ? (
     <Text>Loading</Text>
-  ) : (
+  ) : metadata && metadata.total > 0 ? (
     <Flex direction={'column'} rowGap={4}>
       <TableContainer>
         <Table variant={'black'}>
@@ -108,64 +108,71 @@ export default function AssignmentList() {
           </Tbody>
         </Table>
       </TableContainer>
-      <Flex justifyContent={'space-between'} flexDir={'row-reverse'}>
-        <Flex>
-          <Button
-            variant='mono-outline'
-            w={{ base: '30%', lg: '4em' }}
-            mr='1em'
-            onClick={prevPage}
-          >
-            {'<'}
-          </Button>
-          <Menu>
-            <MenuButton
-              border='1px solid gray'
-              borderRadius='12px'
-              color='gray.600'
-              w={{ base: '30%', lg: '4em' }}
-              h='2.5em'
-            >
-              {page}
-            </MenuButton>
-            <MenuList border='1px solid gray' p='1em'>
-              <Flex>
-                <Input
-                  type='number'
-                  color={'white'}
-                  value={jumpInput}
-                  onChange={(e) => setJumpInput(e.target.value)}
-                />
-                <Button
-                  variant={'outline'}
-                  w='8em'
-                  ml='1em'
-                  onClick={jumpToPage}
+      {!assignmentQuery.isLoading && (
+        <Flex
+          justifyContent={'space-between'}
+          flexDir={{ base: 'column-reverse', lg: 'row-reverse' }}
+          rowGap={'1rem'}
+        >
+          {metadata && metadata.total > 0 && (
+            <Flex>
+              <Button
+                variant='mono-outline'
+                w={{ base: '30%', lg: '4em' }}
+                mr='1em'
+                onClick={prevPage}
+              >
+                {'<'}
+              </Button>
+              <Menu>
+                <MenuButton
+                  border='1px solid gray'
+                  borderRadius='12px'
+                  color='gray.600'
+                  w={{ base: '30%', lg: '4em' }}
+                  h='2.5em'
                 >
-                  Jump
-                </Button>
-              </Flex>
-            </MenuList>
-          </Menu>
-          <Button
-            variant='mono-outline'
-            w={{ base: '30%', lg: '4em' }}
-            ml='1em'
-            onClick={nextPage}
-          >
-            {'>'}
-          </Button>
-        </Flex>
-        {!assignmentQuery.isLoading && (
+                  {page}
+                </MenuButton>
+                <MenuList border='1px solid gray' p='1em'>
+                  <Flex>
+                    <Input
+                      type='number'
+                      color={'white'}
+                      value={jumpInput}
+                      onChange={(e) => setJumpInput(e.target.value)}
+                    />
+                    <Button
+                      variant={'outline'}
+                      w='8em'
+                      ml='1em'
+                      onClick={jumpToPage}
+                    >
+                      Jump
+                    </Button>
+                  </Flex>
+                </MenuList>
+              </Menu>
+              <Button
+                variant='mono-outline'
+                w={{ base: '30%', lg: '4em' }}
+                ml='1em'
+                onClick={nextPage}
+              >
+                {'>'}
+              </Button>
+            </Flex>
+          )}
+
           <Text>
-            Showing rows {(page - 1) * 5 + 1} to{' '}
-            {page * 5 > (metadata?.total as number)
-              ? metadata?.total
-              : page * 5}{' '}
-            of {metadata?.total} entries
+            Showing rows {metadata.total === 0 ? 0 : (page - 1) * 5 + 1} to{' '}
+            {page * 5 > metadata.total ? metadata?.total : page * 5} of{' '}
+            {metadata?.total} entries
           </Text>
-        )}
-      </Flex>
+        </Flex>
+      )}
     </Flex>
+  ) : (
+    <Text>Tidak ada data</Text>
   );
 }

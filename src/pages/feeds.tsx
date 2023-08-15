@@ -1,12 +1,6 @@
 import {
   Flex,
   Box,
-  Button,
-  useDisclosure,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
   Text,
   HStack,
   Popover,
@@ -16,9 +10,9 @@ import {
   PopoverFooter,
   Tag,
   Icon,
-  type BoxProps,
-  useToast
+  type BoxProps
 } from '@chakra-ui/react';
+import { AlertModal } from '~/components/AlertModal';
 import Layout from '~/layout/index';
 import { useForm } from 'react-hook-form';
 import React, { useState, forwardRef, useEffect } from 'react';
@@ -52,7 +46,7 @@ const PopoverBox = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
 
 export default function Feeds() {
   const { data: session } = useSession();
-  const toast = useToast();
+  const [showAlertModal, setShowAlertModal] = useState<boolean>(false);
   const { reset, setValue, getValues } = useForm<FeedProps>({
     mode: 'onSubmit',
     defaultValues: {
@@ -62,11 +56,6 @@ export default function Feeds() {
     }
   });
 
-  const {
-    isOpen: isRemoveOpen,
-    onOpen: onRemoveOpen,
-    onClose: onRemoveClose
-  } = useDisclosure();
   const getFeedsList = api.feeds.adminGetFeeds.useQuery();
   const deleteFeed = api.feeds.adminDeleteFeed.useMutation();
   const [fetchCount, setFetchCount] = useState<number>(0);
@@ -93,6 +82,7 @@ export default function Feeds() {
   }, [fetchCount]);
 
   const handleDelete = (idValue: number) => {
+    setShowAlertModal(true);
     setValue('id', idValue);
   };
 
@@ -105,9 +95,9 @@ export default function Feeds() {
     } catch (error) {
       console.log(error);
     }
+    setShowAlertModal(false);
     setFetchCount(fetchCount + 1);
     reset();
-    onRemoveClose();
   };
 
   const getTimeLabel = (timestamp: Date): string => {
@@ -127,7 +117,7 @@ export default function Feeds() {
 
   return (
     <AdminRoute session={session}>
-      <Layout type='admin' title='Feeds' fullBg={true}>
+      <Layout type='admin' title='Feeds' fullBg={false}>
         <Box width='100%'>
           <Header title='Feeds' />
           <Box
@@ -180,7 +170,7 @@ export default function Feeds() {
                             <EditFeed
                               id={item.id}
                               content={item.text}
-                              url={item.attachmentUrl!}
+                              url={item?.attachmentUrl as string}
                               feedChange={increment}
                             />
                           </PopoverHeader>
@@ -188,42 +178,23 @@ export default function Feeds() {
                             <HStack
                               onClick={() => {
                                 handleDelete(item.id);
-                                onRemoveOpen();
                               }}
                             >
                               <Icon as={SlTrash} boxSize={6} />
                               <Text>Remove</Text>
                             </HStack>
-                            <Modal
-                              isOpen={isRemoveOpen}
-                              onClose={onRemoveClose}
-                            >
-                              <ModalContent>
-                                <ModalHeader>
-                                  Are you sure to delete this feed?
-                                </ModalHeader>
-                                <ModalFooter>
-                                  <Button
-                                    variant='outlineBlue'
-                                    mr={3}
-                                    onClick={onRemoveClose}
-                                  >
-                                    Cancel
-                                  </Button>
-                                  <Button
-                                    variant='solidBlue'
-                                    onClick={() =>
-                                      void handleSubmitDelete(
-                                        getValues('id'),
-                                        item.attachmentUrl
-                                      )
-                                    }
-                                  >
-                                    Confirm
-                                  </Button>
-                                </ModalFooter>
-                              </ModalContent>
-                            </Modal>
+                            <AlertModal
+                              title='Delete Feed'
+                              content='Are you sure you want to delete this feed?'
+                              isOpen={showAlertModal}
+                              onYes={() =>
+                                void handleSubmitDelete(
+                                  getValues('id'),
+                                  item.attachmentUrl
+                                )
+                              }
+                              onNo={() => setShowAlertModal(false)}
+                            />
                           </PopoverFooter>
                         </PopoverContent>
                       </Popover>

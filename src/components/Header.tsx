@@ -5,12 +5,15 @@ export const Header = ({ title }: { title: string }) => (
     <Image
       src='/images/space-object/bulan-sabit.png'
       alt=''
-      w='100px'
+      w={{ base: '3rem', lg: '100px' }}
+      h={{ base: '3rem', lg: '100px' }}
       draggable='false'
       loading='lazy'
     />
     <Box alignSelf='center'>
-      <Heading fontWeight='normal'>Dashboard</Heading>
+      <Heading fontWeight='normal' fontSize={{ base: 'xl', lg: '4xl' }}>
+        Dashboard
+      </Heading>
       <Text
         color='purple.5'
         fontSize='xl'

@@ -33,7 +33,9 @@ import { TRPCClientError } from '@trpc/client';
 interface FormValues {
   title: string;
   type: AssignmentType;
+  startDate: string;
   startTime: string;
+  endDate: string;
   endTime: string;
   description: string;
   filePath: FileList;
@@ -55,24 +57,21 @@ export default function EditAssignmentModal({ props, emit }: Props) {
     register,
     formState: { errors },
     setValue,
-    getValues,
     reset
   } = useForm<FormValues>({
     mode: 'onSubmit',
     defaultValues: {
       title: props.title,
       type: props.type,
+      startDate: undefined,
       startTime: undefined,
+      endDate: undefined,
       endTime: undefined,
       description: props.description ? props.description : '',
       filePath: undefined
     }
   });
 
-  const [startDate, setStartDate] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [endTime, setEndTime] = useState('');
   const [loading, setLoading] = useState(false);
 
   const editAssignment = api.assignment.adminEditAssignment.useMutation();
@@ -87,8 +86,10 @@ export default function EditAssignmentModal({ props, emit }: Props) {
       if (data.filePath[0]) {
         const fileName = `assignment-${data.title}-${data.type}`;
         const extension = data.filePath[0]?.name.split('.').pop() as string;
-        additionalFilePath = `https://cdn.oskmitb.com/assignment-description/${fileName}.${extension}`;
-        await uploadFile(sanitizeURL(additionalFilePath), data.filePath[0]);
+        additionalFilePath = sanitizeURL(
+          `https://cdn.oskmitb.com/assignment-description/${fileName}.${extension}`
+        );
+        await uploadFile(additionalFilePath, data.filePath[0]);
       }
 
       const payload: RouterInputs['assignment']['adminEditAssignment'] = {
@@ -96,9 +97,14 @@ export default function EditAssignmentModal({ props, emit }: Props) {
         title: data.title,
         type: data.type,
         startTime: new Date(
-          moment(data.startTime, 'YYYY-MM-DD HH:mm').toDate()
+          moment(
+            data.startDate + ' ' + data.startTime,
+            'YYYY-MM-DD HH:mm'
+          ).toDate()
         ),
-        endTime: new Date(moment(data.endTime, 'YYYY-MM-DD HH:mm').toDate()),
+        endTime: new Date(
+          moment(data.endDate + ' ' + data.endTime, 'YYYY-MM-DD HH:mm').toDate()
+        ),
         description: data.description,
         filePath: additionalFilePath.length > 0 ? additionalFilePath : undefined
       };
@@ -129,37 +135,27 @@ export default function EditAssignmentModal({ props, emit }: Props) {
   };
 
   const openModal = () => {
-    setStartDate(
+    setValue(
+      'startDate',
       moment(new Date(props.startTime).toISOString()).format('YYYY-MM-DD')
     );
-    setStartTime(
-      moment(new Date(props.startTime).toISOString()).format('hh:mm')
-    );
-    setEndDate(
-      moment(new Date(props.endTime).toISOString()).format('YYYY-MM-DD')
-    );
-    setEndTime(moment(new Date(props.endTime).toISOString()).format('hh:mm'));
     setValue(
       'startTime',
-      moment(new Date(props.startTime).toISOString()).format('YYYY-MM-DD') +
-        ' ' +
-        moment(new Date(props.startTime).toISOString()).format('hh:mm')
+      moment(new Date(props.startTime).toISOString()).format('hh:mm')
+    );
+    setValue(
+      'endDate',
+      moment(new Date(props.endTime).toISOString()).format('YYYY-MM-DD')
     );
     setValue(
       'endTime',
-      moment(new Date(props.endTime).toISOString()).format('YYYY-MM-DD') +
-        ' ' +
-        moment(new Date(props.endTime).toISOString()).format('hh:mm')
+      moment(new Date(props.endTime).toISOString()).format('hh:mm')
     );
     onOpen();
   };
 
   const closeModal = () => {
     reset();
-    setStartDate('');
-    setStartTime('');
-    setEndDate('');
-    setEndTime('');
     emit(true);
     onClose();
   };
@@ -279,28 +275,17 @@ export default function EditAssignmentModal({ props, emit }: Props) {
                       render={() => (
                         <Flex columnGap={'1rem'}>
                           <Input
-                            value={startDate}
                             type='date'
                             color={'white'}
-                            onChange={(e) => {
-                              setValue('startTime', e.target.value);
-                              setStartDate(e.target.value);
-                            }}
                             size={{ base: 'sm', md: 'md' }}
+                            {...register('startDate')}
                           ></Input>
                           <Input
-                            value={startTime}
                             type='time'
                             color={'white'}
-                            onChange={(e) => {
-                              setValue(
-                                'startTime',
-                                getValues('startTime') + ' ' + e.target.value
-                              );
-                              setStartTime(e.target.value);
-                            }}
                             size={{ base: 'sm', md: 'md' }}
                             width={'50%'}
+                            {...register('startTime')}
                           ></Input>
                         </Flex>
                       )}
@@ -326,28 +311,17 @@ export default function EditAssignmentModal({ props, emit }: Props) {
                       render={() => (
                         <Flex columnGap={'1rem'}>
                           <Input
-                            value={endDate}
                             type='date'
                             color={'white'}
-                            onChange={(e) => {
-                              setValue('endTime', e.target.value);
-                              setEndDate(e.target.value);
-                            }}
                             size={{ base: 'sm', md: 'md' }}
+                            {...register('endDate')}
                           ></Input>
                           <Input
-                            value={endTime}
                             type='time'
                             color={'white'}
-                            onChange={(e) => {
-                              setValue(
-                                'endTime',
-                                getValues('endTime') + ' ' + e.target.value
-                              );
-                              setEndTime(e.target.value);
-                            }}
                             size={{ base: 'sm', md: 'md' }}
                             width={'50%'}
+                            {...register('endTime')}
                           ></Input>
                         </Flex>
                       )}
