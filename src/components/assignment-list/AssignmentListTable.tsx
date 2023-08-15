@@ -6,7 +6,7 @@ import {
   Flex,
   Icon,
   Tbody,
-  Button,
+  Text,
   Input,
   Spinner,
   useToast,
@@ -22,6 +22,7 @@ import {
 import { useRef, useState } from 'react';
 import { type AssignmentListProps } from '~/pages/penilaian';
 import { api } from '~/utils/api';
+import axios from 'axios';
 
 const AssignmentListTable = ({
   filteredData,
@@ -77,21 +78,17 @@ const AssignmentListTable = ({
     }
   });
 
-  const downloadFile = (url: string) => {
-    void fetch(url)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const blobURL = window.URL.createObjectURL(new Blob([blob]));
-        const fileName = url.split('/').pop();
-        const aTag = document.createElement('a');
-        aTag.href = blobURL;
-        if (fileName) {
-          aTag.setAttribute('download', fileName);
-          document.body.appendChild(aTag);
-          aTag.click();
-          aTag.remove();
-        }
-      });
+  const downloadFile = async (fileUrl: string, fileName: string) => {
+    const response = await axios.get(fileUrl, {
+      responseType: 'blob'
+    });
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
   };
 
   return (
@@ -382,12 +379,19 @@ const AssignmentListTable = ({
                           textAlign='center'
                           _hover={{ cursor: 'pointer' }}
                         >
-                          <Icon
-                            as={FiDownload}
-                            onClick={() =>
-                              downloadFile(item.filePath as string)
-                            }
-                          />
+                          {item.filePath ? (
+                            <Icon
+                              as={FiDownload}
+                              onClick={() =>
+                                void downloadFile(
+                                  item.filePath as string,
+                                  `${item.title}-${item.name as string}`
+                                )
+                              }
+                            />
+                          ) : (
+                            <Text>-</Text>
+                          )}
                         </Td>
                       </Tr>
                     );
