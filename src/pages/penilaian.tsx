@@ -57,7 +57,7 @@ export default function Penilaian() {
   }>({ params: 'title', order: 0 }); // sort params asc, desc
   const searchValue = useDebounce(search); // debounced search value
 
-  const [recordsPerPage, setRecordsPerPage] = useState(1000); // records per page
+  const [recordsPerPage, setRecordsPerPage] = useState(5); // records per page
   const [page, setPage] = useState(1); // page number
 
   const data =
@@ -130,14 +130,11 @@ export default function Penilaian() {
                   >
                     {dataList.length > 0 ? (
                       <>
-                        <option value={totalData}>All</option>
-                        {Array(totalData)
-                          .fill(1)
-                          .map((_, index: number) => (
-                            <option key={index} value={index + 1}>
-                              {index + 1}
-                            </option>
-                          ))}
+                        {[5, 10, 15].map((val, index: number) => (
+                          <option key={index} value={val}>
+                            {val}
+                          </option>
+                        ))}
                       </>
                     ) : (
                       <option value={0}>-</option>

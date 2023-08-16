@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Box,
   Button,
@@ -10,21 +16,21 @@ import {
   Table,
   TableContainer,
   Tbody,
-  Td,
   Text,
   Th,
   Thead,
   Tr,
-  useDisclosure,
   useToast
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { RouterInputs, RouterOutputs, api } from '~/utils/api';
+import { type RouterOutputs, api } from '~/utils/api';
 import { AddEventModal } from './AddEventModal';
 import { type AttendanceDay, type AttendanceEvent } from '@prisma/client';
-import { MdEdit } from 'react-icons/md';
 import { EventListRow } from './EventListRow';
 import { TRPCClientError } from '@trpc/client';
+import _ from 'lodash';
+import * as XLSX from 'xlsx';
+import FileSaver from 'file-saver';
 
 interface EventListProps {
   day: AttendanceDay;
@@ -33,6 +39,9 @@ interface EventListProps {
 export const EventList = ({ day }: EventListProps) => {
   const toast = useToast();
   const eventListQuery = api.attendance.adminGetAttendanceEventList.useQuery({
+    dayId: day.id
+  });
+  const csvQuery = api.csv.adminGetCSVAttendance.useQuery({
     dayId: day.id
   });
 
@@ -45,15 +54,117 @@ export const EventList = ({ day }: EventListProps) => {
     api.attendance.adminDeleteAttendanceEvent.useMutation();
 
   const [rowPerPage, setRowPerPage] = useState(5);
-  const {
-    isOpen: isEditingRowPerPageOpen,
-    onClose: onEditingRowPerPageClose,
-    onOpen: onEditingRowPerPageOpen
-  } = useDisclosure();
-
-  const [rowPerPageInput, setRowPerPageInput] = useState<number>(rowPerPage);
+  const [loading, setLoading] = useState(false);
 
   const maxPage = Math.ceil(eventList.length / rowPerPage);
+
+  const downloadCSV = async () => {
+    setLoading(true);
+    const curData: RouterOutputs['csv']['adminGetCSVAttendance'] | undefined = (
+      await csvQuery.refetch()
+    ).data;
+
+    // GWS LINTER
+    if (curData && !curData[0]) {
+      toast({
+        description: 'No data found',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'top'
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (curData) {
+      const toParse = curData[0];
+
+      const csv: any = {};
+      toParse?.event.forEach((item) => {
+        const { title, record } = item;
+        record.forEach((item) => {
+          const nim = item.student.nim;
+          const name = item.student.profile?.name;
+          const faculty = item.student.profile?.faculty;
+          const campus = item.student.profile?.campus;
+          const status = item.status;
+          const group = item.student.groupRelation[0]?.group.group || -1;
+
+          if (!csv[group]) csv[group] = {};
+          if (!csv[group][title]) csv[group][title] = [];
+
+          csv[group][title].push({
+            nim,
+            name,
+            faculty,
+            campus,
+            status
+          });
+        });
+      });
+
+      const fileType =
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+      const fileExtension = '.xlsx';
+      const fileName = `Rekap Absensi ${day.name}`;
+      const wb = XLSX.utils.book_new();
+
+      Object.keys(csv).forEach((key) => {
+        const header = [
+          ['NIM', 'Nama', 'Fakultas', 'Kampus', ...Object.keys(csv[key])]
+        ];
+        const ws = XLSX.utils.aoa_to_sheet(header);
+        ws['!cols'] = [
+          { wch: 20 },
+          { wch: 50 },
+          { wch: 30 },
+          { wch: 30 },
+          ...Object.keys(csv[key]).map(() => ({ wch: 20 }))
+        ];
+
+        const res: any[] = [];
+        Object.keys(csv[key]).forEach((key2) => {
+          const temp: { [key: string]: any } = {};
+          Object.keys(csv[key][key2]).forEach((key3) => {
+            const { nim, name, faculty, campus, status } = csv[key][key2][key3];
+            if (!temp[nim])
+              temp[nim] = {
+                nim,
+                name,
+                faculty,
+                campus
+              };
+            temp[nim][key2] = status;
+          });
+          res.push(...Object.values(temp));
+        });
+
+        const csvData = _.groupBy(res, 'nim');
+        Object.keys(csvData).forEach((key) => {
+          const temp = csvData[key] as any[];
+          const merged = _.merge(temp[0], temp[1]);
+          csvData[key] = merged;
+        });
+
+        const final = Object.values(csvData).map((item) => item);
+        console.log(final);
+
+        XLSX.utils.sheet_add_json(ws, final as any[], {
+          skipHeader: true,
+          origin: 'A2'
+        });
+        XLSX.utils.book_append_sheet(wb, ws, `Kelompok ${key}`);
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([excelBuffer], { type: fileType });
+      FileSaver.saveAs(blob, fileName + fileExtension);
+    }
+
+    setLoading(false);
+  };
 
   const addEvent = (
     name: string,
@@ -197,7 +308,13 @@ export const EventList = ({ day }: EventListProps) => {
   };
   return (
     <Flex flexDir='column'>
-      <Button variant='mono-outline' w={{ base: '30%', lg: '8em' }} h='2em'>
+      <Button
+        variant='mono-outline'
+        w={{ base: '30%', lg: '8em' }}
+        h='2em'
+        onClick={() => void downloadCSV()}
+        isLoading={loading}
+      >
         Cetak CSV
       </Button>
       <Flex alignItems='center' mt='1em'>
