@@ -254,7 +254,12 @@ export default function Penilaian() {
             <Box marginInline='auto'>Tidak ada data yang sesuai</Box>
           )}
 
-          <Flex alignItems='end' justifyContent='flex-end' gap='.5rem'>
+          <Flex
+            alignItems='flex-end'
+            justifyContent='flex-end'
+            gap='.5rem'
+            pb={5}
+          >
             {/* left arrow */}
             <IconButton
               variant='unstyled'

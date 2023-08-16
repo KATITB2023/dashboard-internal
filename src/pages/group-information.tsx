@@ -39,7 +39,6 @@ export default function GroupInformation() {
   // Mengambil data id kelompok
   const groupListQuery = api.group.adminGetGroupList.useQuery();
   const groupList = groupListQuery.data;
-  console.log(groupList);
 
   // Mengambil assignment
   const assignmentQuery =
@@ -101,7 +100,7 @@ export default function GroupInformation() {
   return (
     <AdminRoute session={session}>
       <Layout type='admin' title='Group Information' fullBg={false}>
-        <Box height='100%' p={1} overflowY={'auto'}>
+        <Box height='100%' p={1}>
           {/* Logo and dropdown, flex display  */}
           <Flex
             justifyContent='space-between'
@@ -209,12 +208,7 @@ export default function GroupInformation() {
               Anggota:
             </Text>
 
-            <Container
-              minWidth='full'
-              height='100%'
-              px={0}
-              overflowX={{ base: 'scroll', lg: 'visible' }}
-            >
+            <Container minWidth='full' height='100%' px={0} pb={5}>
               <Table variant='black'>
                 <Thead>
                   <Tr>

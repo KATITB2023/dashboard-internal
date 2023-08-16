@@ -148,7 +148,6 @@ export const EventList = ({ day }: EventListProps) => {
         });
 
         const final = Object.values(csvData).map((item) => item);
-        console.log(final);
 
         XLSX.utils.sheet_add_json(ws, final as any[], {
           skipHeader: true,

@@ -6,14 +6,7 @@ import {
   InputGroup,
   Menu,
   MenuButton,
-  MenuItem,
   MenuList,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
   Select,
   Table,
   TableContainer,
@@ -21,12 +14,10 @@ import {
   Td,
   Text,
   Thead,
-  Tr,
-  useDisclosure,
   useToast
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { RouterInputs, type RouterOutputs, api } from '~/utils/api';
+import { type RouterOutputs, api } from '~/utils/api';
 import { MentorRecapRow } from './MentorRecapRow';
 import { Status } from '@prisma/client';
 import { TRPCClientError } from '@trpc/client';
@@ -65,12 +56,6 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
   };
 
   const maxPage = Math.ceil(recordListMetaData.total || 1000 / rowPerPage);
-
-  const {
-    isOpen: isEditingRowPerPageOpen,
-    onClose: onEditingRowPerPageClose,
-    onOpen: onEditingRowPerPageOpen
-  } = useDisclosure();
 
   const [jumpInput, setJumpInput] = useState<string>('1');
   const jumpChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,8 +106,7 @@ export const MentorRecap = ({ dayId }: MentorRecapProps) => {
 
   const editRecord = (
     record: mentorGetAttendanceRecordOutput,
-    { newStatus, newDesc }: { newStatus: Status; newDesc: string },
-    successFn: () => void
+    { newStatus, newDesc }: { newStatus: Status; newDesc: string }
   ) => {
     if (newStatus === record.status) {
       return;

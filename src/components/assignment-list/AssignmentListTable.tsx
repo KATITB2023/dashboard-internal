@@ -45,13 +45,6 @@ const AssignmentListTable = ({
 
   const toast = useToast();
 
-  const [isBottomScroll, setIsBottomScroll] = useState(
-    Math.abs(
-      Math.round(tableRef.current?.scrollTop as number) -
-        (Number(tableRef.current?.scrollHeight) -
-          Number(tableRef.current?.clientHeight))
-    ) < 5
-  ); // is table scrolled to bottom?
   const [isEditing, setIsEditing] = useState(false); // is score being edited?
   const [activeScoreBar, setActiveScoreBar] = useState<number | null>(null); // active score bar index
 
@@ -93,21 +86,11 @@ const AssignmentListTable = ({
 
   return (
     // table wrapper
-    <Box overflow='hidden' height='100%' position='relative'>
+    <Box position='relative'>
       {/* scrollable table container */}
       <Box
         ref={tableRef}
-        overflowY='scroll'
         height='100%'
-        onScroll={(e) => {
-          const target = e.target as HTMLDivElement;
-          const bottom =
-            Math.abs(
-              Math.round(target.scrollTop) -
-                (target.scrollHeight - target.clientHeight)
-            ) < 5;
-          setIsBottomScroll(bottom);
-        }}
         sx={{
           '&::-webkit-scrollbar': {
             width: '0rem'
@@ -116,7 +99,7 @@ const AssignmentListTable = ({
       >
         {/* sticky table header */}
         <Box position='sticky' top='0' backgroundColor='gray.200' zIndex={1}>
-          <Box borderRadius='2rem 2rem 0 0' overflow='hidden'>
+          <Box borderRadius='2rem 2rem 0 0'>
             <TableContainer>
               <Table whiteSpace='normal'>
                 <Tbody backgroundColor='black' color='white'>
@@ -203,12 +186,7 @@ const AssignmentListTable = ({
         </Box>
 
         {/* table body */}
-        <Box
-          overflow='hidden'
-          borderRadius='0 0 2rem 2rem'
-          borderInline='1px'
-          borderBottom='1px'
-        >
+        <Box borderRadius='0 0 2rem 2rem' borderInline='1px' borderBottom='1px'>
           <TableContainer>
             <Table whiteSpace='normal'>
               <Tbody>
@@ -390,6 +368,9 @@ const AssignmentListTable = ({
                                   `${item.title}-${item.name as string}`
                                 )
                               }
+                              _hover={{
+                                opacity: 0.5
+                              }}
                             />
                           ) : (
                             <Text>-</Text>
@@ -404,18 +385,6 @@ const AssignmentListTable = ({
           </TableContainer>
         </Box>
       </Box>
-      <Box
-        position='absolute'
-        width='100%'
-        height='3rem'
-        bottom='0'
-        left='0'
-        opacity={isBottomScroll ? 0 : 1}
-        zIndex={isBottomScroll ? -1 : 1}
-        transitionDuration='.25s'
-        pointerEvents='none'
-        backgroundImage='linear-gradient(to bottom, rgba(255,255,255,0), gray.200)'
-      />
     </Box>
   );
 };

@@ -10,7 +10,6 @@ export const getServerSideProps = withSession({ force: true });
 
 export default function Absensi() {
   const { data: session } = useSession();
-  const router = useRouter();
 
   if (!session) return <Redirect />;
   if (session?.user.role === UserRole.ADMIN) return <AttendancePageAdmin />;

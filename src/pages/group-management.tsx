@@ -70,7 +70,7 @@ export default function GroupManagement() {
   return (
     <MentorRoute session={session}>
       <Layout type='mentor' title='Group Management' fullBg={false}>
-        <Box height='100%' p={1} overflowY={'auto'}>
+        <Box height='100%' p={1}>
           {/* Logo and kelompok, flex display  */}
           <Flex
             justifyContent='space-between'
@@ -156,12 +156,7 @@ export default function GroupManagement() {
             <Text color='#2D3648DE' fontWeight='700' fontSize='20px'>
               Anggota:
             </Text>
-            <Container
-              minWidth='full'
-              height='100%'
-              px={0}
-              overflowX={{ base: 'scroll', lg: 'visible' }}
-            >
+            <Container minWidth='full' height='100%' px={0} pb={5}>
               <Table variant='black'>
                 <Thead>
                   <Tr>
