@@ -17,7 +17,6 @@ import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { FiArrowLeft, FiArrowRight } from 'react-icons/fi';
 import { api } from '~/utils/api';
-import { TRPCError } from '@trpc/server';
 import ReactHtmlParser from 'react-html-parser';
 import { useRouter } from 'next/router';
 import { withSession } from '~/server/auth/withSession';
@@ -91,9 +90,8 @@ export default function ArticleCMS() {
         position: 'top'
       });
       setTotalRecords(totalRecords - 1);
-    } catch (error: unknown) {
-      if (!(error instanceof TRPCError || error instanceof TRPCClientError))
-        throw error;
+    } catch (error) {
+      if (!(error instanceof TRPCClientError)) throw error;
 
       toast({
         title: 'Failed',

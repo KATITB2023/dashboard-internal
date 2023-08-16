@@ -6,8 +6,7 @@ import {
   adminProcedure,
   mentorProcedure,
   protectedProcedure,
-  mentorAndEOProcedure,
-  publicProcedure
+  mentorAndEOProcedure
 } from '~/server/api/trpc';
 
 export const assignmentRouter = createTRPCRouter({

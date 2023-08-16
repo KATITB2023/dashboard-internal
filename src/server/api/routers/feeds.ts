@@ -1,23 +1,15 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { createTRPCRouter, adminProcedure } from '~/server/api/trpc';
-import { prisma } from '~/server/db';
 
 export const feedsRouter = createTRPCRouter({
   adminGetFeeds: adminProcedure.query(async ({ ctx }) => {
     // Get list semua feeds
-    try {
-      const feeds = await ctx.prisma.feed.findMany({
-        orderBy: {}
-      });
-
-      return feeds;
-    } catch (err) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Failed to get feeds'
-      });
-    }
+    return await ctx.prisma.feed.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
   }),
 
   adminGetFeed: adminProcedure
@@ -28,27 +20,11 @@ export const feedsRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       // Get detail feed berdasarkan id feed
-      try {
-        const feed = await ctx.prisma.feed.findFirst({
-          where: {
-            id: input.feedId
-          }
-        });
-
-        if (!feed) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'Feed does not exist'
-          });
+      return await ctx.prisma.feed.findUnique({
+        where: {
+          id: input.feedId
         }
-
-        return feed;
-      } catch (err) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to get feed'
-        });
-      }
+      });
     }),
 
   adminPostFeed: adminProcedure
@@ -89,7 +65,7 @@ export const feedsRouter = createTRPCRouter({
       // Delete feed berdasarkan id feed
       const { feedId } = input;
       try {
-        await prisma.feed.delete({
+        await ctx.prisma.feed.delete({
           where: { id: feedId }
         });
         return {

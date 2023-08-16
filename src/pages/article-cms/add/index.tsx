@@ -17,13 +17,13 @@ import { Header } from '~/components/Header';
 import React, { useState, useEffect } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { api, type RouterInputs } from '~/utils/api';
-import { TRPCError } from '@trpc/server';
 import { uploadFile, sanitizeURL } from '~/utils/file';
 import ReactHtmlParser from 'react-html-parser';
 import { useRouter } from 'next/router';
 import { withSession } from '~/server/auth/withSession';
 import AdminRoute from '~/layout/AdminRoute';
 import { useSession } from 'next-auth/react';
+import { TRPCClientError } from '@trpc/client';
 
 export const getServerSideProps = withSession({ force: true });
 
@@ -107,7 +107,7 @@ export default function AddArticle() {
       reset();
       void router.push('/article-cms');
     } catch (error: unknown) {
-      if (!(error instanceof TRPCError)) throw error;
+      if (!(error instanceof TRPCClientError)) throw error;
       toast({
         title: 'Failed',
         status: 'error',

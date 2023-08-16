@@ -1,3 +1,5 @@
+import { UserRole } from '@prisma/client';
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { createTRPCRouter, mentorProcedure } from '~/server/api/trpc';
 
@@ -28,7 +30,7 @@ export const leaderboardRouter = createTRPCRouter({
 
       const data = await ctx.prisma.user.findMany({
         where: {
-          role: 'STUDENT',
+          role: UserRole.STUDENT,
           groupRelation: {
             every: {
               groupId: groupRelation.groupId
@@ -54,12 +56,24 @@ export const leaderboardRouter = createTRPCRouter({
           }
         },
         take: input.limitPerPage,
-        skip: offset
+        skip: offset,
+        orderBy: [
+          {
+            profile: {
+              point: 'desc'
+            }
+          },
+          {
+            profile: {
+              name: 'asc'
+            }
+          }
+        ]
       });
 
       const total = await ctx.prisma.user.count({
         where: {
-          role: 'STUDENT',
+          role: UserRole.STUDENT,
           groupRelation: {
             every: {
               groupId: groupRelation.groupId
@@ -91,18 +105,25 @@ export const leaderboardRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       // TODO: mencari user berdasarkan userid yang diberikan
       // Lakukan update kolom point pada tabel profile sesuai dengan input
-      const data = await ctx.prisma.profile.update({
-        where: {
-          userId: input.userId
-        },
-        data: {
-          point: input.point
-        }
-      });
+      try {
+        const data = await ctx.prisma.profile.update({
+          where: {
+            userId: input.userId
+          },
+          data: {
+            point: input.point
+          }
+        });
 
-      return {
-        message: 'Point updated',
-        data
-      };
+        return {
+          message: 'Point updated',
+          data
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update point'
+        });
+      }
     })
 });
