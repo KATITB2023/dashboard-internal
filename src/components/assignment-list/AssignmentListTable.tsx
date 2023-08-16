@@ -164,7 +164,7 @@ const AssignmentListTable = ({
                     </Td>
                     <Td width='12%'>NIM</Td>
                     <Td width='14%'>Nama</Td>
-                    <Td width='12%'>Fakultas</Td>
+                    <Td width='10%'>Fakultas</Td>
                     <Td>Timestamp</Td>
                     <Td width='10%'>
                       <Flex
@@ -193,7 +193,7 @@ const AssignmentListTable = ({
                         />
                       </Flex>
                     </Td>
-                    <Td width='8%'>Nilai</Td>
+                    <Td width='12%'>Nilai</Td>
                     <Td width='9%'>Action</Td>
                   </Tr>
                 </Tbody>
@@ -240,7 +240,7 @@ const AssignmentListTable = ({
                           {item.nim}
                         </Td>
                         <Td width='14%'>{item.name}</Td>
-                        <Td width='12%'>{item.faculty}</Td>
+                        <Td width='10%'>{item.faculty}</Td>
                         <Td textAlign='center'>
                           {item.time.toLocaleDateString('id') +
                             ' ' +
@@ -249,7 +249,7 @@ const AssignmentListTable = ({
                         <Td width='10%' textAlign='center'>
                           {item.status}
                         </Td>
-                        <Td width='8%' textAlign='center'>
+                        <Td width='12%' textAlign='center'>
                           <Flex
                             position='relative'
                             justifyContent='center'

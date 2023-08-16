@@ -9,6 +9,20 @@ export const facultyRouter = createTRPCRouter({
         distinct: ['faculty'],
         select: {
           faculty: true
+        },
+        where: {
+          AND: [
+            {
+              faculty: {
+                not: null
+              }
+            },
+            {
+              NOT: {
+                faculty: ''
+              }
+            }
+          ]
         }
       });
 
