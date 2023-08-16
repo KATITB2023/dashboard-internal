@@ -113,7 +113,7 @@ export default function ArticleCMS() {
 
   return (
     <AdminRoute session={session}>
-      <Layout type='admin' title='Article CMS' fullBg={true}>
+      <Layout type='admin' title='Article CMS' fullBg={false}>
         <Header title='Article CMS' />
         <Flex>
           <InputGroup my='4'>
@@ -160,6 +160,20 @@ export default function ArticleCMS() {
           flexDirection='column'
           paddingRight='10'
           marginBottom='8'
+          overflow='scroll'
+          overflowX='hidden'
+          css={{
+            '&::-webkit-scrollbar': {
+              width: '4px'
+            },
+            '&::-webkit-scrollbar-track': {
+              width: '6px'
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: '#2D3648',
+              borderRadius: '24px'
+            }
+          }}
         >
           {articlesList?.data.map((article, index: number) => {
             return (

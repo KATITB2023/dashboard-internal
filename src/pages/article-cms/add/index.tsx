@@ -79,11 +79,12 @@ export default function AddArticle() {
     try {
       let imagePath = '';
       if (data.featureImage[0]) {
-        const fileName = `article-feature-img-${data.featureImage[0].name.replace(
-          ' ',
-          ''
-        )}`;
-        imagePath = sanitizeURL(`https://cdn.oskmitb.com/${fileName}`);
+        const fileName = `article-feature-img-${data.featureImage[0].name
+          .split(' ')
+          .join('-')}`;
+        imagePath = sanitizeURL(
+          `https://cdn.oskmitb.com/article-feat-image/${fileName}`
+        );
         await uploadFile(imagePath, data.featureImage[0]);
       }
 
@@ -122,8 +123,10 @@ export default function AddArticle() {
     if (file) {
       try {
         const handleUploadFile = async () => {
-          const fileName = `article-${file.name.replace(' ', '')}`;
-          const imagePath = sanitizeURL(`https://cdn.oskmitb.com/${fileName}`);
+          const fileName = `article-${file.name.split(' ').join('-')}`;
+          const imagePath = sanitizeURL(
+            `https://cdn.oskmitb.com/article/${fileName}`
+          );
 
           await uploadFile(imagePath, file);
           const imgHtml = `<img src=${imagePath} alt=${fileName} width='500px'/>`;

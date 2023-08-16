@@ -92,11 +92,12 @@ export default function EditArticle() {
     try {
       let imagePath = articleData?.feature_image as string;
       if (data.featureImage && data.featureImage[0]) {
-        const fileName = `article-feature-img-${data.featureImage[0].name.replace(
-          ' ',
-          ''
-        )}`;
-        imagePath = sanitizeURL(`https://cdn.oskmitb.com/article/${fileName}`);
+        const fileName = `article-feature-img-${data.featureImage[0].name
+          .split(' ')
+          .join('-')}`;
+        imagePath = sanitizeURL(
+          `https://cdn.oskmitb.com/article-feat-image/${fileName}`
+        );
         await uploadFile(imagePath, data.featureImage[0]);
       }
 
@@ -138,7 +139,7 @@ export default function EditArticle() {
     if (file) {
       try {
         const handleUploadFile = async () => {
-          const fileName = `article-${file.name.replace(' ', '')}`;
+          const fileName = `article-${file.name.split(' ').join('-')}`;
           const imagePath = sanitizeURL(
             `https://cdn.oskmitb.com/article/${fileName}`
           );
