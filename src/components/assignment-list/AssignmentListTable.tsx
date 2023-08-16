@@ -163,9 +163,10 @@ const AssignmentListTable = ({
                       </Flex>
                     </Td>
                     <Td width='12%'>NIM</Td>
-                    <Td width='18%'>Nama</Td>
+                    <Td width='14%'>Nama</Td>
+                    <Td width='12%'>Fakultas</Td>
                     <Td>Timestamp</Td>
-                    <Td width='12%'>
+                    <Td width='10%'>
                       <Flex
                         alignItems='center'
                         justifyContent='center'
@@ -192,7 +193,7 @@ const AssignmentListTable = ({
                         />
                       </Flex>
                     </Td>
-                    <Td width='11%'>Nilai</Td>
+                    <Td width='8%'>Nilai</Td>
                     <Td width='9%'>Action</Td>
                   </Tr>
                 </Tbody>
@@ -238,16 +239,17 @@ const AssignmentListTable = ({
                         <Td width='12%' textAlign='center'>
                           {item.nim}
                         </Td>
-                        <Td width='18%'>{item.name}</Td>
+                        <Td width='14%'>{item.name}</Td>
+                        <Td width='12%'>{item.faculty}</Td>
                         <Td textAlign='center'>
                           {item.time.toLocaleDateString('id') +
                             ' ' +
                             item.time.toLocaleTimeString('id')}
                         </Td>
-                        <Td width='12%' textAlign='center'>
+                        <Td width='10%' textAlign='center'>
                           {item.status}
                         </Td>
-                        <Td width='11%' textAlign='center'>
+                        <Td width='8%' textAlign='center'>
                           <Flex
                             position='relative'
                             justifyContent='center'
