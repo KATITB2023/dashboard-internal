@@ -8,7 +8,6 @@ import {
 
 export const groupRouter = createTRPCRouter({
   adminGetGroupList: adminProcedure.query(async ({ ctx }) => {
-    // TODO: isi logic disini
     const groups = await ctx.prisma.group.findMany({
       select: {
         id: true,
@@ -24,7 +23,6 @@ export const groupRouter = createTRPCRouter({
   adminGetGroupData: adminProcedure
     .input(z.object({ groupId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      // TODO: isi logic disini
       const group = await ctx.prisma.groupRelation.findMany({
         where: {
           groupId: input.groupId
@@ -40,30 +38,6 @@ export const groupRouter = createTRPCRouter({
                   faculty: true,
                   campus: true,
                   image: true
-                }
-              },
-              submission: {
-                select: {
-                  id: true,
-                  filePath: true,
-                  assignment: {
-                    select: {
-                      type: true,
-                      title: true
-                    }
-                  }
-                }
-              },
-              attendance: {
-                select: {
-                  id: true,
-                  date: true,
-                  status: true,
-                  event: {
-                    select: {
-                      title: true
-                    }
-                  }
                 }
               }
             }
