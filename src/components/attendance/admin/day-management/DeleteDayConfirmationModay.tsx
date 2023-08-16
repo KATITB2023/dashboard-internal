@@ -19,11 +19,13 @@ import { api } from '~/utils/api';
 interface DeleteDayConfirmationModalProps {
   dayId: string;
   deleteDay: (dayId: string) => void;
+  closeEditDayModal: () => void;
 }
 
 export const DeleteDayConfirmationModal = ({
   dayId,
-  deleteDay
+  deleteDay,
+  closeEditDayModal
 }: DeleteDayConfirmationModalProps) => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -39,8 +41,9 @@ export const DeleteDayConfirmationModal = ({
       });
       return;
     }
-
     deleteDay(dayId);
+    onClose();
+    closeEditDayModal();
   };
 
   return (

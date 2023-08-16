@@ -1,5 +1,6 @@
-import { ChakraProps, Input } from '@chakra-ui/react';
+import { type ChakraProps, Input } from '@chakra-ui/react';
 import { useState } from 'react';
+import { debounce } from 'lodash';
 
 interface DateInputProps extends ChakraProps {
   dateState: Date | undefined;
@@ -22,7 +23,7 @@ export const DateInput = ({
   const dateChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const format = e.target.value;
 
-    setDateState(new Date(`${format}T00:00:00`));
+    setDateState(new Date(`${format}T07:00:00`));
   };
 
   return (
@@ -30,7 +31,7 @@ export const DateInput = ({
       {...rest}
       type='date'
       value={dateState && getDateFormat(dateState ?? new Date())}
-      onChange={dateChangeHandler}
+      onChange={debounce(dateChangeHandler, 1000)}
       color='white'
     />
   );
