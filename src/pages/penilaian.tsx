@@ -162,7 +162,6 @@ export default function Penilaian() {
                   cursor='pointer'
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                     setFilterTugas(e.target.value);
-                    setRecordsPerPage(totalData);
                     setPage(1);
                   }}
                 >
@@ -185,7 +184,6 @@ export default function Penilaian() {
                     setFilterBy(e.target.value);
                     setSearch('');
                     setFilterFakultas('');
-                    setRecordsPerPage(totalData);
                   }}
                 >
                   {['NIM', 'Nama', 'Fakultas'].map((item: string) => (
@@ -206,7 +204,6 @@ export default function Penilaian() {
                     cursor='pointer'
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                       setFilterFakultas(e.target.value);
-                      setRecordsPerPage(totalData);
                       setPage(1);
                     }}
                   >
@@ -228,7 +225,6 @@ export default function Penilaian() {
                   value={search}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     setSearch(e.target.value);
-                    setRecordsPerPage(totalData);
                     setPage(1);
                   }}
                   variant='outline'
