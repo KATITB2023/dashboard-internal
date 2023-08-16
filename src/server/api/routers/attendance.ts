@@ -532,6 +532,14 @@ export const attendanceRouter = createTRPCRouter({
     });
   }),
 
+  getOnlyEventList: adminAndMentorProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.attendanceEvent.findMany({
+      orderBy: {
+        startTime: 'desc'
+      }
+    });
+  }),
+
   editAttendanceRecord: adminAndMentorProcedure
     .input(
       z.object({

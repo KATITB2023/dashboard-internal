@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  adminAndMentorProcedure,
   adminProcedure,
   createTRPCRouter,
   mentorProcedure
@@ -74,7 +75,6 @@ export const groupRouter = createTRPCRouter({
     }),
 
   mentorGetGroupData: mentorProcedure.query(async ({ ctx }) => {
-    // TODO: isi logic disini
     const mentorId = ctx.session.user.id;
 
     const groupRelation = await ctx.prisma.groupRelation.findFirst({
@@ -108,30 +108,6 @@ export const groupRouter = createTRPCRouter({
                 campus: true,
                 image: true
               }
-            },
-            submission: {
-              select: {
-                id: true,
-                filePath: true,
-                assignment: {
-                  select: {
-                    type: true,
-                    title: true
-                  }
-                }
-              }
-            },
-            attendance: {
-              select: {
-                id: true,
-                date: true,
-                status: true,
-                event: {
-                  select: {
-                    title: true
-                  }
-                }
-              }
             }
           }
         }
@@ -139,5 +115,43 @@ export const groupRouter = createTRPCRouter({
     });
 
     return group;
-  })
+  }),
+
+  getMenteeAssignment: adminAndMentorProcedure
+    .input(z.object({ menteeId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const res = await ctx.prisma.assignmentSubmission.findMany({
+        where: {
+          studentId: input.menteeId
+        },
+        include: {
+          assignment: {
+            select: {
+              title: true
+            }
+          }
+        }
+      });
+
+      return res;
+    }),
+
+  getMenteeAttendance: adminAndMentorProcedure
+    .input(z.object({ menteeId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const res = await ctx.prisma.attendanceRecord.findMany({
+        where: {
+          studentId: input.menteeId
+        },
+        include: {
+          event: {
+            select: {
+              title: true
+            }
+          }
+        }
+      });
+
+      return res;
+    })
 });
