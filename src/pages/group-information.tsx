@@ -39,7 +39,6 @@ export default function GroupInformation() {
   // Mengambil data id kelompok
   const groupListQuery = api.group.adminGetGroupList.useQuery();
   const groupList = groupListQuery.data;
-  console.log(groupList);
 
   // Mengambil assignment
   const assignmentQuery =
@@ -101,7 +100,7 @@ export default function GroupInformation() {
   return (
     <AdminRoute session={session}>
       <Layout type='admin' title='Group Information' fullBg={false}>
-        <Box height='100%' p={1} overflowY={'auto'}>
+        <Box height='100%' p={1}>
           {/* Logo and dropdown, flex display  */}
           <Flex
             justifyContent='space-between'
@@ -114,36 +113,35 @@ export default function GroupInformation() {
             {/* Dropdown */}
             <Box
               width='auto'
-              height='96px'
               bgImage='/images/comet_container.png'
               backgroundSize='cover'
               borderRadius='25px'
             >
               <Menu>
-                <Flex
-                  p={3}
-                  justifyContent='space-between'
-                  alignItems='center'
-                  height='100%'
-                  cursor='pointer'
-                  color='white'
+                <MenuButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                 >
-                  <Avatar name={groupNumber.toString()} boxSize='70px' mr={4} />
-                  <Text
-                    fontWeight='bold'
-                    fontSize={{ base: '16px', lg: '24px' }}
-                    marginX={{ base: '10px', lg: '30px' }}
+                  <Flex
+                    p={3}
+                    justifyContent='space-between'
+                    alignItems='center'
+                    height='100%'
+                    cursor='pointer'
+                    color='white'
                   >
-                    Kelompok {groupNumber}
-                  </Text>
-                  <MenuButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
+                    <Avatar name={groupNumber.toString()} />
+                    <Text
+                      fontWeight='bold'
+                      fontSize={{ base: '16px', lg: '24px' }}
+                      marginX={{ base: '10px', lg: '30px' }}
+                    >
+                      Kelompok {groupNumber}
+                    </Text>
                     <RiArrowDownSLine size={24} />
-                  </MenuButton>
-                </Flex>
+                  </Flex>
+                </MenuButton>
                 <MenuList bg='black' borderColor='black' width='full'>
                   {groupList?.map((groupList) => (
                     <MenuItem
@@ -154,6 +152,9 @@ export default function GroupInformation() {
                       onClick={() =>
                         handleOptionSelect(groupList.id, groupList.group)
                       }
+                      _hover={{
+                        bg: '#4909B3'
+                      }}
                     >
                       Kelompok {groupList.group}
                     </MenuItem>
@@ -184,16 +185,8 @@ export default function GroupInformation() {
                     color='white'
                     alignItems='center'
                   >
-                    <Avatar
-                      name={groupData.user.profile?.name}
-                      boxSize='70px'
-                      mr={4}
-                    />
-                    <Flex
-                      flexDirection='column'
-                      height='74px'
-                      justifyContent='center'
-                    >
+                    <Avatar name={groupData.user.profile?.name} mr={4} />
+                    <Flex flexDirection='column' justifyContent='center'>
                       <Text fontSize='16px' fontWeight='700'>
                         {groupData.user.profile?.name}
                       </Text>
@@ -215,12 +208,7 @@ export default function GroupInformation() {
               Anggota:
             </Text>
 
-            <Container
-              minWidth='full'
-              height='100%'
-              px={0}
-              overflowX={{ base: 'scroll', lg: 'visible' }}
-            >
+            <Container minWidth='full' height='100%' px={0} pb={5}>
               <Table variant='black'>
                 <Thead>
                   <Tr>

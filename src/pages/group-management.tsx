@@ -70,7 +70,7 @@ export default function GroupManagement() {
   return (
     <MentorRoute session={session}>
       <Layout type='mentor' title='Group Management' fullBg={false}>
-        <Box height='100%' p={1} overflowY={'auto'}>
+        <Box height='100%' p={1}>
           {/* Logo and kelompok, flex display  */}
           <Flex
             justifyContent='space-between'
@@ -83,7 +83,6 @@ export default function GroupManagement() {
             {/* Kelompok */}
             <Box
               width='auto'
-              height='96px'
               bgImage='/images/comet_container.png'
               backgroundSize='cover'
               borderRadius='25px'
@@ -100,7 +99,6 @@ export default function GroupManagement() {
                     ? mentorGroup[0]?.group.group
                     : []
                   )?.toString()}
-                  boxSize='70px'
                   mr={4}
                 />
                 <Text
@@ -136,16 +134,8 @@ export default function GroupManagement() {
                     color='white'
                     alignItems='center'
                   >
-                    <Avatar
-                      name={mentorGroup.user.profile?.name}
-                      boxSize='70px'
-                      mr={4}
-                    />
-                    <Flex
-                      flexDirection='column'
-                      height='74px'
-                      justifyContent='center'
-                    >
+                    <Avatar name={mentorGroup.user.profile?.name} mr={4} />
+                    <Flex flexDirection='column' justifyContent='center'>
                       <Text fontSize='16px' fontWeight='700'>
                         {mentorGroup.user.profile?.name}
                       </Text>
@@ -166,12 +156,7 @@ export default function GroupManagement() {
             <Text color='#2D3648DE' fontWeight='700' fontSize='20px'>
               Anggota:
             </Text>
-            <Container
-              minWidth='full'
-              height='100%'
-              px={0}
-              overflowX={{ base: 'scroll', lg: 'visible' }}
-            >
+            <Container minWidth='full' height='100%' px={0} pb={5}>
               <Table variant='black'>
                 <Thead>
                   <Tr>

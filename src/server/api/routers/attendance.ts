@@ -129,7 +129,7 @@ export const attendanceRouter = createTRPCRouter({
       }
 
       try {
-        const [attendanceEvent, users] = await Promise.all([
+        const [attendanceEvent] = await Promise.all([
           ctx.prisma.attendanceEvent.create({
             data: {
               day: {
@@ -151,18 +151,6 @@ export const attendanceRouter = createTRPCRouter({
             }
           })
         ]);
-
-        await Promise.all(
-          users.map(async (user) => {
-            await ctx.prisma.attendanceRecord.create({
-              data: {
-                date: new Date(),
-                studentId: user.id,
-                eventId: attendanceEvent.id
-              }
-            });
-          })
-        );
 
         return {
           message: 'Attendance event added successfully',

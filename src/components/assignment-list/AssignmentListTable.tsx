@@ -6,7 +6,7 @@ import {
   Flex,
   Icon,
   Tbody,
-  Button,
+  Text,
   Input,
   Spinner,
   useToast,
@@ -22,6 +22,7 @@ import {
 import { useRef, useState } from 'react';
 import { type AssignmentListProps } from '~/pages/penilaian';
 import { api } from '~/utils/api';
+import axios from 'axios';
 
 const AssignmentListTable = ({
   filteredData,
@@ -44,13 +45,6 @@ const AssignmentListTable = ({
 
   const toast = useToast();
 
-  const [isBottomScroll, setIsBottomScroll] = useState(
-    Math.abs(
-      Math.round(tableRef.current?.scrollTop as number) -
-        (Number(tableRef.current?.scrollHeight) -
-          Number(tableRef.current?.clientHeight))
-    ) < 5
-  ); // is table scrolled to bottom?
   const [isEditing, setIsEditing] = useState(false); // is score being edited?
   const [activeScoreBar, setActiveScoreBar] = useState<number | null>(null); // active score bar index
 
@@ -77,40 +71,26 @@ const AssignmentListTable = ({
     }
   });
 
-  const downloadFile = (url: string) => {
-    void fetch(url)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const blobURL = window.URL.createObjectURL(new Blob([blob]));
-        const fileName = url.split('/').pop();
-        const aTag = document.createElement('a');
-        aTag.href = blobURL;
-        if (fileName) {
-          aTag.setAttribute('download', fileName);
-          document.body.appendChild(aTag);
-          aTag.click();
-          aTag.remove();
-        }
-      });
+  const downloadFile = async (fileUrl: string, fileName: string) => {
+    const response = await axios.get(fileUrl, {
+      responseType: 'blob'
+    });
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
   };
 
   return (
     // table wrapper
-    <Box overflow='hidden' height='100%' position='relative'>
+    <Box position='relative'>
       {/* scrollable table container */}
       <Box
         ref={tableRef}
-        overflowY='scroll'
         height='100%'
-        onScroll={(e) => {
-          const target = e.target as HTMLDivElement;
-          const bottom =
-            Math.abs(
-              Math.round(target.scrollTop) -
-                (target.scrollHeight - target.clientHeight)
-            ) < 5;
-          setIsBottomScroll(bottom);
-        }}
         sx={{
           '&::-webkit-scrollbar': {
             width: '0rem'
@@ -119,7 +99,7 @@ const AssignmentListTable = ({
       >
         {/* sticky table header */}
         <Box position='sticky' top='0' backgroundColor='gray.200' zIndex={1}>
-          <Box borderRadius='2rem 2rem 0 0' overflow='hidden'>
+          <Box borderRadius='2rem 2rem 0 0'>
             <TableContainer>
               <Table whiteSpace='normal'>
                 <Tbody backgroundColor='black' color='white'>
@@ -166,9 +146,10 @@ const AssignmentListTable = ({
                       </Flex>
                     </Td>
                     <Td width='12%'>NIM</Td>
-                    <Td width='18%'>Nama</Td>
+                    <Td width='14%'>Nama</Td>
+                    <Td width='12%'>Fakultas</Td>
                     <Td>Timestamp</Td>
-                    <Td width='12%'>
+                    <Td width='10%'>
                       <Flex
                         alignItems='center'
                         justifyContent='center'
@@ -195,7 +176,7 @@ const AssignmentListTable = ({
                         />
                       </Flex>
                     </Td>
-                    <Td width='11%'>Nilai</Td>
+                    <Td width='8%'>Nilai</Td>
                     <Td width='9%'>Action</Td>
                   </Tr>
                 </Tbody>
@@ -205,12 +186,7 @@ const AssignmentListTable = ({
         </Box>
 
         {/* table body */}
-        <Box
-          overflow='hidden'
-          borderRadius='0 0 2rem 2rem'
-          borderInline='1px'
-          borderBottom='1px'
-        >
+        <Box borderRadius='0 0 2rem 2rem' borderInline='1px' borderBottom='1px'>
           <TableContainer>
             <Table whiteSpace='normal'>
               <Tbody>
@@ -241,16 +217,17 @@ const AssignmentListTable = ({
                         <Td width='12%' textAlign='center'>
                           {item.nim}
                         </Td>
-                        <Td width='18%'>{item.name}</Td>
+                        <Td width='14%'>{item.name}</Td>
+                        <Td width='12%'>{item.faculty}</Td>
                         <Td textAlign='center'>
                           {item.time.toLocaleDateString('id') +
                             ' ' +
                             item.time.toLocaleTimeString('id')}
                         </Td>
-                        <Td width='12%' textAlign='center'>
+                        <Td width='10%' textAlign='center'>
                           {item.status}
                         </Td>
-                        <Td width='11%' textAlign='center'>
+                        <Td width='8%' textAlign='center'>
                           <Flex
                             position='relative'
                             justifyContent='center'
@@ -382,12 +359,22 @@ const AssignmentListTable = ({
                           textAlign='center'
                           _hover={{ cursor: 'pointer' }}
                         >
-                          <Icon
-                            as={FiDownload}
-                            onClick={() =>
-                              downloadFile(item.filePath as string)
-                            }
-                          />
+                          {item.filePath ? (
+                            <Icon
+                              as={FiDownload}
+                              onClick={() =>
+                                void downloadFile(
+                                  item.filePath as string,
+                                  `${item.title}-${item.name as string}`
+                                )
+                              }
+                              _hover={{
+                                opacity: 0.5
+                              }}
+                            />
+                          ) : (
+                            <Text>-</Text>
+                          )}
                         </Td>
                       </Tr>
                     );
@@ -398,18 +385,6 @@ const AssignmentListTable = ({
           </TableContainer>
         </Box>
       </Box>
-      <Box
-        position='absolute'
-        width='100%'
-        height='3rem'
-        bottom='0'
-        left='0'
-        opacity={isBottomScroll ? 0 : 1}
-        zIndex={isBottomScroll ? -1 : 1}
-        transitionDuration='.25s'
-        pointerEvents='none'
-        backgroundImage='linear-gradient(to bottom, rgba(255,255,255,0), gray.200)'
-      />
     </Box>
   );
 };

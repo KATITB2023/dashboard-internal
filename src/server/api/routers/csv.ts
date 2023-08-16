@@ -5,6 +5,7 @@ export const csvRouter = createTRPCRouter({
   adminGetCSVAssignment: adminProcedure
     .input(z.object({ assignmentId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
+      if (!input.assignmentId) return [];
       return await ctx.prisma.assignment.findMany({
         where: {
           id: input.assignmentId
@@ -24,6 +25,15 @@ export const csvRouter = createTRPCRouter({
                       faculty: true,
                       campus: true
                     }
+                  },
+                  groupRelation: {
+                    select: {
+                      group: {
+                        select: {
+                          group: true
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -36,6 +46,7 @@ export const csvRouter = createTRPCRouter({
   adminGetCSVAttendance: adminProcedure
     .input(z.object({ dayId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
+      if (!input.dayId) return [];
       return await ctx.prisma.attendanceDay.findMany({
         where: {
           id: input.dayId
@@ -59,6 +70,15 @@ export const csvRouter = createTRPCRouter({
                           name: true,
                           faculty: true,
                           campus: true
+                        }
+                      },
+                      groupRelation: {
+                        select: {
+                          group: {
+                            select: {
+                              group: true
+                            }
+                          }
                         }
                       }
                     }

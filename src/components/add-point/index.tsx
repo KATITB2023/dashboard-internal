@@ -7,7 +7,6 @@ import {
   InputGroup,
   Menu,
   MenuButton,
-  MenuItem,
   MenuList,
   Modal,
   ModalBody,
@@ -22,19 +21,14 @@ import {
   Td,
   Text,
   Thead,
-  Tr,
   useDisclosure,
   useToast
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { RouterOutputs, api } from '~/utils/api';
-import { Status } from '@prisma/client';
+import { api } from '~/utils/api';
 import { AddPointRow } from './AddPointRow';
 import Layout from '~/layout';
 import { TRPCClientError } from '@trpc/client';
-
-type leaderboardQueryOutput =
-  RouterOutputs['leaderboard']['mentorGetLeaderboardData']['data'][0];
 
 export const AddPoint = () => {
   const toast = useToast();
@@ -87,12 +81,6 @@ export const AddPoint = () => {
   };
 
   const searchQueryChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const statusSearchQueryChangeHandler = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
     setSearchQuery(e.target.value);
   };
 

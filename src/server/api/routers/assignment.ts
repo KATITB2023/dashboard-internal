@@ -16,6 +16,7 @@ export const assignmentRouter = createTRPCRouter({
       z.object({
         filterBy: z.string().optional(),
         searchQuery: z.string().optional(),
+        assignment: z.string().optional(),
         currentPage: z.number(),
         limitPerPage: z.number()
       })
@@ -25,7 +26,7 @@ export const assignmentRouter = createTRPCRouter({
       const limitPerPage = input.limitPerPage;
       const offset = (currentPage - 1) * limitPerPage;
 
-      if (input.filterBy && input.searchQuery) {
+      if (input.filterBy && input.searchQuery && input.assignment) {
         let where = {};
 
         switch (input.filterBy) {
@@ -77,6 +78,25 @@ export const assignmentRouter = createTRPCRouter({
                   }
                 }
               },
+              {
+                assignment: {
+                  title: {
+                    contains: input.assignment,
+                    mode: 'insensitive'
+                  }
+                }
+              },
+              {
+                student: {
+                  profile: {
+                    faculty: {
+                      contains:
+                        input.filterBy === 'Fakultas' ? input.searchQuery : '',
+                      mode: 'insensitive'
+                    }
+                  }
+                }
+              },
               where
             ]
           },
@@ -113,6 +133,25 @@ export const assignmentRouter = createTRPCRouter({
                   student: {
                     some: {
                       mentorId: ctx.session.user.id
+                    }
+                  }
+                }
+              },
+              {
+                assignment: {
+                  title: {
+                    contains: input.assignment,
+                    mode: 'insensitive'
+                  }
+                }
+              },
+              {
+                student: {
+                  profile: {
+                    faculty: {
+                      contains:
+                        input.filterBy === 'Fakultas' ? input.searchQuery : '',
+                      mode: 'insensitive'
                     }
                   }
                 }
@@ -239,6 +278,7 @@ export const assignmentRouter = createTRPCRouter({
       z.object({
         filterBy: z.string().optional(),
         searchQuery: z.string().optional(),
+        assignment: z.string().optional(),
         currentPage: z.number(),
         limitPerPage: z.number(),
         isEO: z.boolean()
@@ -305,6 +345,25 @@ export const assignmentRouter = createTRPCRouter({
                 }
               }
             },
+            {
+              assignment: {
+                title: {
+                  contains: input.assignment,
+                  mode: 'insensitive'
+                }
+              }
+            },
+            {
+              student: {
+                profile: {
+                  faculty: {
+                    contains:
+                      input.filterBy === 'Fakultas' ? input.searchQuery : '',
+                    mode: 'insensitive'
+                  }
+                }
+              }
+            },
             filterAssignmentType,
             filterByMentor
           ]
@@ -326,7 +385,8 @@ export const assignmentRouter = createTRPCRouter({
               nim: true,
               profile: {
                 select: {
-                  name: true
+                  name: true,
+                  faculty: true
                 }
               }
             }
@@ -360,6 +420,14 @@ export const assignmentRouter = createTRPCRouter({
                       input.filterBy === 'Nama' ? input.searchQuery : '',
                     mode: 'insensitive'
                   }
+                }
+              }
+            },
+            {
+              assignment: {
+                title: {
+                  contains: input.assignment,
+                  mode: 'insensitive'
                 }
               }
             },

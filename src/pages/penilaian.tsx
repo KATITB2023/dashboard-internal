@@ -38,6 +38,7 @@ export interface AssignmentListProps {
   studentId: string;
   nim: string;
   name: string | undefined;
+  faculty: string | null | undefined;
   score: number | null;
   time: Date;
   status: 'Terlambat' | 'Tepat Waktu';
@@ -51,13 +52,14 @@ export default function Penilaian() {
   const [search, setSearch] = useState(''); // serach bar value
   const [filterBy, setFilterBy] = useState(''); // filter by value
   const [filterTugas, setFilterTugas] = useState(''); // filter tugas value
+  const [filterFakultas, setFilterFakultas] = useState(''); // filter tugas value
   const [sortParams, setSortParams] = useState<{
     params: 'title' | 'status';
     order: number;
   }>({ params: 'title', order: 0 }); // sort params asc, desc
   const searchValue = useDebounce(search); // debounced search value
 
-  const [recordsPerPage, setRecordsPerPage] = useState(1000); // records per page
+  const [recordsPerPage, setRecordsPerPage] = useState(5); // records per page
   const [page, setPage] = useState(1); // page number
 
   const data =
@@ -65,7 +67,8 @@ export default function Penilaian() {
       currentPage: page,
       limitPerPage: recordsPerPage,
       filterBy: filterBy,
-      searchQuery: filterBy === 'Tugas' ? filterTugas : searchValue,
+      searchQuery: filterBy === 'Fakultas' ? filterFakultas : searchValue,
+      assignment: filterTugas,
       isEO: session && session.user.role === UserRole.EO ? true : false
     }) || [];
 
@@ -73,12 +76,15 @@ export default function Penilaian() {
     api.assignment.mentorGetAssignmentTitleList.useQuery().data || [];
   const totalData = data.data?.metadata.total || 0;
 
+  const facultyList = api.faculty.getFaculties.useQuery().data || [];
+
   const dataList: AssignmentListProps[] =
     data.data?.data.map((item) => ({
       id: item.id,
       studentId: item.studentId,
       nim: item.student.nim,
       name: item.student.profile?.name,
+      faculty: item.student.profile?.faculty,
       score: item.score,
       time: item.createdAt,
       status:
@@ -130,14 +136,11 @@ export default function Penilaian() {
                   >
                     {dataList.length > 0 ? (
                       <>
-                        <option value={totalData}>All</option>
-                        {Array(totalData)
-                          .fill(1)
-                          .map((_, index: number) => (
-                            <option key={index} value={index + 1}>
-                              {index + 1}
-                            </option>
-                          ))}
+                        {[5, 10, 15].map((val, index: number) => (
+                          <option key={index} value={val}>
+                            {val}
+                          </option>
+                        ))}
                       </>
                     ) : (
                       <option value={0}>-</option>
@@ -151,6 +154,26 @@ export default function Penilaian() {
             <Flex gap='.5rem'>
               <label>
                 <Select
+                  width='15rem'
+                  value={filterTugas}
+                  border='2px'
+                  borderColor='gray.300'
+                  placeholder='Daftar Tugas'
+                  cursor='pointer'
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                    setFilterTugas(e.target.value);
+                    setPage(1);
+                  }}
+                >
+                  {tugasList.map((item) => (
+                    <option key={item.id} value={item.title}>
+                      {item.title}
+                    </option>
+                  ))}
+                </Select>
+              </label>
+              <label>
+                <Select
                   value={filterBy}
                   width='max-content'
                   placeholder='Filter by'
@@ -160,18 +183,41 @@ export default function Penilaian() {
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                     setFilterBy(e.target.value);
                     setSearch('');
-                    setFilterTugas('');
-                    setRecordsPerPage(totalData);
+                    setFilterFakultas('');
                   }}
                 >
-                  {['Tugas', 'NIM', 'Nama'].map((item: string) => (
+                  {['NIM', 'Nama', 'Fakultas'].map((item: string) => (
                     <option key={item} value={item}>
                       {item}
                     </option>
                   ))}
                 </Select>
               </label>
-              {filterBy !== 'Tugas' ? (
+              {filterBy === 'Fakultas' ? (
+                <label>
+                  <Select
+                    width='15rem'
+                    value={filterFakultas}
+                    border='2px'
+                    borderColor='gray.300'
+                    placeholder='Daftar Fakultas'
+                    cursor='pointer'
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                      setFilterFakultas(e.target.value);
+                      setPage(1);
+                    }}
+                  >
+                    {facultyList.map((item) => (
+                      <option
+                        key={item.faculty as string}
+                        value={item.faculty as string}
+                      >
+                        {item.faculty}
+                      </option>
+                    ))}
+                  </Select>
+                </label>
+              ) : (
                 <Input
                   type='search'
                   placeholder='Search'
@@ -179,34 +225,13 @@ export default function Penilaian() {
                   value={search}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     setSearch(e.target.value);
-                    setRecordsPerPage(totalData);
+                    setPage(1);
                   }}
                   variant='outline'
                   border='2px'
                   borderColor='gray.300'
                   display={filterBy === '' ? 'none' : 'block'}
                 />
-              ) : (
-                <label>
-                  <Select
-                    width='15rem'
-                    value={filterTugas}
-                    border='2px'
-                    borderColor='gray.300'
-                    placeholder='Daftar Tugas'
-                    cursor='pointer'
-                    onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-                      setFilterTugas(e.target.value);
-                      setRecordsPerPage(totalData);
-                    }}
-                  >
-                    {tugasList.map((item) => (
-                      <option key={item.id} value={item.title}>
-                        {item.title}
-                      </option>
-                    ))}
-                  </Select>
-                </label>
               )}
             </Flex>
           </Flex>
@@ -229,7 +254,12 @@ export default function Penilaian() {
             <Box marginInline='auto'>Tidak ada data yang sesuai</Box>
           )}
 
-          <Flex alignItems='end' justifyContent='flex-end' gap='.5rem'>
+          <Flex
+            alignItems='flex-end'
+            justifyContent='flex-end'
+            gap='.5rem'
+            pb={5}
+          >
             {/* left arrow */}
             <IconButton
               variant='unstyled'

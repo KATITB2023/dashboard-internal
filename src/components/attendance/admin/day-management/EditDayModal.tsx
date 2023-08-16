@@ -17,7 +17,7 @@ import {
   useDisclosure,
   useToast
 } from '@chakra-ui/react';
-import { AttendanceDay } from '@prisma/client';
+import { type AttendanceDay } from '@prisma/client';
 import { useState } from 'react';
 import { MdEdit } from 'react-icons/md';
 import { DateInput } from '~/components/DateInput';
@@ -118,6 +118,7 @@ export const EditDayModal = ({
             <DeleteDayConfirmationModal
               dayId={dayData.id}
               deleteDay={deleteDay}
+              closeEditDayModal={onClose}
             />
             <Button variant='mono' onClick={addDayClickHandler}>
               Simpan

@@ -15,7 +15,6 @@ import { useState } from 'react';
 import { type InferGetServerSidePropsType } from 'next';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { UserRole } from '@prisma/client';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { type getServerSideProps } from '~/pages';
@@ -61,6 +60,9 @@ const LoginForm = ({
   };
 
   const handleRedirect = () => {
+    if (session?.user.role === 'STUDENT') {
+      window.location.href = 'https://oskmitb.com';
+    }
     void router.push('/welcome');
   };
 
@@ -181,9 +183,10 @@ const LoginForm = ({
             Login
           </Button>
           <Link
-            href='/forgot-password'
+            href='https://app.oskmitb.com/forgot-password'
             fontSize={{ base: 'xs', md: 'sm' }}
             zIndex='2'
+            target='_blank'
           >
             Lupa Password?
           </Link>

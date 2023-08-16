@@ -89,7 +89,10 @@ export const authOptions: NextAuthOptions = {
           ? 'next-auth.session-token'
           : '__Secure-next-auth.session-token',
       options: {
-        domain: env.SESSION_COOKIE_DOMAIN,
+        domain:
+          env.NODE_ENV === 'development'
+            ? 'localhost'
+            : env.SESSION_COOKIE_DOMAIN,
         httpOnly: true,
         maxAge: env.SESSION_MAXAGE,
         path: '/',

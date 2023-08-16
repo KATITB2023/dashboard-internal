@@ -57,6 +57,7 @@ export const AddDayModal = ({ addDay }: AddDayModalProps) => {
     }
 
     addDay(dayNameInput, dayDateInput, () => onClose());
+    onClose();
   };
   return (
     <>
