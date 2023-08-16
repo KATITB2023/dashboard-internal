@@ -126,7 +126,6 @@ export const Recap = ({ dayId }: RecapProps) => {
           duration: 3000
         });
         await recordListQuery.refetch();
-        await recordListQuery.refetch();
       })
       .catch((err) => {
         if (!(err instanceof TRPCClientError)) throw err;

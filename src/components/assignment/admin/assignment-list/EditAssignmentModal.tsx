@@ -43,7 +43,7 @@ interface FormValues {
 
 interface Props {
   props: Assignment;
-  emit: (data: boolean) => void;
+  emit: () => void;
 }
 
 export default function EditAssignmentModal({ props, emit }: Props) {
@@ -158,7 +158,7 @@ export default function EditAssignmentModal({ props, emit }: Props) {
 
   const closeModal = () => {
     reset();
-    emit(true);
+    emit();
     onClose();
   };
 
@@ -370,7 +370,7 @@ export default function EditAssignmentModal({ props, emit }: Props) {
               <DeleteAssignmentModal
                 id={props.id}
                 title={props.title}
-                emit={() => emit(true)}
+                emit={() => emit()}
               />
               <Button
                 variant={'outline'}

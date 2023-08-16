@@ -70,7 +70,6 @@ export default function AttendancePageAdmin() {
           duration: 3000
         });
         await dayListQuery.refetch();
-        await dayListQuery.refetch();
         thenFn();
       })
       .catch((err) => {

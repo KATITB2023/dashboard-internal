@@ -141,29 +141,9 @@ export default function AssignmentList() {
     setLoading(false);
   };
 
-  [
-    {
-      filePath:
-        'https://cdn.oskmitb.com/861a0126-a9cb-40cf-9ae8-f50282c016bc-KLMPK MENTOR AGAMA.png',
-      score: 30,
-      createdAt: '2023-08-15T06:17:17.073Z',
-      student: {
-        nim: '13523009',
-        profile: {
-          name: 'Raymond Elliott',
-          faculty: 'FTSL',
-          campus: 'CIREBON'
-        },
-        groupRelation: [
-          {
-            group: {
-              group: 1
-            }
-          }
-        ]
-      }
-    }
-  ];
+  const refetch = async () => {
+    await assignmentQuery.refetch();
+  };
 
   const prevPage = () => {
     let jump: number;
@@ -228,11 +208,13 @@ export default function AssignmentList() {
                   <AssignmentListRow
                     data={item}
                     index={(page - 1) * 5 + index + 1}
-                    page={page}
                     key={item.id}
                     loading={loading}
                     assignmentId={assignmentId}
                     downloadCSV={() => void downloadCSV(item.id, item.title)}
+                    emit={() => {
+                      void refetch();
+                    }}
                   />
                 );
               })}

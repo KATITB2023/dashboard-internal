@@ -232,27 +232,6 @@ export const assignmentRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const offset = (input.currentPage - 1) * 5;
       const data = await ctx.prisma.assignment.findMany({
-        include: {
-          submission: {
-            select: {
-              id: true,
-              filePath: true,
-              score: true,
-              student: {
-                select: {
-                  nim: true,
-                  profile: {
-                    select: {
-                      name: true,
-                      faculty: true,
-                      campus: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
         skip: offset,
         take: 5,
         orderBy: {
