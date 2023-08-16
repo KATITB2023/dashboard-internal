@@ -163,6 +163,7 @@ export default function Penilaian() {
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                     setFilterTugas(e.target.value);
                     setRecordsPerPage(totalData);
+                    setPage(1);
                   }}
                 >
                   {tugasList.map((item) => (
@@ -183,7 +184,7 @@ export default function Penilaian() {
                   onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                     setFilterBy(e.target.value);
                     setSearch('');
-                    setFilterTugas('');
+                    setFilterFakultas('');
                     setRecordsPerPage(totalData);
                   }}
                 >
@@ -206,6 +207,7 @@ export default function Penilaian() {
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                       setFilterFakultas(e.target.value);
                       setRecordsPerPage(totalData);
+                      setPage(1);
                     }}
                   >
                     {facultyList.map((item) => (
@@ -227,6 +229,7 @@ export default function Penilaian() {
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     setSearch(e.target.value);
                     setRecordsPerPage(totalData);
+                    setPage(1);
                   }}
                   variant='outline'
                   border='2px'
