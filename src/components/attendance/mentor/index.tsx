@@ -4,12 +4,8 @@ import Layout from '~/layout';
 import { api } from '~/utils/api';
 import { MentorRecap } from './mentor-recap/MentorRecap';
 import { Header } from '~/components/Header';
-import MentorRoute from '~/layout/MentorRoute';
-import { useSession } from 'next-auth/react';
 
 export default function AttendancePageMentor() {
-  const { data: session } = useSession();
-
   const dayListQuery = api.attendance.mentorGetEventList.useQuery(); // ganti querynya jadi buat mentor
   const dayList = dayListQuery.data || [];
 
@@ -27,68 +23,66 @@ export default function AttendancePageMentor() {
   }, [dayId, dayList]);
 
   return (
-    <MentorRoute session={session}>
-      <Layout title='Attendance Page' type='mentor' fullBg>
+    <Layout title='Attendance Page' type='mentor' fullBg>
+      <Flex
+        justifyContent={{
+          base: 'center',
+          lg: 'space-between'
+        }}
+        flexDir={{
+          base: 'column',
+          lg: 'row'
+        }}
+        w='100%'
+      >
+        <Header title={'Rekap Absensi'} />
         <Flex
-          justifyContent={{
-            base: 'center',
-            lg: 'space-between'
-          }}
-          flexDir={{
-            base: 'column',
-            lg: 'row'
-          }}
-          w='100%'
+          bg='black'
+          p='1em'
+          borderRadius='10px'
+          pos='relative'
+          w='min(20em,90%)'
+          alignItems='center'
+          overflow='hidden'
+          h='4.5em'
         >
-          <Header title={'Rekap Absensi'} />
-          <Flex
-            bg='black'
-            p='1em'
-            borderRadius='10px'
-            pos='relative'
-            w='min(20em,90%)'
-            alignItems='center'
-            overflow='hidden'
-            h='4.5em'
-          >
-            <Text color='white' fontSize='2xl' fontWeight='bold' zIndex='2'>
-              {`Kelompok ${groupNumber}`}
-            </Text>
-            <Image
-              src='/images/komet-absen.png'
-              position='absolute'
-              right='-5%'
-              w='25%'
-              top='-1em'
-              alt=''
-            />
-          </Flex>
+          <Text color='white' fontSize='2xl' fontWeight='bold' zIndex='2'>
+            {`Kelompok ${groupNumber}`}
+          </Text>
+          <Image
+            src='/images/komet-absen.png'
+            position='absolute'
+            right='-5%'
+            w='25%'
+            top='-1em'
+            alt=''
+          />
         </Flex>
+      </Flex>
 
-        <Flex w='100%' mt='2em'>
-          <Select
-            color='white'
-            borderRadius='md'
-            bg='black'
-            w='10em'
-            onChange={dayChangeHandler}
-            defaultValue={dayId} // P benerin
-          >
-            {dayList.map((day, i) => (
-              <option value={day.id} key={i} style={{ color: 'black' }}>
-                {day.name}
-              </option>
-            ))}
-          </Select>
-        </Flex>
-        {dayId ? (
-          <Box minH='30em'>
-            <MentorRecap dayId={dayId} />
-          </Box>
-        ) : (
-          <Box h='30em' />
-        )}
-      </Layout>
-    </MentorRoute>
+      <Flex w='100%' mt='2em'>
+        <Select
+          color='white'
+          borderRadius='md'
+          bg='black'
+          w='10em'
+          onChange={dayChangeHandler}
+          defaultValue={dayId} // P benerin
+        >
+          {dayList.map((day, i) => (
+            <option value={day.id} key={i} style={{ color: 'black' }}>
+              {day.name}
+            </option>
+          ))}
+        </Select>
+      </Flex>
+      {dayId ? (
+        <Box minH='30em'>
+          <MentorRecap dayId={dayId} />
+        </Box>
+      ) : (
+        <Box h='30em' />
+      )}
+    </Layout>
   );
 }
