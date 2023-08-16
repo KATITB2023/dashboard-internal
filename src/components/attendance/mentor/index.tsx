@@ -1,4 +1,4 @@
-import { Box, Flex, Image, Select, Text, useToast } from '@chakra-ui/react';
+import { Box, Flex, Image, Select, Text } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import Layout from '~/layout';
 import { api } from '~/utils/api';
@@ -9,12 +9,10 @@ import { useSession } from 'next-auth/react';
 
 export default function AttendancePageMentor() {
   const { data: session } = useSession();
-  const toast = useToast();
 
   const dayListQuery = api.attendance.mentorGetEventList.useQuery(); // ganti querynya jadi buat mentor
   const dayList = dayListQuery.data || [];
 
-  const groupDataQuery = api.group.mentorGetGroupData.useQuery(); // belum ada query group data yang ada nomor kelompoknya
   const groupNumber = 1;
 
   const [dayId, setDayId] = useState<string>();
@@ -62,6 +60,7 @@ export default function AttendancePageMentor() {
               right='-5%'
               w='25%'
               top='-1em'
+              alt=''
             />
           </Flex>
         </Flex>

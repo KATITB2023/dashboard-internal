@@ -160,20 +160,6 @@ export default function ArticleCMS() {
           flexDirection='column'
           paddingRight='10'
           marginBottom='8'
-          overflow='scroll'
-          overflowX='hidden'
-          css={{
-            '&::-webkit-scrollbar': {
-              width: '4px'
-            },
-            '&::-webkit-scrollbar-track': {
-              width: '6px'
-            },
-            '&::-webkit-scrollbar-thumb': {
-              background: '#2D3648',
-              borderRadius: '24px'
-            }
-          }}
         >
           {articlesList?.data.map((article, index: number) => {
             return (
@@ -226,41 +212,40 @@ export default function ArticleCMS() {
               </Box>
             );
           })}
-        </Flex>
-
-        <Flex alignItems='center' justifyContent='flex-end'>
-          {currentPageNum != 1 && (
-            <Button
-              variant='outlineBlue'
-              onClick={() => handlePageChange(currentPageNum - 1)}
+          <Flex alignItems='center' justifyContent='flex-end' pb={5}>
+            {currentPageNum != 1 && (
+              <Button
+                variant='outlineBlue'
+                onClick={() => handlePageChange(currentPageNum - 1)}
+              >
+                <FiArrowLeft />
+              </Button>
+            )}
+            <Select
+              placeholder=''
+              width='20'
+              borderColor='gray.400'
+              size='sm'
+              borderRadius='12'
+              mx='2'
+              value={currentPageNum}
+              onChange={handleCurrentPageNumChange}
             >
-              <FiArrowLeft />
-            </Button>
-          )}
-          <Select
-            placeholder=''
-            width='20'
-            borderColor='gray.400'
-            size='sm'
-            borderRadius='12'
-            mx='2'
-            value={currentPageNum}
-            onChange={handleCurrentPageNumChange}
-          >
-            {options.map((page) => (
-              <option key={page} value={page}>
-                {page}
-              </option>
-            ))}
-          </Select>
-          {currentPageNum != totalPages && (
-            <Button
-              variant='outlineBlue'
-              onClick={() => handlePageChange(currentPageNum + 1)}
-            >
-              <FiArrowRight />
-            </Button>
-          )}
+              {options.map((page) => (
+                <option key={page} value={page}>
+                  {page}
+                </option>
+              ))}
+            </Select>
+            {currentPageNum != totalPages && (
+              <Button
+                variant='outlineBlue'
+                onClick={() => handlePageChange(currentPageNum + 1)}
+              >
+                <FiArrowRight />
+              </Button>
+            )}
+          </Flex>
         </Flex>
       </Layout>
     </AdminRoute>
