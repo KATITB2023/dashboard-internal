@@ -64,7 +64,9 @@ export default function AddAssignment() {
       let additionalFilePath = '';
 
       if (data.filePath[0]) {
-        const fileName = `assignment-${data.title}-${data.type}`;
+        const fileName = `assignment-${data.title.split(' ').join('-')}-${
+          data.type
+        }`;
         const extension = data.filePath[0]?.name.split('.').pop() as string;
         additionalFilePath = sanitizeURL(
           `https://cdn.oskmitb.com/assignment-description/${fileName}.${extension}`
