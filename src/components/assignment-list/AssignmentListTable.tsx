@@ -76,10 +76,16 @@ const AssignmentListTable = ({
       responseType: 'blob'
     });
 
+    const lastDotIndex = fileUrl.lastIndexOf('.');
+    let fileExtension = ""
+    if (lastDotIndex !== -1) {
+      fileExtension = fileUrl.slice(lastDotIndex);
+    }
+
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', fileName);
+    link.setAttribute('download', fileName + fileExtension);
     document.body.appendChild(link);
     link.click();
   };
