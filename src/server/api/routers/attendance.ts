@@ -129,32 +129,21 @@ export const attendanceRouter = createTRPCRouter({
       }
 
       try {
-        const [attendanceEvent] = await Promise.all([
-          ctx.prisma.attendanceEvent.create({
-            data: {
-              day: {
-                connect: {
-                  id: attendanceDay.id
-                }
-              },
-              title: input.title,
-              startTime: input.startTime,
-              endTime: input.endTime
-            }
-          }),
-          ctx.prisma.user.findMany({
-            where: {
-              role: 'STUDENT'
+        await ctx.prisma.attendanceEvent.create({
+          data: {
+            day: {
+              connect: {
+                id: attendanceDay.id
+              }
             },
-            select: {
-              id: true
-            }
-          })
-        ]);
+            title: input.title,
+            startTime: input.startTime,
+            endTime: input.endTime
+          }
+        });
 
         return {
-          message: 'Attendance event added successfully',
-          attendanceEvent
+          message: 'Attendance event added successfully'
         };
       } catch (error) {
         throw new TRPCError({
@@ -528,6 +517,14 @@ export const attendanceRouter = createTRPCRouter({
       },
       orderBy: {
         time: 'desc'
+      }
+    });
+  }),
+
+  getOnlyEventList: adminAndMentorProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.attendanceEvent.findMany({
+      orderBy: {
+        startTime: 'desc'
       }
     });
   }),

@@ -17,7 +17,6 @@ import { Header } from '~/components/Header';
 import React, { useState, useEffect } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { api, type RouterInputs } from '~/utils/api';
-import { TRPCError } from '@trpc/server';
 import { uploadFile, sanitizeURL } from '~/utils/file';
 import ReactHtmlParser from 'react-html-parser';
 import { useRouter } from 'next/router';
@@ -122,8 +121,7 @@ export default function EditArticle() {
       void router.push('/article-cms');
       reset();
     } catch (error: unknown) {
-      if (!(error instanceof TRPCError || error instanceof TRPCClientError))
-        throw error;
+      if (!(error instanceof TRPCClientError)) throw error;
       toast({
         title: 'Failed',
         status: 'error',
