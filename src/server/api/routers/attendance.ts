@@ -129,32 +129,21 @@ export const attendanceRouter = createTRPCRouter({
       }
 
       try {
-        const [attendanceEvent] = await Promise.all([
-          ctx.prisma.attendanceEvent.create({
-            data: {
-              day: {
-                connect: {
-                  id: attendanceDay.id
-                }
-              },
-              title: input.title,
-              startTime: input.startTime,
-              endTime: input.endTime
-            }
-          }),
-          ctx.prisma.user.findMany({
-            where: {
-              role: 'STUDENT'
+        await ctx.prisma.attendanceEvent.create({
+          data: {
+            day: {
+              connect: {
+                id: attendanceDay.id
+              }
             },
-            select: {
-              id: true
-            }
-          })
-        ]);
+            title: input.title,
+            startTime: input.startTime,
+            endTime: input.endTime
+          }
+        });
 
         return {
-          message: 'Attendance event added successfully',
-          attendanceEvent
+          message: 'Attendance event added successfully'
         };
       } catch (error) {
         throw new TRPCError({
@@ -531,6 +520,62 @@ export const attendanceRouter = createTRPCRouter({
       }
     });
   }),
+
+  getOnlyEventList: adminAndMentorProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.attendanceEvent.findMany({
+      orderBy: {
+        startTime: 'desc'
+      }
+    });
+  }),
+
+  addAttendanceRecord: mentorProcedure
+    .input(
+      z.object({
+        eventId: z.string().uuid(),
+        studentId: z.string().uuid(),
+        kehadiran: z.nativeEnum(Status),
+        reason: z.string().optional()
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (input.kehadiran !== Status.HADIR && !input.reason) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Please provide a reason'
+        });
+      }
+
+      try {
+        const currentTime = new Date();
+        const attendanceRecord = await ctx.prisma.attendanceRecord.create({
+          data: {
+            date: currentTime,
+            status: input.kehadiran,
+            reason: input.kehadiran !== Status.HADIR ? input.reason : null,
+            student: {
+              connect: {
+                id: input.studentId
+              }
+            },
+            event: {
+              connect: {
+                id: input.eventId
+              }
+            }
+          }
+        });
+        return {
+          message: 'Add attendance successful',
+          attendanceRecord
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to add the attendance record'
+        });
+      }
+    }),
 
   editAttendanceRecord: adminAndMentorProcedure
     .input(

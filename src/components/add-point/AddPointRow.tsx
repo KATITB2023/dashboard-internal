@@ -1,6 +1,6 @@
 import { Button, Flex, Input, Td, Tr } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { RouterOutputs } from '~/utils/api';
+import type { RouterOutputs } from '~/utils/api';
 
 type LeaderboardDataOutput =
   RouterOutputs['leaderboard']['mentorGetLeaderboardData']['data'][0];

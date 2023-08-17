@@ -14,18 +14,15 @@ import {
 } from '@chakra-ui/react';
 import { type AttendanceDay } from '@prisma/client';
 import { TRPCClientError } from '@trpc/client';
-import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import { Header } from '~/components/Header';
 import { DayManagementModal } from '~/components/attendance/admin/day-management/DayManagementModal';
 import { EventList } from '~/components/attendance/admin/event-management/EventList';
 import { Recap } from '~/components/attendance/admin/recap/Recap';
 import Layout from '~/layout';
-import AdminRoute from '~/layout/AdminRoute';
 import { api } from '~/utils/api';
 
 export default function AttendancePageAdmin() {
-  const { data: session } = useSession();
   const toast = useToast();
 
   const dayListQuery = api.attendance.getAttendanceDayList.useQuery();
@@ -69,7 +66,6 @@ export default function AttendancePageAdmin() {
           status: 'success',
           duration: 3000
         });
-        await dayListQuery.refetch();
         await dayListQuery.refetch();
         thenFn();
       })
@@ -165,95 +161,93 @@ export default function AttendancePageAdmin() {
     );
   });
   return (
-    <AdminRoute session={session}>
-      <Layout title='Attendance Page' type='admin' fullBg={false}>
-        <Box>
-          <Header title={'Rekap Absensi'} />
-          <Tabs
-            variant='soft-rounded'
-            colorScheme='green'
-            align='center'
-            w='100%'
-            isLazy={true}
-          >
-            <TabList w='initial' px='0' mt='1em'>
-              <Flex
-                border='4px solid black'
-                borderRadius='3xl'
-                w='100%'
-                flexDir={{
-                  base: 'column',
-                  md: 'row'
+    <Layout title='Attendance Page' type='admin' fullBg={false}>
+      <Box>
+        <Header title={'Rekap Absensi'} />
+        <Tabs
+          variant='soft-rounded'
+          colorScheme='green'
+          align='center'
+          w='100%'
+          isLazy={true}
+        >
+          <TabList w='initial' px='0' mt='1em'>
+            <Flex
+              border='4px solid black'
+              borderRadius='3xl'
+              w='100%'
+              flexDir={{
+                base: 'column',
+                md: 'row'
+              }}
+              alignItems='center'
+            >
+              <Tab
+                w={{
+                  base: '100%',
+                  md: '50%'
                 }}
-                alignItems='center'
               >
-                <Tab
-                  w={{
-                    base: '100%',
-                    md: '50%'
-                  }}
-                >
-                  Daftar Event
-                </Tab>
-                <Tab
-                  w={{
-                    base: '100%',
-                    md: '50%'
-                  }}
-                >
-                  Recap Absensi Mentee
-                </Tab>
-              </Flex>
-            </TabList>
-            <Flex w='100%' ml='1em' mt='2em'>
-              <Select
-                color='white'
-                borderRadius='md'
-                bg='black'
-                w='10em'
-                onChange={dayChangeHandler}
-                defaultValue={dayId}
+                Daftar Event
+              </Tab>
+              <Tab
+                w={{
+                  base: '100%',
+                  md: '50%'
+                }}
               >
-                {dayList.length > 0 ? (
-                  dayList.map((day, i) => (
-                    <option value={day.id} key={i} style={{ color: 'black' }}>
-                      {day.name}
-                    </option>
-                  ))
-                ) : (
-                  <option disabled style={{ color: 'black' }}>
-                    No Day Available
-                  </option>
-                )}
-              </Select>
-
-              <DayManagementModal
-                dayList={dayList}
-                editDay={editDay}
-                addDay={addDay}
-                deleteDay={deleteDay}
-              />
+                Recap Absensi Mentee
+              </Tab>
             </Flex>
-            {dayId ? (
-              <Box minH='30em'>
-                <TabPanels mt='2em'>
-                  <TabPanel>
-                    <EventList
-                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                      day={dayList.find((d) => d.id == dayId) || dayList[0]!}
-                    />
-                  </TabPanel>
-                  <TabPanel>
-                    <Recap dayId={dayId} />
-                  </TabPanel>
-                </TabPanels>
-              </Box>
-            ) : (
-              <Box h='30em' />
-            )}
-          </Tabs>
-        </Box>
-      </Layout>
-    </AdminRoute>
+          </TabList>
+          <Flex w='100%' ml='1em' mt='2em'>
+            <Select
+              color='white'
+              borderRadius='md'
+              bg='black'
+              w='10em'
+              onChange={dayChangeHandler}
+              defaultValue={dayId}
+            >
+              {dayList.length > 0 ? (
+                dayList.map((day, i) => (
+                  <option value={day.id} key={i} style={{ color: 'black' }}>
+                    {day.name}
+                  </option>
+                ))
+              ) : (
+                <option disabled style={{ color: 'black' }}>
+                  No Day Available
+                </option>
+              )}
+            </Select>
+
+            <DayManagementModal
+              dayList={dayList}
+              editDay={editDay}
+              addDay={addDay}
+              deleteDay={deleteDay}
+            />
+          </Flex>
+          {dayId ? (
+            <Box minH='30em'>
+              <TabPanels mt='2em'>
+                <TabPanel>
+                  <EventList
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    day={dayList.find((d) => d.id == dayId) || dayList[0]!}
+                  />
+                </TabPanel>
+                <TabPanel>
+                  <Recap dayId={dayId} />
+                </TabPanel>
+              </TabPanels>
+            </Box>
+          ) : (
+            <Box h='30em' />
+          )}
+        </Tabs>
+      </Box>
+    </Layout>
   );
 }

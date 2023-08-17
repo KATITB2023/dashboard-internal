@@ -32,60 +32,113 @@ interface CellIdentifier {
   columnIndex: number;
 }
 
+interface AttendanceProps {
+  [key: string]: string;
+}
+
 export const getServerSideProps = withSession({ force: true });
 
 export default function GroupInformation() {
   const { data: session } = useSession();
   // Mengambil data id kelompok
-  const groupListQuery = api.group.adminGetGroupList.useQuery();
-  const groupList = groupListQuery.data;
-  console.log(groupList);
 
-  // Mengambil assignment
-  const assignmentQuery =
-    api.assignment.mentorGetAssignmentTitleList.useQuery();
-  const assignment = assignmentQuery.data;
-
+  const [assignmentMenteeId, setAssignmentMenteeId] = useState<string>('');
+  const [attendanceMenteeId, setAttendanceMenteeId] = useState<string>('');
   // Untuk dropdown
   const [selectedOption, setSelectedOption] = useState<string | undefined>(
     undefined
   );
   const [groupNumber, setGroupNumber] = useState<number>(1);
 
-  useEffect(() => {
-    if (groupList && groupList.length > 0) {
-      const firstGroupId = groupList[0]?.id;
-      setSelectedOption(firstGroupId);
-    }
-  }, [groupList]);
-
-  const handleOptionSelect = (option: string, groupNumber: number) => {
-    setSelectedOption(option);
-    setGroupNumber(groupNumber);
-  };
-
   // Mengambil data tiap kelompok
+  const groupListQuery = api.group.adminGetGroupList.useQuery();
+  const groupList = groupListQuery.data;
   const groupDataQuery = api.group.adminGetGroupData.useQuery({
     groupId: selectedOption || ''
   });
   const groupData = groupDataQuery.data;
 
-  // Warna teks
-  const getTextColor = (percentage: number): string => {
-    if (percentage >= 100) {
-      return '#278A43DE';
-    } else if (percentage >= 50) {
-      return '#CD7626DE';
-    } else {
-      return '#DE4545DE';
-    }
-  };
+  const assignmentQuery =
+    api.assignment.mentorGetAssignmentTitleList.useQuery();
+  const assignmentList = assignmentQuery.data || [];
+  const menteeAssignmentQuery = api.group.getMenteeAssignment.useQuery({
+    menteeId: assignmentMenteeId
+  });
+  const menteeAssignment = menteeAssignmentQuery.data || [];
+
+  const eventQuery = api.attendance.getOnlyEventList.useQuery();
+  const eventList = eventQuery.data || [];
+  const menteeAttendanceQuery = api.group.getMenteeAttendance.useQuery({
+    menteeId: attendanceMenteeId
+  });
+  const menteeAttendance = menteeAttendanceQuery.data || [];
 
   // Tooltip
   const [tooltipPosition, setTooltipPosition] = useState<CellIdentifier | null>(
     null
   );
 
+  const submissionTooltip = () => {
+    const allAssignmentTitles: string[] = assignmentList?.map(
+      (assignment) => assignment.title
+    );
+    const studentAssignmentTitles: string[] = menteeAssignment?.map(
+      (submission) => submission.assignment.title
+    );
+    return allAssignmentTitles.map((title, index) => {
+      const isCompleted = studentAssignmentTitles?.includes(title);
+
+      return (
+        <Flex key={index} alignItems='center'>
+          {isCompleted ? (
+            <BsCheckCircle size={24} color='#4909B3' />
+          ) : (
+            <BsCheckCircle size={24} color='#9B9B9B' />
+          )}
+          <Text
+            textAlign='center'
+            textDecoration={isCompleted ? 'line-through' : undefined}
+            marginLeft='2px'
+          >
+            {allAssignmentTitles[index]}
+          </Text>
+        </Flex>
+      );
+    });
+  };
+
+  const attendanceTooltip = () => {
+    const allEvent: string[] = eventList?.map((event) => event.title);
+    const studentAttendance: AttendanceProps = {};
+    menteeAttendance?.forEach((attendance) => {
+      studentAttendance[attendance.event.title] = attendance.status;
+    });
+
+    return allEvent.map((title, index) => {
+      const isAttended = studentAttendance[title] === 'HADIR';
+      return (
+        <Flex key={index} alignItems='center'>
+          {isAttended ? (
+            <BsCheckCircle size={24} color='#4909B3' />
+          ) : (
+            <BsCheckCircle size={24} color='#9B9B9B' />
+          )}
+          <Text
+            textAlign='center'
+            textDecoration={isAttended ? 'line-through' : undefined}
+            marginLeft='2px'
+          >
+            {allEvent[index]}
+          </Text>
+        </Flex>
+      );
+    });
+  };
+
+  const handleOptionSelect = (option: string, groupNumber: number) => {
+    setSelectedOption(option);
+    setGroupNumber(groupNumber);
+  };
   const toggleTooltip = (identifier: CellIdentifier) => {
     if (
       tooltipPosition &&
@@ -97,11 +150,17 @@ export default function GroupInformation() {
       setTooltipPosition(identifier);
     }
   };
+  useEffect(() => {
+    if (groupList && groupList.length > 0) {
+      const firstGroupId = groupList[0]?.id;
+      setSelectedOption(firstGroupId);
+    }
+  }, [groupList]);
 
   return (
     <AdminRoute session={session}>
       <Layout type='admin' title='Group Information' fullBg={false}>
-        <Box height='100%' p={1} overflowY={'auto'}>
+        <Box height='100%' p={1}>
           {/* Logo and dropdown, flex display  */}
           <Flex
             justifyContent='space-between'
@@ -209,12 +268,7 @@ export default function GroupInformation() {
               Anggota:
             </Text>
 
-            <Container
-              minWidth='full'
-              height='100%'
-              px={0}
-              overflowX={{ base: 'scroll', lg: 'visible' }}
-            >
+            <Container minWidth='full' height='100%' px={0} pb={5}>
               <Table variant='black'>
                 <Thead>
                   <Tr>
@@ -231,85 +285,6 @@ export default function GroupInformation() {
                   {groupData
                     ?.filter((groupData) => groupData.user.role === 'STUDENT')
                     .map((groupData, id) => {
-                      // submisi Tugas
-                      const totalAssignment = assignment?.length as number; // Banyak total assignment
-                      const allAssignmentTitles: string[] = assignment?.map(
-                        (assignment) => assignment.title
-                      ) as string[]; // Mengambil array judul assignment
-                      const studentAssignmentTitles: string[] =
-                        groupData.user.submission.map(
-                          (submission) => submission.assignment.title
-                        ); // Mengambil array judul assignment yang sudah dikerjakan
-                      const completedAssignment =
-                        groupData.user.submission.length;
-                      const assignmentPercentage = parseFloat(
-                        ((completedAssignment / totalAssignment) * 100).toFixed(
-                          2
-                        )
-                      );
-
-                      // presensi
-                      const attendanceArray = groupData.user.attendance;
-                      const totalAttendance = attendanceArray.length;
-                      const attendedCount = attendanceArray.filter(
-                        (item) => item.status === 'HADIR'
-                      ).length;
-                      const attendancePercentage = parseFloat(
-                        ((attendedCount / totalAttendance) * 100).toFixed(2)
-                      );
-
-                      // Tooltip content
-                      const submissionTooltip = () => {
-                        return allAssignmentTitles.map((title, index) => {
-                          const isCompleted =
-                            studentAssignmentTitles.includes(title);
-
-                          return (
-                            <Flex key={index} alignItems='center'>
-                              {isCompleted ? (
-                                <BsCheckCircle size={24} color='#4909B3' />
-                              ) : (
-                                <BsCheckCircle size={24} color='#9B9B9B' />
-                              )}
-                              <Text
-                                textAlign='center'
-                                textDecoration={
-                                  isCompleted ? 'line-through' : undefined
-                                }
-                                marginLeft='2px'
-                              >
-                                {allAssignmentTitles[index]}
-                              </Text>
-                            </Flex>
-                          );
-                        });
-                      };
-
-                      const attendanceTooltip = () => {
-                        return groupData.user.attendance.map(
-                          (attendance, index) => (
-                            <Flex key={index} alignItems='center'>
-                              {attendance.status === 'HADIR' ? (
-                                <BsCheckCircle size={24} color='#4909B3' />
-                              ) : (
-                                <BsCheckCircle size={24} color='#9B9B9B' />
-                              )}
-                              <Text
-                                textAlign='center'
-                                textDecoration={
-                                  attendance.status === 'HADIR'
-                                    ? 'line-through'
-                                    : undefined
-                                }
-                                marginLeft='2px'
-                              >
-                                {`Event ${index + 1}`}
-                              </Text>
-                            </Flex>
-                          )
-                        );
-                      };
-
                       return (
                         <Tr bg='white' color='#2D3648DE' key={id}>
                           <Td borderColor='black' borderWidth='1px'>
@@ -334,19 +309,17 @@ export default function GroupInformation() {
                               justifyContent='space-evenly'
                               position='relative'
                             >
-                              <Text color={getTextColor(assignmentPercentage)}>
-                                {`${completedAssignment} / ${totalAssignment}`}
-                              </Text>
                               <FaEye
                                 size={24}
                                 color='#4b19a7'
                                 cursor='pointer'
-                                onClick={() =>
+                                onClick={() => {
                                   toggleTooltip({
                                     rowIndex: id,
                                     columnIndex: 5
-                                  })
-                                }
+                                  });
+                                  setAssignmentMenteeId(groupData.userId);
+                                }}
                               />
                               {tooltipPosition &&
                                 tooltipPosition.rowIndex === id &&
@@ -362,19 +335,17 @@ export default function GroupInformation() {
                               justifyContent='space-evenly'
                               position='relative'
                             >
-                              <Text color={getTextColor(attendancePercentage)}>
-                                {`${attendancePercentage}%`}
-                              </Text>
                               <FaEye
                                 size={24}
                                 color='#4b19a7'
                                 cursor='pointer'
-                                onClick={() =>
+                                onClick={() => {
                                   toggleTooltip({
                                     rowIndex: id,
                                     columnIndex: 6
-                                  })
-                                }
+                                  });
+                                  setAttendanceMenteeId(groupData.userId);
+                                }}
                               />
                               {tooltipPosition &&
                                 tooltipPosition.rowIndex === id &&

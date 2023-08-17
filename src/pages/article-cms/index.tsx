@@ -17,7 +17,6 @@ import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { FiArrowLeft, FiArrowRight } from 'react-icons/fi';
 import { api } from '~/utils/api';
-import { TRPCError } from '@trpc/server';
 import ReactHtmlParser from 'react-html-parser';
 import { useRouter } from 'next/router';
 import { withSession } from '~/server/auth/withSession';
@@ -91,9 +90,8 @@ export default function ArticleCMS() {
         position: 'top'
       });
       setTotalRecords(totalRecords - 1);
-    } catch (error: unknown) {
-      if (!(error instanceof TRPCError || error instanceof TRPCClientError))
-        throw error;
+    } catch (error) {
+      if (!(error instanceof TRPCClientError)) throw error;
 
       toast({
         title: 'Failed',
@@ -113,7 +111,7 @@ export default function ArticleCMS() {
 
   return (
     <AdminRoute session={session}>
-      <Layout type='admin' title='Article CMS' fullBg={true}>
+      <Layout type='admin' title='Article CMS' fullBg={false}>
         <Header title='Article CMS' />
         <Flex>
           <InputGroup my='4'>
@@ -212,41 +210,40 @@ export default function ArticleCMS() {
               </Box>
             );
           })}
-        </Flex>
-
-        <Flex alignItems='center' justifyContent='flex-end'>
-          {currentPageNum != 1 && (
-            <Button
-              variant='outlineBlue'
-              onClick={() => handlePageChange(currentPageNum - 1)}
+          <Flex alignItems='center' justifyContent='flex-end' pb={5}>
+            {currentPageNum != 1 && (
+              <Button
+                variant='outlineBlue'
+                onClick={() => handlePageChange(currentPageNum - 1)}
+              >
+                <FiArrowLeft />
+              </Button>
+            )}
+            <Select
+              placeholder=''
+              width='20'
+              borderColor='gray.400'
+              size='sm'
+              borderRadius='12'
+              mx='2'
+              value={currentPageNum}
+              onChange={handleCurrentPageNumChange}
             >
-              <FiArrowLeft />
-            </Button>
-          )}
-          <Select
-            placeholder=''
-            width='20'
-            borderColor='gray.400'
-            size='sm'
-            borderRadius='12'
-            mx='2'
-            value={currentPageNum}
-            onChange={handleCurrentPageNumChange}
-          >
-            {options.map((page) => (
-              <option key={page} value={page}>
-                {page}
-              </option>
-            ))}
-          </Select>
-          {currentPageNum != totalPages && (
-            <Button
-              variant='outlineBlue'
-              onClick={() => handlePageChange(currentPageNum + 1)}
-            >
-              <FiArrowRight />
-            </Button>
-          )}
+              {options.map((page) => (
+                <option key={page} value={page}>
+                  {page}
+                </option>
+              ))}
+            </Select>
+            {currentPageNum != totalPages && (
+              <Button
+                variant='outlineBlue'
+                onClick={() => handlePageChange(currentPageNum + 1)}
+              >
+                <FiArrowRight />
+              </Button>
+            )}
+          </Flex>
         </Flex>
       </Layout>
     </AdminRoute>

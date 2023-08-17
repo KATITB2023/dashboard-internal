@@ -10,22 +10,18 @@ import {
   Select,
   Table,
   Tbody,
-  Td,
   Th,
   Text,
   Thead,
   Tr,
-  useDisclosure,
   useToast
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { type RouterInputs, type RouterOutputs, api } from '~/utils/api';
+import { type RouterOutputs, api } from '~/utils/api';
 import { RecapRow } from './RecapRow';
 import { Status } from '@prisma/client';
 import { TRPCClientError } from '@trpc/client';
 
-type recordListQueryInputs =
-  RouterInputs['attendance']['adminGetAttendanceRecord'];
 type recordListQueryOutput =
   RouterOutputs['attendance']['adminGetAttendanceRecord']['data'][0];
 
@@ -43,8 +39,6 @@ export const Recap = ({ dayId }: RecapProps) => {
   const [filterBy, setFilterBy] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const [rowPerPageInput, setRowPerPageInput] = useState<number>(rowPerPage);
-
   const recordListQuery = api.attendance.adminGetAttendanceRecord.useQuery({
     dayId: dayId,
     currentPage: page,
@@ -60,12 +54,6 @@ export const Recap = ({ dayId }: RecapProps) => {
   };
 
   const maxPage = Math.ceil(recordListMetaData.total / rowPerPage);
-
-  const {
-    isOpen: isEditingRowPerPageOpen,
-    onClose: onEditingRowPerPageClose,
-    onOpen: onEditingRowPerPageOpen
-  } = useDisclosure();
 
   const [jumpInput, setJumpInput] = useState<string>('1');
   const jumpChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,8 +108,7 @@ export const Recap = ({ dayId }: RecapProps) => {
 
   const editRecord = (
     record: recordListQueryOutput,
-    { newStatus, newDesc }: { newStatus: Status; newDesc: string },
-    successFn: () => void
+    { newStatus, newDesc }: { newStatus: Status; newDesc: string }
   ) => {
     if (newStatus === record.status) {
       return;
@@ -138,7 +125,6 @@ export const Recap = ({ dayId }: RecapProps) => {
           status: 'success',
           duration: 3000
         });
-        await recordListQuery.refetch();
         await recordListQuery.refetch();
       })
       .catch((err) => {

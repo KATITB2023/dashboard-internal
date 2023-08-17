@@ -1,28 +1,24 @@
 import { Tr, Td, Button } from '@chakra-ui/react';
-import { type RouterOutputs, api } from '~/utils/api';
+import { type RouterOutputs } from '~/utils/api';
 import EditAssignmentModal from './EditAssignmentModal';
 
 interface Props {
   data: RouterOutputs['assignment']['adminGetAssignment']['data'][0];
   index: number;
-  page: number;
   loading: boolean;
   assignmentId: string;
   downloadCSV: (id: string, title: string) => void;
+  emit: () => void;
 }
 
 export default function AssignmentListRow({
   data,
   index,
-  page,
   loading,
   assignmentId,
-  downloadCSV
+  downloadCSV,
+  emit
 }: Props) {
-  const assignmentQuery = api.assignment.adminGetAssignment.useQuery({
-    currentPage: page
-  });
-
   return (
     <Tr>
       <Td w='10%'>{index}</Td>
@@ -60,10 +56,7 @@ export default function AssignmentListRow({
           Unduh
         </Button>
       </Td>
-      <EditAssignmentModal
-        props={data}
-        emit={() => void assignmentQuery.refetch()}
-      />
+      <EditAssignmentModal props={data} emit={() => emit()} />
     </Tr>
   );
 }

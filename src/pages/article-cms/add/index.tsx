@@ -17,13 +17,13 @@ import { Header } from '~/components/Header';
 import React, { useState, useEffect } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { api, type RouterInputs } from '~/utils/api';
-import { TRPCError } from '@trpc/server';
 import { uploadFile, sanitizeURL } from '~/utils/file';
 import ReactHtmlParser from 'react-html-parser';
 import { useRouter } from 'next/router';
 import { withSession } from '~/server/auth/withSession';
 import AdminRoute from '~/layout/AdminRoute';
 import { useSession } from 'next-auth/react';
+import { TRPCClientError } from '@trpc/client';
 
 export const getServerSideProps = withSession({ force: true });
 
@@ -79,11 +79,12 @@ export default function AddArticle() {
     try {
       let imagePath = '';
       if (data.featureImage[0]) {
-        const fileName = `article-feature-img-${data.featureImage[0].name.replace(
-          ' ',
-          ''
-        )}`;
-        imagePath = sanitizeURL(`https://cdn.oskmitb.com/${fileName}`);
+        const fileName = `article-feature-img-${data.featureImage[0].name
+          .split(' ')
+          .join('-')}`;
+        imagePath = sanitizeURL(
+          `https://cdn.oskmitb.com/article-feat-image/${fileName}`
+        );
         await uploadFile(imagePath, data.featureImage[0]);
       }
 
@@ -106,7 +107,7 @@ export default function AddArticle() {
       reset();
       void router.push('/article-cms');
     } catch (error: unknown) {
-      if (!(error instanceof TRPCError)) throw error;
+      if (!(error instanceof TRPCClientError)) throw error;
       toast({
         title: 'Failed',
         status: 'error',
@@ -122,8 +123,10 @@ export default function AddArticle() {
     if (file) {
       try {
         const handleUploadFile = async () => {
-          const fileName = `article-${file.name.replace(' ', '')}`;
-          const imagePath = sanitizeURL(`https://cdn.oskmitb.com/${fileName}`);
+          const fileName = `article-${file.name.split(' ').join('-')}`;
+          const imagePath = sanitizeURL(
+            `https://cdn.oskmitb.com/article/${fileName}`
+          );
 
           await uploadFile(imagePath, file);
           const imgHtml = `<img src=${imagePath} alt=${fileName} width='500px'/>`;

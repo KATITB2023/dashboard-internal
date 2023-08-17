@@ -18,7 +18,7 @@ import { TRPCClientError } from '@trpc/client';
 interface Props {
   id: string;
   title: string;
-  emit: (data: boolean) => void;
+  emit: () => void;
 }
 
 export default function DeleteAssignmentModal({ id, title, emit }: Props) {
@@ -41,7 +41,7 @@ export default function DeleteAssignmentModal({ id, title, emit }: Props) {
         isClosable: true,
         position: 'top'
       });
-      emit(true);
+      emit();
       onClose();
     } catch (error) {
       if (!(error instanceof TRPCClientError)) throw error;

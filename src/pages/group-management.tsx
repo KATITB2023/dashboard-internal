@@ -27,33 +27,94 @@ interface CellIdentifier {
   columnIndex: number;
 }
 
+interface AttendanceProps {
+  [key: string]: string;
+}
+
 export const getServerSideProps = withSession({ force: true });
 
 export default function GroupManagement() {
   const { data: session } = useSession();
+  const [assignmentMenteeId, setAssignmentMenteeId] = useState<string>('');
+  const [attendanceMenteeId, setAttendanceMenteeId] = useState<string>('');
   const mentorGroupQuery = api.group.mentorGetGroupData.useQuery();
-  const mentorGroup = mentorGroupQuery.data;
+  const mentorGroup = mentorGroupQuery.data || [];
 
-  // Mengambil assignment
   const assignmentQuery =
     api.assignment.mentorGetAssignmentTitleList.useQuery();
-  const assignment = assignmentQuery.data;
+  const assignmentList = assignmentQuery.data || [];
+  const menteeAssignmentQuery = api.group.getMenteeAssignment.useQuery({
+    menteeId: assignmentMenteeId
+  });
+  const menteeAssignment = menteeAssignmentQuery.data || [];
 
-  // Warna teks
-  const getTextColor = (percentage: number): string => {
-    if (percentage >= 100) {
-      return '#278A43DE';
-    } else if (percentage >= 50) {
-      return '#CD7626DE';
-    } else {
-      return '#DE4545DE';
-    }
-  };
+  const eventQuery = api.attendance.getOnlyEventList.useQuery();
+  const eventList = eventQuery.data || [];
+  const menteeAttendanceQuery = api.group.getMenteeAttendance.useQuery({
+    menteeId: attendanceMenteeId
+  });
+  const menteeAttendance = menteeAttendanceQuery.data || [];
 
-  // Tooltip
   const [tooltipPosition, setTooltipPosition] = useState<CellIdentifier | null>(
     null
   );
+
+  const submissionTooltip = () => {
+    const allAssignmentTitles: string[] = assignmentList?.map(
+      (assignment) => assignment.title
+    );
+    const studentAssignmentTitles: string[] = menteeAssignment?.map(
+      (submission) => submission.assignment.title
+    );
+    return allAssignmentTitles.map((title, index) => {
+      const isCompleted = studentAssignmentTitles?.includes(title);
+
+      return (
+        <Flex key={index} alignItems='center'>
+          {isCompleted ? (
+            <BsCheckCircle size={24} color='#4909B3' />
+          ) : (
+            <BsCheckCircle size={24} color='#9B9B9B' />
+          )}
+          <Text
+            textAlign='center'
+            textDecoration={isCompleted ? 'line-through' : undefined}
+            marginLeft='2px'
+          >
+            {allAssignmentTitles[index]}
+          </Text>
+        </Flex>
+      );
+    });
+  };
+
+  const attendanceTooltip = () => {
+    const allEvent: string[] = eventList?.map((event) => event.title);
+    const studentAttendance: AttendanceProps = {};
+    menteeAttendance?.forEach((attendance) => {
+      studentAttendance[attendance.event.title] = attendance.status;
+    });
+
+    return allEvent.map((title, index) => {
+      const isAttended = studentAttendance[title] === 'HADIR';
+      return (
+        <Flex key={index} alignItems='center'>
+          {isAttended ? (
+            <BsCheckCircle size={24} color='#4909B3' />
+          ) : (
+            <BsCheckCircle size={24} color='#9B9B9B' />
+          )}
+          <Text
+            textAlign='center'
+            textDecoration={isAttended ? 'line-through' : undefined}
+            marginLeft='2px'
+          >
+            {allEvent[index]}
+          </Text>
+        </Flex>
+      );
+    });
+  };
 
   const toggleTooltip = (identifier: CellIdentifier) => {
     if (
@@ -70,7 +131,7 @@ export default function GroupManagement() {
   return (
     <MentorRoute session={session}>
       <Layout type='mentor' title='Group Management' fullBg={false}>
-        <Box height='100%' p={1} overflowY={'auto'}>
+        <Box height='100%' p={1}>
           {/* Logo and kelompok, flex display  */}
           <Flex
             justifyContent='space-between'
@@ -156,12 +217,7 @@ export default function GroupManagement() {
             <Text color='#2D3648DE' fontWeight='700' fontSize='20px'>
               Anggota:
             </Text>
-            <Container
-              minWidth='full'
-              height='100%'
-              px={0}
-              overflowX={{ base: 'scroll', lg: 'visible' }}
-            >
+            <Container minWidth='full' height='100%' px={0} pb={5}>
               <Table variant='black'>
                 <Thead>
                   <Tr>
@@ -180,85 +236,6 @@ export default function GroupManagement() {
                       (mentorGroup) => mentorGroup.user.role === 'STUDENT'
                     )
                     .map((mentorGroup, id) => {
-                      // submisi Tugas
-                      const totalAssignment = assignment?.length as number; // Banyak total assignment
-                      const allAssignmentTitles: string[] = assignment?.map(
-                        (assignment) => assignment.title
-                      ) as string[]; // Mengambil array judul assignment
-                      const studentAssignmentTitles: string[] =
-                        mentorGroup.user.submission.map(
-                          (submission) => submission.assignment.title
-                        ); // Mengambil array judul assignment yang sudah dikerjakan
-                      const completedAssignment =
-                        mentorGroup.user.submission.length;
-                      const assignmentPercentage = parseFloat(
-                        ((completedAssignment / totalAssignment) * 100).toFixed(
-                          2
-                        )
-                      );
-
-                      // presensi
-                      const attendanceArray = mentorGroup.user.attendance;
-                      const totalAttendance = attendanceArray.length;
-                      const hadirCount = attendanceArray.filter(
-                        (item) => item.status === 'HADIR'
-                      ).length;
-                      const attendancePercentage = parseFloat(
-                        ((hadirCount / totalAttendance) * 100).toFixed(2)
-                      );
-
-                      // Tooltip content
-                      const submissionTooltip = () => {
-                        return allAssignmentTitles.map((title, index) => {
-                          const isCompleted =
-                            studentAssignmentTitles.includes(title);
-
-                          return (
-                            <Flex key={index} alignItems='center'>
-                              {isCompleted ? (
-                                <BsCheckCircle size={24} color='#4909B3' />
-                              ) : (
-                                <BsCheckCircle size={24} color='#9B9B9B' />
-                              )}
-                              <Text
-                                textAlign='center'
-                                textDecoration={
-                                  isCompleted ? 'line-through' : undefined
-                                }
-                                marginLeft='2px'
-                              >
-                                {allAssignmentTitles[index]}
-                              </Text>
-                            </Flex>
-                          );
-                        });
-                      };
-
-                      const attendanceTooltip = () => {
-                        return mentorGroup.user.attendance.map(
-                          (attendance, index) => (
-                            <Flex key={index} alignItems='center'>
-                              {attendance.status === 'HADIR' ? (
-                                <BsCheckCircle size={24} color='#4909B3' />
-                              ) : (
-                                <BsCheckCircle size={24} color='#9B9B9B' />
-                              )}
-                              <Text
-                                textAlign='center'
-                                textDecoration={
-                                  attendance.status === 'HADIR'
-                                    ? 'line-through'
-                                    : undefined
-                                }
-                                marginLeft='2px'
-                              >
-                                {`Event ${index + 1}`}
-                              </Text>
-                            </Flex>
-                          )
-                        );
-                      };
-
                       return (
                         <Tr bg='white' color='#2D3648DE' key={id}>
                           <Td borderColor='black' borderWidth='1px'>
@@ -283,19 +260,17 @@ export default function GroupManagement() {
                               justifyContent='space-evenly'
                               position='relative'
                             >
-                              <Text color={getTextColor(assignmentPercentage)}>
-                                {`${completedAssignment} / ${totalAssignment}`}
-                              </Text>
                               <FaEye
                                 size={24}
                                 color='#4b19a7'
                                 cursor='pointer'
-                                onClick={() =>
+                                onClick={() => {
                                   toggleTooltip({
                                     rowIndex: id,
                                     columnIndex: 5
-                                  })
-                                }
+                                  });
+                                  setAssignmentMenteeId(mentorGroup.userId);
+                                }}
                               />
                               {tooltipPosition &&
                                 tooltipPosition.rowIndex === id &&
@@ -311,19 +286,17 @@ export default function GroupManagement() {
                               justifyContent='space-evenly'
                               position='relative'
                             >
-                              <Text color={getTextColor(attendancePercentage)}>
-                                {`${attendancePercentage}%`}
-                              </Text>
                               <FaEye
                                 size={24}
                                 color='#4b19a7'
                                 cursor='pointer'
-                                onClick={() =>
+                                onClick={() => {
                                   toggleTooltip({
                                     rowIndex: id,
                                     columnIndex: 6
-                                  })
-                                }
+                                  });
+                                  setAttendanceMenteeId(mentorGroup.userId);
+                                }}
                               />
                               {tooltipPosition &&
                                 tooltipPosition.rowIndex === id &&

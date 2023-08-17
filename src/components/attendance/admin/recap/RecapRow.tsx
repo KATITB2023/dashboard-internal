@@ -1,6 +1,6 @@
 import { Td, Tr } from '@chakra-ui/react';
-import { Status } from '@prisma/client';
-import { RouterOutputs, api } from '~/utils/api';
+import { type Status } from '@prisma/client';
+import { type RouterOutputs } from '~/utils/api';
 import { StatusBox } from './StatusBox';
 
 type getAttendanceRecordOutput =

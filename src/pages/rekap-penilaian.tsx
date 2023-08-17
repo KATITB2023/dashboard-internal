@@ -1,12 +1,9 @@
-import { UserRole } from '@prisma/client';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 import { Header } from '~/components/Header';
 import Layout from '~/layout/index';
 import AdminAssignmentList from '~/components/assignment/admin/assignment-list';
 import AdminAddAssignment from '~/components/assignment/admin/add-assignment';
 import React from 'react';
-import { Redirect } from '~/components/Redirect';
 import {
   TabList,
   Tabs,
@@ -53,7 +50,7 @@ export default function RekapPenilaian() {
   return (
     <AdminRoute session={session}>
       <Layout type='admin' title='Tugas dan Penilaian' fullBg={false}>
-        <Flex w={'full'} h={'100%'} direction={'column'} overflowY={'auto'}>
+        <Flex w={'full'} h={'100%'} direction={'column'}>
           <Header title='Tugas dan Penilaian' />
           <Tabs
             variant='soft-rounded'

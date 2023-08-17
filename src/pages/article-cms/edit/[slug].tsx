@@ -17,7 +17,6 @@ import { Header } from '~/components/Header';
 import React, { useState, useEffect } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { api, type RouterInputs } from '~/utils/api';
-import { TRPCError } from '@trpc/server';
 import { uploadFile, sanitizeURL } from '~/utils/file';
 import ReactHtmlParser from 'react-html-parser';
 import { useRouter } from 'next/router';
@@ -92,11 +91,12 @@ export default function EditArticle() {
     try {
       let imagePath = articleData?.feature_image as string;
       if (data.featureImage && data.featureImage[0]) {
-        const fileName = `article-feature-img-${data.featureImage[0].name.replace(
-          ' ',
-          ''
-        )}`;
-        imagePath = sanitizeURL(`https://cdn.oskmitb.com/article/${fileName}`);
+        const fileName = `article-feature-img-${data.featureImage[0].name
+          .split(' ')
+          .join('-')}`;
+        imagePath = sanitizeURL(
+          `https://cdn.oskmitb.com/article-feat-image/${fileName}`
+        );
         await uploadFile(imagePath, data.featureImage[0]);
       }
 
@@ -121,8 +121,7 @@ export default function EditArticle() {
       void router.push('/article-cms');
       reset();
     } catch (error: unknown) {
-      if (!(error instanceof TRPCError || error instanceof TRPCClientError))
-        throw error;
+      if (!(error instanceof TRPCClientError)) throw error;
       toast({
         title: 'Failed',
         status: 'error',
@@ -138,7 +137,7 @@ export default function EditArticle() {
     if (file) {
       try {
         const handleUploadFile = async () => {
-          const fileName = `article-${file.name.replace(' ', '')}`;
+          const fileName = `article-${file.name.split(' ').join('-')}`;
           const imagePath = sanitizeURL(
             `https://cdn.oskmitb.com/article/${fileName}`
           );
