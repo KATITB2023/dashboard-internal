@@ -48,6 +48,78 @@ export const groupRouter = createTRPCRouter({
       return group;
     }),
 
+  mentorGetGroupNumber: mentorProcedure.query(async ({ ctx }) => {
+    const mentorId = ctx.session.user.id;
+
+    const groupNumber = await ctx.prisma.groupRelation.findFirst({
+      where: {
+        userId: mentorId
+      },
+      include: {
+        group: {
+          select: {
+            group: true
+          }
+        }
+      }
+    });
+
+    return groupNumber;
+  }),
+
+  mentorGetAttendanceData: mentorProcedure
+    .input(z.object({ eventId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const mentorId = ctx.session.user.id;
+
+      const groupRelation = await ctx.prisma.groupRelation.findFirst({
+        where: {
+          userId: mentorId
+        }
+      });
+
+      if (!groupRelation) {
+        return [];
+      }
+
+      const group = await ctx.prisma.groupRelation.findMany({
+        where: {
+          groupId: groupRelation.groupId
+        },
+        include: {
+          group: {
+            select: {
+              group: true
+            }
+          },
+          user: {
+            select: {
+              nim: true,
+              role: true,
+              profile: {
+                select: {
+                  userId: true,
+                  name: true
+                }
+              },
+              attendance: {
+                where: {
+                  eventId: input.eventId
+                },
+                select: {
+                  id: true,
+                  status: true,
+                  reason: true
+                }
+              }
+            }
+          }
+        }
+      });
+
+      return group;
+    }),
+
   mentorGetGroupData: mentorProcedure.query(async ({ ctx }) => {
     const mentorId = ctx.session.user.id;
 

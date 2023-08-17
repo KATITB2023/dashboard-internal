@@ -1,45 +1,42 @@
 import {
-  Box,
   Button,
   Flex,
   Menu,
   MenuButton,
   MenuList,
-  Text,
   useDisclosure
 } from '@chakra-ui/react';
 import { Status } from '@prisma/client';
 import { useState } from 'react';
-import { type RouterOutputs } from '~/utils/api';
 import { MentorEditDescModal } from './MentorEditDescModal';
-
-type getAttendanceRecordOutput =
-  RouterOutputs['attendance']['mentorGetAttendance']['data'][0];
+import type { RecordProps } from './MentorRecap';
 
 interface StatusBoxProps {
-  record: getAttendanceRecordOutput;
+  record: RecordProps;
   editRecord: (
-    record: getAttendanceRecordOutput,
+    record: RecordProps,
     { newStatus, newDesc }: { newStatus: Status; newDesc: string },
     successFn: () => void
-  ) => void;
+  ) => Promise<void>;
 }
 
 export const MentorStatusBox = ({ record, editRecord }: StatusBoxProps) => {
-  const [status, setStatus] = useState<Status>(record.status);
+  const [status, setStatus] = useState<Status>(
+    record.attendance[0] ? record.attendance[0]?.status : Status.TIDAK_HADIR
+  );
   const modalDisclosure = useDisclosure();
 
-  const editDesc = (desc: string) => {
-    editRecord(record, { newStatus: status, newDesc: desc }, () =>
+  const editDesc = async (desc: string) => {
+    await editRecord(record, { newStatus: status, newDesc: desc }, () =>
       modalDisclosure.onClose()
     );
   };
 
-  const editRecordStatus = (status: Status) => {
+  const editRecordStatus = async (status: Status) => {
     if (status !== Status.HADIR) {
       modalDisclosure.onOpen();
     } else {
-      editRecord(record, { newStatus: status, newDesc: '' }, () =>
+      await editRecord(record, { newStatus: status, newDesc: '' }, () =>
         modalDisclosure.onClose()
       );
     }
@@ -74,7 +71,7 @@ export const MentorStatusBox = ({ record, editRecord }: StatusBoxProps) => {
           h='2em'
           w='100%'
           bg='green.500'
-          onClick={() => editRecordStatus(Status.HADIR)}
+          onClick={() => void editRecordStatus(Status.HADIR)}
           mt='1em'
           _hover={{
             bg: 'green.600',
@@ -95,7 +92,7 @@ export const MentorStatusBox = ({ record, editRecord }: StatusBoxProps) => {
             color='red.600'
             bg='red.100'
             h='2em'
-            onClick={() => editRecordStatus(Status.TIDAK_HADIR)}
+            onClick={() => void editRecordStatus(Status.TIDAK_HADIR)}
           >
             Tidak Hadir
           </Button>
@@ -106,7 +103,7 @@ export const MentorStatusBox = ({ record, editRecord }: StatusBoxProps) => {
             color='yellow.600'
             bg='yellow.100'
             h='2em'
-            onClick={() => editRecordStatus(Status.IZIN_DITERIMA)}
+            onClick={() => void editRecordStatus(Status.IZIN_DITERIMA)}
             ml='1em'
           >
             Izin Diterima
@@ -120,7 +117,7 @@ export const MentorStatusBox = ({ record, editRecord }: StatusBoxProps) => {
             color='blue.600'
             bg='blue.100'
             h='2em'
-            onClick={() => editRecordStatus(Status.IZIN_PENDING)}
+            onClick={() => void editRecordStatus(Status.IZIN_PENDING)}
           >
             Izin Pending
           </Button>
@@ -131,7 +128,7 @@ export const MentorStatusBox = ({ record, editRecord }: StatusBoxProps) => {
             color='gray.600'
             bg='gray.100'
             h='2em'
-            onClick={() => editRecordStatus(Status.IZIN_DITOLAK)}
+            onClick={() => void editRecordStatus(Status.IZIN_DITOLAK)}
             ml='1em'
           >
             Izin Ditolak
@@ -147,7 +144,7 @@ export const MentorStatusBox = ({ record, editRecord }: StatusBoxProps) => {
   );
 
   const generateBox: () => JSX.Element = () => {
-    switch (record.status) {
+    switch (status) {
       case Status.HADIR:
         return statusBoxMenu('green.100', 'green.500', 'Hadir');
       case Status.TIDAK_HADIR:
@@ -159,7 +156,7 @@ export const MentorStatusBox = ({ record, editRecord }: StatusBoxProps) => {
       case Status.IZIN_DITOLAK:
         return statusBoxMenu('gray.600', 'gray.100', 'Izin Ditolak');
       default:
-        return <Text fontStyle='italic'> Terjadi Kesalahan</Text>;
+        return statusBoxMenu('red.600', 'red.100', 'Tidak Hadir');
     }
   };
 

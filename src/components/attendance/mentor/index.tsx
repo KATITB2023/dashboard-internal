@@ -1,26 +1,30 @@
 import { Box, Flex, Image, Select, Text } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Layout from '~/layout';
 import { api } from '~/utils/api';
 import { MentorRecap } from './mentor-recap/MentorRecap';
 import { Header } from '~/components/Header';
 
 export default function AttendancePageMentor() {
-  const dayListQuery = api.attendance.mentorGetEventList.useQuery(); // ganti querynya jadi buat mentor
-  const dayList = dayListQuery.data || [];
+  const eventListQuery = api.attendance.mentorGetEventList.useQuery();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const eventList = eventListQuery.data || [];
+  const [eventId, setEventId] = useState<string | undefined>('');
 
-  const groupNumber = 1;
+  const groupQuery = api.group.mentorGetAttendanceData.useQuery({
+    eventId: eventId || ''
+  });
+  const eventChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setEventId(e.target.value);
+  };
 
-  const [dayId, setDayId] = useState<string>();
-  const dayChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setDayId(e.target.value);
+  const refetch = async () => {
+    await groupQuery.refetch();
   };
 
   useEffect(() => {
-    if (dayList.length > 0 && !dayId) {
-      setDayId(dayList[0]?.id);
-    }
-  }, [dayId, dayList]);
+    if (eventList) setEventId(eventList[0]?.event[0]?.id);
+  }, [eventList]);
 
   return (
     <Layout title='Attendance Page' type='mentor' fullBg>
@@ -47,7 +51,7 @@ export default function AttendancePageMentor() {
           h='4.5em'
         >
           <Text color='white' fontSize='2xl' fontWeight='bold' zIndex='2'>
-            {`Kelompok ${groupNumber}`}
+            {`Kelompok ${1}`}
           </Text>
           <Image
             src='/images/komet-absen.png'
@@ -66,19 +70,23 @@ export default function AttendancePageMentor() {
           borderRadius='md'
           bg='black'
           w='10em'
-          onChange={dayChangeHandler}
-          defaultValue={dayId} // P benerin
+          onChange={eventChangeHandler}
         >
-          {dayList.map((day, i) => (
-            <option value={day.id} key={i} style={{ color: 'black' }}>
-              {day.name}
+          {eventList.map((event, i) => (
+            <option value={event.id} key={i} style={{ color: 'black' }}>
+              {event.name}
             </option>
           ))}
         </Select>
       </Flex>
-      {dayId ? (
+      {eventId ? (
         <Box minH='30em'>
-          <MentorRecap dayId={dayId} />
+          <MentorRecap
+            group={groupQuery.data}
+            fetching={groupQuery.isLoading}
+            emit={async () => await refetch()}
+            eventId={eventId}
+          />
         </Box>
       ) : (
         <Box h='30em' />

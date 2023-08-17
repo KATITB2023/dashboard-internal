@@ -13,14 +13,11 @@ import {
   useToast
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { type RouterOutputs } from '~/utils/api';
-
-type getAttendanceRecordOutput =
-  RouterOutputs['attendance']['mentorGetAttendance']['data'][0];
+import type { RecordProps } from './MentorRecap';
 
 interface EditDescModalProps {
-  record: getAttendanceRecordOutput;
-  editDesc: (newDesc: string) => void;
+  record: RecordProps;
+  editDesc: (newDesc: string) => Promise<void>;
   disclosure: ReturnType<typeof useDisclosure>;
 }
 
@@ -31,8 +28,10 @@ export const MentorEditDescModal = ({
 }: EditDescModalProps) => {
   const toast = useToast();
 
-  const [desc, setDesc] = useState<string>(record.reason || '');
-  const saveHandler = () => {
+  const [desc, setDesc] = useState<string>(
+    record.attendance[0] ? (record.attendance[0]?.reason as string) : ''
+  );
+  const saveHandler = async () => {
     if (!desc) {
       toast({
         title: 'Keterangan tidak boleh kosong',
@@ -41,7 +40,8 @@ export const MentorEditDescModal = ({
       });
       return;
     }
-    editDesc(desc);
+
+    await editDesc(desc);
     disclosure.onClose();
   };
 
@@ -66,7 +66,7 @@ export const MentorEditDescModal = ({
               variant='mono-outline'
               color='green'
               border='green'
-              onClick={saveHandler}
+              onClick={() => void saveHandler()}
             >
               Simpan
             </Button>
