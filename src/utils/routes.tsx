@@ -7,7 +7,6 @@ import Feeds from '~/pages/feeds';
 import Absensi from '../pages/absensi';
 import GroupManagement from '~/pages/group-management';
 import Penilaian from '~/pages/penilaian';
-import TambahPoin from '~/pages/tambah-poin';
 
 import { type SidebarRoute } from '~/components/sidebar/Links';
 
@@ -69,12 +68,6 @@ export const mentorRoutes: SidebarRoute[] = [
     path: '/absensi',
     icon: FaFileInvoice,
     component: <Absensi />
-  },
-  {
-    name: 'Tambah Poin',
-    path: '/tambah-poin',
-    icon: BiSolidCalendarStar,
-    component: <TambahPoin />
   }
 ];
 
