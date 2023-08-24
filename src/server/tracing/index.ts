@@ -1,12 +1,12 @@
-import { type Tracer, trace } from "@opentelemetry/api";
+import { type Tracer, trace } from '@opentelemetry/api';
 
 // This is a helper function that instantiates OpenTelemetry Tracer
-const instantiateTracer = () => trace.getTracer("server");
+const instantiateTracer = () => trace.getTracer('server');
 
 const globalForTracer = globalThis as unknown as {
-  tracer: Tracer | undefined;
+  tracer?: Tracer;
 };
 
 export const tracer = globalForTracer.tracer ?? instantiateTracer();
 
-if (process.env.NODE_ENV !== "production") globalForTracer.tracer = tracer;
+if (process.env.NODE_ENV !== 'production') globalForTracer.tracer = tracer;

@@ -8,10 +8,10 @@ import {
 } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { compare } from 'bcrypt';
+import { TRPCError } from '@trpc/server';
 import { prisma } from '~/server/db';
 import { type UserRole } from '@prisma/client';
-import { env } from '~/env.mjs';
-import { TRPCError } from '@trpc/server';
+import { env } from '~/env.cjs';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`

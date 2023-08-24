@@ -1,12 +1,20 @@
-import { createEnv } from '@t3-oss/env-nextjs';
-import { z } from 'zod';
+/* eslint-disable @typescript-eslint/no-var-requires */
 
-export const env = createEnv({
+const { createEnv } = require('@t3-oss/env-nextjs');
+const { z } = require('zod');
+
+exports.env = createEnv({
   /**
    * Specify your server-side environment variables schema here. This way you can ensure the app
    * isn't built with invalid env vars.
    */
   server: {
+    PORT: z.preprocess(
+      // If PORT is not set, set it to 3000
+      (str) => (str ? +str : 3000),
+      // PORT must be a positive integer
+      z.number().int().positive()
+    ),
     DATABASE_URL: z.string().url(),
     NODE_ENV: z.enum(['development', 'test', 'production']),
     NEXTAUTH_SECRET:
@@ -23,24 +31,24 @@ export const env = createEnv({
     SESSION_MAXAGE: z.preprocess(
       // If SESSION_MAXAGE is not set, set it to 30 days
       (str) => (str ? +str : 30 * 24 * 60 * 60),
-      z.number().int().positive().min(1)
+      z.number().int().positive()
     ),
     S_MAXAGE: z.preprocess(
       // If S_MAXAGE is not set, set it to 1 second
       (str) => (str ? +str : 1),
       // S_MAXAGE must be a positive integer
-      z.number().int().positive().min(1)
+      z.number().int().positive()
     ),
     STALE_WHILE_REVALIDATE: z.preprocess(
       // If STALE_WHILE_REVALIDATE is not set, set it to 24 hours
       (str) => (str ? +str : 24 * 60 * 60),
       // STALE_WHILE_REVALIDATE must be a positive integer
-      z.number().int().positive().min(1)
+      z.number().int().positive()
     ),
     SAMPLER_RATIO: z.preprocess(
       // If SAMPLER_RATIO is not set, set it to 1
       (str) => (str ? +str : 1),
-      // SAMPLER_RATIO must be a positive number
+      // SAMPLER_RATIO must be a positive number (float)
       z.number().positive().min(0).max(1)
     ),
     GHOST_CONTENT_API: z.string().min(1),
@@ -54,6 +62,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
+    NEXT_PUBLIC_API_URL: z.string().url(),
     NEXT_PUBLIC_BUCKET_API_KEY: z.string().min(1)
   },
 
@@ -62,6 +71,7 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
+    PORT: process.env.PORT,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
@@ -73,6 +83,7 @@ export const env = createEnv({
     GHOST_CONTENT_API: process.env.GHOST_CONTENT_API,
     GHOST_ADMIN_API: process.env.GHOST_ADMIN_API,
     NEXT_PUBLIC_BUCKET_API_KEY: process.env.NEXT_PUBLIC_BUCKET_API_KEY,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     SESSION_COOKIE_DOMAIN: process.env.SESSION_COOKIE_DOMAIN
   },
   /**

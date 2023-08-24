@@ -1,15 +1,17 @@
-version: "3.9"
+version: '3.9'
 services:
   app:
-    platform: "linux/amd64"
+    platform: 'linux/amd64'
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_CLIENTVAR: "clientvar"
+        DATABASE_URL: ${DATABASE_URL}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_BUCKET_API_KEY: ${NEXT_PUBLIC_BUCKET_API_KEY}
     working_dir: /app
     ports:
-      - "3000:3000"
+      - '3000:3000'
     image: t3-app
     environment:
       - DATABASE_URL=${DATABASE_URL}
@@ -18,7 +20,7 @@ services:
       - S_MAXAGE=${S_MAXAGE}
       - STALE_WHILE_REVALIDATE=${STALE_WHILE_REVALIDATE}
       - SAMPLER_RATIO=${SAMPLER_RATIO}
-      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
-      - BUCKET_NAME=${BUCKET_NAME}
-      - URL_EXPIRATION_TIME=${URL_EXPIRATION_TIME}
-      - BUCKET_CORS_EXPIRATION_TIME=${BUCKET_CORS_EXPIRATION_TIME}
+      - GHOST_CONTENT_API=${GHOST_CONTENT_API}
+      - GHOST_ADMIN_API=${GHOST_ADMIN_API}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_BUCKET_API_KEY=${NEXT_PUBLIC_BUCKET_API_KEY}
