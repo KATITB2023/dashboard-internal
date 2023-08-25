@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { otelSetup } from '~/server/db/setup';
-import { env } from '~/env.mjs';
+import { env } from '~/env.cjs';
 
 // This is a helper function that instantiates Prisma
 const instantiatePrisma = () => {
@@ -20,12 +20,11 @@ const instantiatePrisma = () => {
   // Add middleware to handle optimistic concurrency control
   // Comment this out to disable optimistic concurrency control
   // prisma.$use(versioningChangeUpdate);
-  console.log('Prisma instantiated to database: ' + env.DATABASE_URL);
   return prisma;
 };
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+  prisma?: PrismaClient;
 };
 
 export const prisma = globalForPrisma.prisma ?? instantiatePrisma();

@@ -1,22 +1,22 @@
-import ArticleCMS from '../pages/article-cms';
-import GroupInformation from '~/pages/group-information';
-import RekapAbsensi from '~/pages/rekap-absensi';
-import RekapPenilaian from '~/pages/rekap-penilaian';
-import Feeds from '~/pages/feeds';
-
-import Absensi from '../pages/absensi';
-import GroupManagement from '~/pages/group-management';
-import Penilaian from '~/pages/penilaian';
-import TambahPoin from '~/pages/tambah-poin';
-
-import { type SidebarRoute } from '~/components/sidebar/Links';
-
 import { HiUserGroup } from 'react-icons/hi';
 import { FaFileInvoice } from 'react-icons/fa';
 import { LuClipboardList } from 'react-icons/lu';
 import { RiMailSettingsFill } from 'react-icons/ri';
 import { BiSolidCalendarStar } from 'react-icons/bi';
 import { BsGrid3X3GapFill } from 'react-icons/bs';
+
+import ArticleCMS from '~/pages/article-cms';
+import GroupInformation from '~/pages/group-information';
+import RekapAbsensi from '~/pages/rekap-absensi';
+import RekapPenilaian from '~/pages/rekap-penilaian';
+import Feeds from '~/pages/feeds';
+
+import Absensi from '~/pages/absensi';
+import GroupManagement from '~/pages/group-management';
+import Penilaian from '~/pages/penilaian';
+import TambahPoin from '~/pages/tambah-poin';
+
+import { type SidebarRoute } from '~/components/sidebar/Links';
 
 export const adminRoutes: SidebarRoute[] = [
   {

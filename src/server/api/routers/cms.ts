@@ -9,7 +9,7 @@ import { adminProcedure, createTRPCRouter } from '~/server/api/trpc';
 import GhostContentAPI from '@tryghost/content-api';
 // @ts-ignore
 import GhostAdminAPI from '@tryghost/admin-api';
-import { env } from '~/env.mjs';
+import { env } from '~/env.cjs';
 
 const contentApi = new GhostContentAPI({
   url: 'https://blog.oskmitb.com',
