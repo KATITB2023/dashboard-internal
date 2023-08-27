@@ -211,6 +211,19 @@ const isMentorAdmin = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
   return next();
 });
 
+/** Reusable middleware that enforces users have user role before running the procedure.
+ *
+ * It is safe to use despite the `unstable` prefix.
+ *
+ * @see https://trpc.io/docs/middleware
+ */
+const isUnit = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
+  if (ctx.session.user.role !== UserRole.UNIT) {
+    throw new TRPCError({ code: 'FORBIDDEN' });
+  }
+  return next();
+});
+
 /**
  * Protected (authenticated) procedure
  *
@@ -280,3 +293,13 @@ export const adminAndEOProcedure = t.procedure.use(isAdminEO);
  * @see https://trpc.io/docs/procedures
  */
 export const adminAndMentorProcedure = t.procedure.use(isMentorAdmin);
+
+/**
+ * Protected (unit) procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to user role users, use this. It verifies
+ * the session is valid dan guarantees that the role is user.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const unitProcedure = t.procedure.use(isUnit);
