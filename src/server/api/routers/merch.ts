@@ -1,9 +1,9 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { createTRPCRouter, adminAndEOProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, adminAndUnitProcedure } from '~/server/api/trpc';
 
 export const merchRouter = createTRPCRouter({
-  addNewMerch: adminAndEOProcedure
+  addNewMerch: adminAndUnitProcedure
     .input(
       z.object({
         name: z.string(),
@@ -34,7 +34,7 @@ export const merchRouter = createTRPCRouter({
       }
     }),
 
-  editMerch: adminAndEOProcedure
+  editMerch: adminAndUnitProcedure
     .input(
       z.object({
         merchId: z.string().uuid(),
@@ -45,12 +45,11 @@ export const merchRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      if (input.stock && input.stock <= 0) {
+      if (input.stock && input.stock <= 0)
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: 'Stock cannot be empty'
         });
-      }
 
       try {
         const updatedMerch = await ctx.prisma.merchandise.update({
@@ -77,7 +76,7 @@ export const merchRouter = createTRPCRouter({
       }
     }),
 
-  deleteMerch: adminAndEOProcedure
+  deleteMerch: adminAndUnitProcedure
     .input(z.object({ merchId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       try {
@@ -98,7 +97,7 @@ export const merchRouter = createTRPCRouter({
       }
     }),
 
-  publishMerch: adminAndEOProcedure
+  publishMerch: adminAndUnitProcedure
     .input(z.object({ merchId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       try {
@@ -122,7 +121,7 @@ export const merchRouter = createTRPCRouter({
       }
     }),
 
-  editMerchStock: adminAndEOProcedure
+  editMerchStock: adminAndUnitProcedure
     .input(z.object({ merchId: z.string().uuid(), stock: z.number() }))
     .mutation(async ({ ctx, input }) => {
       if (input.stock && input.stock <= 0) {
@@ -153,7 +152,7 @@ export const merchRouter = createTRPCRouter({
       }
     }),
 
-  getMerchRequest: adminAndEOProcedure
+  getMerchRequest: adminAndUnitProcedure
     .input(z.object({ nim: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.merchandiseRequest.findMany({
@@ -171,7 +170,7 @@ export const merchRouter = createTRPCRouter({
       });
     }),
 
-  approveMerchRequest: adminAndEOProcedure
+  approveMerchRequest: adminAndUnitProcedure
     .input(z.object({ requestId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       try {

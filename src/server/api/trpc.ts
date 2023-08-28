@@ -217,8 +217,11 @@ const isMentorAdmin = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
  *
  * @see https://trpc.io/docs/middleware
  */
-const isUnit = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
-  if (ctx.session.user.role !== UserRole.UNIT) {
+const isUnitAdmin = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
+  if (
+    ctx.session.user.role === UserRole.UNIT ||
+    ctx.session.user.role === UserRole.ADMIN
+  ) {
     throw new TRPCError({ code: 'FORBIDDEN' });
   }
   return next();
@@ -302,4 +305,4 @@ export const adminAndMentorProcedure = t.procedure.use(isMentorAdmin);
  *
  * @see https://trpc.io/docs/procedures
  */
-export const unitProcedure = t.procedure.use(isUnit);
+export const adminAndUnitProcedure = t.procedure.use(isUnitAdmin);

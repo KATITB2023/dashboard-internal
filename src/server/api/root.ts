@@ -8,6 +8,8 @@ import { csvRouter } from '~/server/api/routers/csv';
 import { feedsRouter } from '~/server/api/routers/feeds';
 import { facultyRouter } from '~/server/api/routers/faculty';
 import { merchRouter } from '~/server/api/routers/merch';
+import { unitRouter } from '~/server/api/routers/unit';
+
 /**
  * This is the primary router for your server.
  *
@@ -22,7 +24,8 @@ export const appRouter = createTRPCRouter({
   csv: csvRouter,
   feeds: feedsRouter,
   faculty: facultyRouter,
-  merch: merchRouter
+  merch: merchRouter,
+  unit: unitRouter
 });
 
 // export type definition of API
