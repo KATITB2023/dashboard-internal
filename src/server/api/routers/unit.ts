@@ -1,10 +1,34 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { createTRPCRouter, adminAndUnitProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, unitProcedure } from '~/server/api/trpc';
 import { REWARD_CONFIG } from '~/utils/reward';
 
 export const unitRouter = createTRPCRouter({
-  sentReward: adminAndUnitProcedure
+  getAllVisit: unitProcedure.query(async ({ ctx }) => {
+    const unit = await ctx.prisma.unitProfile.findUnique({
+      where: {
+        userId: ctx.session.user.id
+      },
+      select: {
+        userId: true
+      }
+    });
+
+    if (!unit) return [];
+
+    const visits = await ctx.prisma.unitVisit.findMany({
+      where: {
+        unitId: unit.userId
+      },
+      include: {
+        student: true
+      }
+    });
+
+    return visits;
+  }),
+
+  sentReward: unitProcedure
     .input(
       z.object({
         studentId: z.string().uuid(),
@@ -16,6 +40,9 @@ export const unitRouter = createTRPCRouter({
         const unit = await tx.unitProfile.findUnique({
           where: {
             userId: ctx.session.user.id
+          },
+          select: {
+            userId: true
           }
         });
 

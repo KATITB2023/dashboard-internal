@@ -169,6 +169,19 @@ const isEO = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
  *
  * @see https://trpc.io/docs/middleware
  */
+const isUnit = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
+  if (ctx.session.user.role !== UserRole.UNIT) {
+    throw new TRPCError({ code: 'FORBIDDEN' });
+  }
+  return next();
+});
+
+/** Reusable middleware that enforces users have user role before running the procedure.
+ *
+ * It is safe to use despite the `unstable` prefix.
+ *
+ * @see https://trpc.io/docs/middleware
+ */
 const isMentorEO = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
   if (
     ctx.session.user.role === UserRole.ADMIN ||
@@ -211,22 +224,6 @@ const isMentorAdmin = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
   return next();
 });
 
-/** Reusable middleware that enforces users have user role before running the procedure.
- *
- * It is safe to use despite the `unstable` prefix.
- *
- * @see https://trpc.io/docs/middleware
- */
-const isUnitAdmin = enforceUserIsAuthed.unstable_pipe(({ ctx, next }) => {
-  if (
-    ctx.session.user.role === UserRole.UNIT ||
-    ctx.session.user.role === UserRole.ADMIN
-  ) {
-    throw new TRPCError({ code: 'FORBIDDEN' });
-  }
-  return next();
-});
-
 /**
  * Protected (authenticated) procedure
  *
@@ -248,7 +245,7 @@ export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 export const adminProcedure = t.procedure.use(isAdmin);
 
 /**
- * Protected (user) procedure
+ * Protected (mentor) procedure
  *
  * If you want a query or mutation to ONLY be accessible to user role users, use this. It verifies
  * the session is valid dan guarantees that the role is user.
@@ -258,7 +255,7 @@ export const adminProcedure = t.procedure.use(isAdmin);
 export const mentorProcedure = t.procedure.use(isMentor);
 
 /**
- * Protected (user) procedure
+ * Protected (EO) procedure
  *
  * If you want a query or mutation to ONLY be accessible to user role users, use this. It verifies
  * the session is valid dan guarantees that the role is user.
@@ -266,6 +263,16 @@ export const mentorProcedure = t.procedure.use(isMentor);
  * @see https://trpc.io/docs/procedures
  */
 export const eoProcedure = t.procedure.use(isEO);
+
+/**
+ * Protected (unit) procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to user role users, use this. It verifies
+ * the session is valid dan guarantees that the role is user.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const unitProcedure = t.procedure.use(isUnit);
 
 /**
  * Protected (mentor and eo) procedure
@@ -296,13 +303,3 @@ export const adminAndEOProcedure = t.procedure.use(isAdminEO);
  * @see https://trpc.io/docs/procedures
  */
 export const adminAndMentorProcedure = t.procedure.use(isMentorAdmin);
-
-/**
- * Protected (unit) procedure
- *
- * If you want a query or mutation to ONLY be accessible to user role users, use this. It verifies
- * the session is valid dan guarantees that the role is user.
- *
- * @see https://trpc.io/docs/procedures
- */
-export const adminAndUnitProcedure = t.procedure.use(isUnitAdmin);

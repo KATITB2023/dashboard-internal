@@ -1,9 +1,9 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { createTRPCRouter, adminAndUnitProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, adminAndEOProcedure } from '~/server/api/trpc';
 
 export const merchRouter = createTRPCRouter({
-  addNewMerch: adminAndUnitProcedure
+  addNewMerch: adminAndEOProcedure
     .input(
       z.object({
         name: z.string(),
@@ -34,7 +34,7 @@ export const merchRouter = createTRPCRouter({
       }
     }),
 
-  editMerch: adminAndUnitProcedure
+  editMerch: adminAndEOProcedure
     .input(
       z.object({
         merchId: z.string().uuid(),
@@ -76,7 +76,7 @@ export const merchRouter = createTRPCRouter({
       }
     }),
 
-  deleteMerch: adminAndUnitProcedure
+  deleteMerch: adminAndEOProcedure
     .input(z.object({ merchId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       try {
@@ -97,7 +97,7 @@ export const merchRouter = createTRPCRouter({
       }
     }),
 
-  publishMerch: adminAndUnitProcedure
+  publishMerch: adminAndEOProcedure
     .input(z.object({ merchId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       try {
@@ -121,7 +121,7 @@ export const merchRouter = createTRPCRouter({
       }
     }),
 
-  editMerchStock: adminAndUnitProcedure
+  editMerchStock: adminAndEOProcedure
     .input(z.object({ merchId: z.string().uuid(), stock: z.number() }))
     .mutation(async ({ ctx, input }) => {
       if (input.stock && input.stock <= 0) {
@@ -152,7 +152,7 @@ export const merchRouter = createTRPCRouter({
       }
     }),
 
-  getMerchRequest: adminAndUnitProcedure
+  getMerchRequest: adminAndEOProcedure
     .input(z.object({ nim: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.merchandiseRequest.findMany({
@@ -170,7 +170,7 @@ export const merchRouter = createTRPCRouter({
       });
     }),
 
-  approveMerchRequest: adminAndUnitProcedure
+  approveMerchRequest: adminAndEOProcedure
     .input(z.object({ requestId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       try {
