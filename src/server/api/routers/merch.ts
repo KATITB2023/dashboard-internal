@@ -3,6 +3,10 @@ import { z } from 'zod';
 import { createTRPCRouter, adminAndEOProcedure } from '~/server/api/trpc';
 
 export const merchRouter = createTRPCRouter({
+  getAllMerch: adminAndEOProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.merchandise.findMany();
+  }),
+
   addNewMerch: adminAndEOProcedure
     .input(
       z.object({
