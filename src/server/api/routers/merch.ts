@@ -15,11 +15,11 @@ export const merchRouter = createTRPCRouter({
       const data = await ctx.prisma.merchandise.findMany({
         where: {
           name: {
-            contains: input.filterBy === 'name' ? input.searchQuery : ''
+            contains: input.filterBy === 'Nama' ? input.searchQuery : ''
           },
           isPublished:
-            input.filterBy === 'status'
-              ? input.searchQuery === 'true'
+            input.filterBy === 'Status'
+              ? input.searchQuery === 'Published'
                 ? true
                 : false
               : undefined
