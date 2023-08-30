@@ -16,7 +16,6 @@ import {
 } from '@chakra-ui/react';
 import { type RouterOutputs } from '~/utils/api';
 import { FaTrash } from 'react-icons/fa';
-import { useState } from 'react';
 import EditMerchModal from './editMerchModal';
 import React from 'react';
 import { api } from '~/utils/api';
@@ -25,10 +24,9 @@ interface Props {
   data: RouterOutputs['merch']['getAllMerch'][0];
   index: number;
   loading: boolean;
-  emit: () => void;
 }
 
-export default function MerchCatalogRow({ data, index, loading, emit }: Props) {
+export default function MerchCatalogRow({ data, index, loading }: Props) {
   const deleteAlert = useDisclosure();
   const publishAlert = useDisclosure();
   const cancelRef = React.useRef();
@@ -67,7 +65,7 @@ export default function MerchCatalogRow({ data, index, loading, emit }: Props) {
       <Td w='15%'>{data.stock}</Td>
       <Td w='15%'>{data.price}</Td>
       <Td w='15%'>{data.image ? data.image.substring(74) : ''}</Td>
-      <EditMerchModal props={data} emit={() => emit()} loading={loading} />
+      <EditMerchModal props={data} />
       <Td w='10%'>
         <Button variant='outline' onClick={deleteAlert.onOpen}>
           <FaTrash fontSize='1rem' />

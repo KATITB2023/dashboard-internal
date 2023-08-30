@@ -25,105 +25,77 @@ import {
 } from '@chakra-ui/react';
 import { MdEdit } from 'react-icons/md';
 import { type Merchandise } from '@prisma/client';
-import { useForm } from 'react-hook-form';
-import { SetStateAction, useState } from 'react';
+import { SubmitHandler, useForm, Controller } from 'react-hook-form';
+import { BaseSyntheticEvent, useState } from 'react';
 import { sanitizeURL, uploadFile } from '~/utils/file';
-import { api } from '~/utils/api';
+import { RouterInputs, api } from '~/utils/api';
 import { TRPCClientError } from '@trpc/client';
 
 interface FormValues {
-  nama: string;
-  quantity: number;
-  harga: number;
-  image: string;
+  name: string;
+  price: number;
+  stock: number;
+  image: FileList;
   isPublished: boolean;
 }
 
 interface Props {
   props: Merchandise;
-  emit: () => void;
 }
 
-export default function EditMerchModal({ props, emit }: Props) {
+export default function EditMerchModal({ props }: Props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
 
   const toast = useToast();
   const {
-    formState: { errors }
+    control,
+    handleSubmit,
+    register,
+    formState: { errors },
+    setValue,
+    reset
   } = useForm<FormValues>({
     mode: 'onSubmit',
     defaultValues: {
-      nama: props.name,
-      quantity: props.stock,
-      harga: props.price,
-      image: props.image || undefined,
-      isPublished: props.isPublished
+      name: props.name,
+      price: props.price,
+      stock: props.stock,
+      isPublished: props.isPublished,
+      image: undefined
     }
   });
-  const [namaProduk, setNamaProduk] = useState(props.name);
-  const isError = namaProduk === '';
-  const handleNamaProdukChange = (e: {
-    target: { value: SetStateAction<string> };
-  }) => {
-    setNamaProduk(e.target.value);
-  };
-  const [harga, setHarga] = useState(0);
-  const isHargaError = harga === '';
-  const handleHargaChange = (e: string) => {
-    setHarga(parseInt(e));
-  };
-  const [quantity, setQuantity] = useState(0);
-  const isQuantityError = quantity === '';
-  const handleQuantityChange = (e: string) => {
-    setQuantity(parseInt(e));
-  };
-
-  const [file, setFile] = useState<File | null>(null);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { files } = event.target;
-    if (!files) return;
-
-    const file = files[0];
-    if (!file) return;
-
-    setFile(file);
-  };
 
   const editMerchMutation = api.merch.editMerch.useMutation();
 
-  const editMerch = async (
-    nama: string,
-    quantity: number,
-    harga: number,
-    image: File | null = null,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    event.preventDefault();
+  const editMerch: SubmitHandler<FormValues> = async (data: FormValues) => {
     let additionalFilePath = '';
 
-    if (image != null) {
-      const fileName = image.name;
+    if (data.image) {
+      const fileName = data.image[0]?.name;
       additionalFilePath = sanitizeURL(
         `https://cdn.oskmitb.com/merch-images/${fileName}`
       );
-      await uploadFile(additionalFilePath, image);
+      await uploadFile(additionalFilePath, data.image[0]);
     }
+
+    const payload: RouterInputs['merch']['editMerch'] = {
+      merchId: props.id,
+      name: data.name,
+      price: parseInt(data.price),
+      stock: parseInt(data.stock),
+      isPublished: data.isPublished,
+      image: additionalFilePath
+    };
     try {
-      await editMerchMutation.mutateAsync({
-        merchId: props.id,
-        name: namaProduk,
-        price: harga,
-        stock: quantity,
-        image: additionalFilePath
-      });
+      await editMerchMutation.mutateAsync(payload);
       toast({
         title: 'Merch edited',
         status: 'success',
         duration: 3000,
         isClosable: true
       });
+      closeModal();
     } catch (err) {
       if (!(err instanceof TRPCClientError)) throw err;
 
@@ -138,96 +110,117 @@ export default function EditMerchModal({ props, emit }: Props) {
     }
 
     setLoading(false);
-    setHarga(0);
-    setNamaProduk('');
-    setQuantity(0);
-    location.reload();
+  };
+
+  const closeModal = () => {
+    reset();
+    onClose();
+  };
+
+  const handleNumberInputChange = (fieldName, value) => {
+    setValue(fieldName, value !== '' ? parseInt(value) : '');
+  };
+
+  const handleInputChange = (fieldName, value) => {
+    setValue(fieldName, value !== '' ? value : '');
   };
 
   return (
     <Td w='10%'>
-      <Button
-        variant='outline'
-        onClick={() => {
-          onOpen();
-          setNamaProduk(props.name);
-          setHarga(props.price);
-          setQuantity(props.stock);
-        }}
-      >
+      <Button variant='outline' onClick={onOpen}>
         <MdEdit fontSize='1.5rem' />
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered={true}>
         <ModalOverlay />
         <ModalContent>
-          <form>
+          <form
+            onSubmit={(e: BaseSyntheticEvent) =>
+              void handleSubmit(editMerch)(e)
+            }
+          >
             <ModalHeader>Edit merch</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={6}>
               {props.isPublished ? (
                 <></>
               ) : (
-                <FormControl isRequired isInvalid={isError}>
+                <FormControl isRequired isInvalid={!!errors.name}>
                   <FormLabel>Nama produk</FormLabel>
                   <Input
                     placeholder={'Nama produk'}
-                    value={namaProduk}
-                    onChange={handleNamaProdukChange}
+                    {...register('name', {
+                      required: 'Nama produk tidak boleh kosong'
+                    })}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
                   />
-                  {!isError ? (
-                    <></>
-                  ) : (
-                    <FormErrorMessage>Nama produk is required</FormErrorMessage>
-                  )}
                 </FormControl>
               )}
-              <FormControl mt={4} isRequired isInvalid={isQuantityError}>
+              <FormControl mt={4} isRequired isInvalid={!!errors.stock}>
                 <FormLabel>Quantity</FormLabel>
-                <NumberInput
-                  min={1}
-                  value={quantity}
-                  clampValueOnBlur={false}
-                  onChange={handleQuantityChange}
-                >
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-                {!isQuantityError ? (
-                  <></>
-                ) : (
-                  <FormErrorMessage>Quantity is required</FormErrorMessage>
-                )}
+                <Controller
+                  control={control}
+                  name='stock'
+                  rules={{
+                    required: {
+                      value: true,
+                      message: 'stok harus ada'
+                    }
+                  }}
+                  render={() => (
+                    <NumberInput
+                      min={1}
+                      clampValueOnBlur={false}
+                      {...register('stock', {
+                        required:
+                          'Stock tidak boleh kosong dan harus lebih dari 0'
+                      })}
+                      onChange={(e) => handleNumberInputChange('stock', e)}
+                    >
+                      <NumberInputField />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  )}
+                />
               </FormControl>
               {props.isPublished ? (
                 <></>
               ) : (
                 <>
-                  <FormControl mt={4} isRequired isInvalid={isHargaError}>
+                  <FormControl mt={4} isRequired isInvalid={!!errors.price}>
                     <FormLabel>Harga</FormLabel>
-                    <NumberInput
-                      min={1}
-                      value={harga}
-                      onChange={handleHargaChange}
-                    >
-                      <NumberInputField />
-                      {!isHargaError ? (
-                        <></>
-                      ) : (
-                        <FormErrorMessage>Harga is required</FormErrorMessage>
-                      )}
-                    </NumberInput>
-                  </FormControl>
-                  <FormControl mt={4} flexDirection={'row'}>
-                    <FormLabel>Foto produk (Opsional)</FormLabel>
-                    <input
-                      type='file'
-                      onChange={(e) => {
-                        handleFileChange(e);
+                    <Controller
+                      control={control}
+                      name='price'
+                      rules={{
+                        required: {
+                          value: true,
+                          message: 'Harga harus ada'
+                        }
                       }}
+                      render={() => (
+                        <NumberInput
+                          min={1}
+                          {...register('price', {
+                            required:
+                              'Harga tidak boleh kosong dan harus lebih dari 0'
+                          })}
+                          onChange={(e) => handleNumberInputChange('price', e)}
+                        >
+                          <NumberInputField />
+                        </NumberInput>
+                      )}
                     />
+                  </FormControl>
+                  <FormControl
+                    mt={4}
+                    flexDirection={'row'}
+                    isInvalid={!!errors.image}
+                  >
+                    <FormLabel>Foto produk (Opsional)</FormLabel>
+                    <input type='file' {...register('image')} />
                     {errors.image && (
                       <FormErrorMessage>
                         {errors.image.message}
@@ -246,9 +239,6 @@ export default function EditMerchModal({ props, emit }: Props) {
                 _hover={{ backgroundColor: 'green.800' }}
                 type='submit'
                 isLoading={loading}
-                onClick={(e) =>
-                  void editMerch(namaProduk, quantity, harga, file, e)
-                }
               >
                 Edit
               </Button>

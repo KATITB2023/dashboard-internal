@@ -4,15 +4,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { SetStateAction, useState } from 'react';
-import { api } from '~/utils/api';
+import { BaseSyntheticEvent, useState } from 'react';
+import { RouterInputs, api } from '~/utils/api';
 import {
   Table,
   Thead,
   Tbody,
   Tr,
   Th,
-  Text,
   TableContainer,
   Button,
   Flex,
@@ -42,40 +41,45 @@ import {
 import MerchCatalogRow from './MerchCatalogRow';
 import { TRPCClientError } from '@trpc/client';
 import { sanitizeURL, uploadFile } from '~/utils/file';
+import { type SubmitHandler, useForm, Controller } from 'react-hook-form';
 
-interface Props {
-  emit: () => void;
+interface FormValues {
+  name: string;
+  price: number;
+  stock: number;
+  image: FileList;
+  isPublished: boolean;
 }
 
-export default function MerchCatalog({ emit }: Props) {
+export default function MerchCatalog() {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const toast = useToast();
+
   const [page, setPage] = useState(1);
   const [jumpInput, setJumpInput] = useState(page.toString());
   const [filterBy, setFilterBy] = useState('Nama');
   const [searchQuery, setSearchQuery] = useState<string>();
-  const [namaProduk, setNamaProduk] = useState('');
   const [loading, setLoading] = useState(false);
-  const handleNamaProdukChange = (e: {
-    target: { value: SetStateAction<string> };
-  }) => {
-    setNamaProduk(e.target.value);
-  };
-  const [harga, setHarga] = useState(0);
-  const handleHargaChange = (e: string) => {
-    setHarga(parseInt(e));
-  };
-  const [quantity, setQuantity] = useState(0);
-  const handleQuantityChange = (e: string) => {
-    setQuantity(parseInt(e));
-  };
-  const [file, setFile] = useState<File | null>(null);
-  const isError = namaProduk === '';
-  const isHargaError = harga === '';
-  const isQuantityError = quantity === '';
   const addMerchMutation = api.merch.addNewMerch.useMutation();
 
+  const {
+    control,
+    handleSubmit,
+    register,
+    formState: { errors },
+    setValue,
+    reset
+  } = useForm<FormValues>({
+    mode: 'onSubmit',
+    defaultValues: {
+      name: '',
+      price: 0,
+      stock: 0,
+      isPublished: false,
+      image: undefined
+    }
+  });
   const filters = [
     { title: 'Nama', value: 'Nama' },
     { title: 'Status', value: 'Status' }
@@ -126,62 +130,59 @@ export default function MerchCatalog({ emit }: Props) {
       setPage(temp);
     }
   };
-  const addMerch = async (
-    nama: string,
-    quantity: number,
-    harga: number,
-    image?: File | null = null
-  ) => {
+  const addMerch = async (data: FormValues) => {
     setLoading(true);
-    try {
-      let additionalFilePath = '';
-      if (image) {
-        const fileName = image.name;
-        additionalFilePath = sanitizeURL(
-          `https://cdn.oskmitb.com/merch-images/${fileName}`
-        );
-        file;
-        await uploadFile(additionalFilePath, image);
-      }
-      try {
-        await addMerchMutation.mutateAsync({
-          name: namaProduk,
-          price: harga,
-          stock: quantity,
-          image: additionalFilePath
-        });
-        toast({
-          title: 'Merch added',
-          status: 'success',
-          duration: 3000,
-          isClosable: true
-        });
-      } catch (err) {
-        if (!(err instanceof TRPCClientError)) throw err;
+    let additionalFilePath = '';
+    if (data.image) {
+      const fileName = data.image[0]?.name;
+      additionalFilePath = sanitizeURL(
+        `https://cdn.oskmitb.com/merch-images/${fileName}`
+      );
+      await uploadFile(additionalFilePath, data.image[0]);
+    }
+    const payload: RouterInputs['merch']['addNewMerch'] = {
+      name: data.name,
+      price: parseInt(data.price),
+      stock: parseInt(data.stock),
+      isPublished: data.isPublished,
+      image: additionalFilePath
+    };
 
-        toast({
-          title: 'Error',
-          status: 'error',
-          description: err.message,
-          duration: 2000,
-          isClosable: true,
-          position: 'top'
-        });
-      }
-      setLoading(false);
-      location.reload();
-    } catch (error) {
-      if (!(error instanceof TRPCClientError)) throw error;
+    try {
+      await addMerchMutation.mutateAsync(payload);
+      toast({
+        title: 'Merch added',
+        status: 'success',
+        duration: 3000,
+        isClosable: true
+      });
+      closeModal();
+    } catch (err) {
+      if (!(err instanceof TRPCClientError)) throw err;
 
       toast({
         title: 'Error',
-        description: error.message,
         status: 'error',
-        duration: 3000,
+        description: err.message,
+        duration: 2000,
         isClosable: true,
         position: 'top'
       });
     }
+    setLoading(false);
+  };
+
+  const closeModal = () => {
+    reset();
+    onClose();
+  };
+
+  const handleNumberInputChange = (fieldName, value) => {
+    setValue(fieldName, value !== '' ? parseInt(value) : '');
+  };
+
+  const handleInputChange = (fieldName, value) => {
+    setValue(fieldName, value !== '' ? value : '');
   };
 
   const header = [
@@ -194,16 +195,6 @@ export default function MerchCatalog({ emit }: Props) {
     { w: '10%', title: 'Delete' },
     { w: '10%', title: 'Publish' }
   ];
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { files } = event.target;
-    if (!files) return;
-
-    const file = files[0];
-    if (!file) return;
-
-    setFile(file);
-  };
 
   return (
     <Flex direction={'column'} rowGap={4}>
@@ -257,7 +248,6 @@ export default function MerchCatalog({ emit }: Props) {
                     data={item}
                     index={(page - 1) * 5 + index + 1}
                     loading={loading}
-                    emit={() => emit()}
                     key={item.id}
                   />
                 );
@@ -284,96 +274,113 @@ export default function MerchCatalog({ emit }: Props) {
         >
           {'Add merch'}
         </Button>
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} onClose={onClose} isCentered={true}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Add merch</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={6}>
-              <FormControl isRequired isInvalid={isError}>
-                <FormLabel>Nama produk</FormLabel>
-                <Input
-                  placeholder='Nama produk'
-                  value={namaProduk}
-                  onChange={handleNamaProdukChange}
-                />
-                {!isError ? (
-                  <></>
-                ) : (
-                  <FormErrorMessage>Nama produk is required</FormErrorMessage>
-                )}
-              </FormControl>
+            <form
+              onSubmit={(e: BaseSyntheticEvent) =>
+                void handleSubmit(addMerch)(e)
+              }
+            >
+              <ModalHeader>Add merch</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody pb={6}>
+                <FormControl isRequired isInvalid={!!errors.name}>
+                  <FormLabel>Nama produk</FormLabel>
+                  <Input
+                    placeholder={'Nama produk'}
+                    {...register('name', {
+                      required: 'Nama produk tidak boleh kosong'
+                    })}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                  />
+                </FormControl>
 
-              <FormControl mt={4} isRequired isInvalid={isQuantityError}>
-                <FormLabel>Quantity</FormLabel>
-                <NumberInput
-                  defaultValue={1}
-                  min={1}
-                  clampValueOnBlur={false}
-                  value={quantity}
-                  onChange={handleQuantityChange}
-                >
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-                {!isQuantityError ? (
-                  <></>
-                ) : (
-                  <FormErrorMessage>Quantity is required</FormErrorMessage>
-                )}
-              </FormControl>
-              <FormControl mt={4} isRequired isInvalid={isHargaError}>
-                <FormLabel>Harga</FormLabel>
-                <NumberInput
-                  defaultValue={1000}
-                  min={1}
-                  clampValueOnBlur={false}
-                  value={harga}
-                  onChange={handleHargaChange}
-                >
-                  <NumberInputField />
-                  {!isHargaError ? (
-                    <></>
-                  ) : (
-                    <FormErrorMessage>Harga is required</FormErrorMessage>
+                <FormControl mt={4} isRequired isInvalid={!!errors.stock}>
+                  <FormLabel>Quantity</FormLabel>
+                  <Controller
+                    control={control}
+                    name='stock'
+                    rules={{
+                      required: {
+                        value: true,
+                        message: 'stok harus ada'
+                      }
+                    }}
+                    render={() => (
+                      <NumberInput
+                        min={1}
+                        clampValueOnBlur={false}
+                        {...register('stock', {
+                          required:
+                            'Stock tidak boleh kosong dan harus lebih dari 0'
+                        })}
+                        onChange={(e) => handleNumberInputChange('stock', e)}
+                      >
+                        <NumberInputField />
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                    )}
+                  />
+                </FormControl>
+                <FormControl mt={4} isRequired isInvalid={!!errors.price}>
+                  <FormLabel>Harga</FormLabel>
+                  <Controller
+                    control={control}
+                    name='price'
+                    rules={{
+                      required: {
+                        value: true,
+                        message: 'Harga harus ada'
+                      }
+                    }}
+                    render={() => (
+                      <NumberInput
+                        min={1}
+                        {...register('price', {
+                          required:
+                            'Harga tidak boleh kosong dan harus lebih dari 0'
+                        })}
+                        onChange={(e) => handleNumberInputChange('price', e)}
+                      >
+                        <NumberInputField />
+                      </NumberInput>
+                    )}
+                  />
+                </FormControl>
+                <FormControl mt={4} flexDirection={'row'}>
+                  <FormLabel>Foto produk (Opsional)</FormLabel>
+                  <input type='file' {...register('image')} />
+                  {errors.image && (
+                    <FormErrorMessage>{errors.image.message}</FormErrorMessage>
                   )}
-                </NumberInput>
-              </FormControl>
-              <FormControl mt={4} flexDirection={'row'}>
-                <FormLabel>Foto produk (Opsional)</FormLabel>
-                <input
-                  type='file'
-                  onChange={(e) => {
-                    handleFileChange(e);
-                  }}
-                />
-              </FormControl>
-            </ModalBody>
+                </FormControl>
+              </ModalBody>
 
-            <ModalFooter>
-              <Button
-                mr={3}
-                color={'white'}
-                backgroundColor={'green.500'}
-                _hover={{ backgroundColor: 'green.800' }}
-                type='submit'
-                isLoading={loading}
-                onClick={() => void addMerch(namaProduk, quantity, harga, file)}
-              >
-                Save
-              </Button>
-              <Button
-                onClick={onClose}
-                color={'white'}
-                backgroundColor={'red.500'}
-                _hover={{ backgroundColor: 'red.800' }}
-              >
-                Cancel
-              </Button>
-            </ModalFooter>
+              <ModalFooter>
+                <Button
+                  mr={3}
+                  color={'white'}
+                  backgroundColor={'green.500'}
+                  _hover={{ backgroundColor: 'green.800' }}
+                  type='submit'
+                  isLoading={loading}
+                >
+                  Save
+                </Button>
+                <Button
+                  onClick={onClose}
+                  color={'white'}
+                  backgroundColor={'red.500'}
+                  _hover={{ backgroundColor: 'red.800' }}
+                >
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </form>
           </ModalContent>
         </Modal>
       </Flex>
