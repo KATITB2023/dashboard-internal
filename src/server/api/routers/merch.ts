@@ -3,9 +3,50 @@ import { z } from 'zod';
 import { createTRPCRouter, adminAndEOProcedure } from '~/server/api/trpc';
 
 export const merchRouter = createTRPCRouter({
-  getAllMerch: adminAndEOProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.merchandise.findMany();
-  }),
+  getAllMerch: adminAndEOProcedure
+    .input(
+      z.object({
+        page: z.number(),
+        filterBy: z.string(),
+        searchQuery: z.string().optional()
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.prisma.merchandise.findMany({
+        where: {
+          name: {
+            contains: input.filterBy === 'name' ? input.searchQuery : ''
+          },
+          isPublished:
+            input.filterBy === 'status'
+              ? input.searchQuery === 'true'
+                ? true
+                : false
+              : undefined
+        },
+        take: 5,
+        skip: (input.page - 1) * 5
+      });
+
+      const total = await ctx.prisma.merchandise.count({
+        where: {
+          name: {
+            contains: input.filterBy === 'name' ? input.searchQuery : ''
+          },
+          isPublished:
+            input.filterBy === 'status' ? !!input.searchQuery : undefined
+        }
+      });
+
+      return {
+        data,
+        metadata: {
+          total: total,
+          currentPage: input.page,
+          lastPage: Math.ceil(total / 5)
+        }
+      };
+    }),
 
   addNewMerch: adminAndEOProcedure
     .input(
