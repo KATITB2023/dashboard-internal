@@ -1,11 +1,5 @@
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
-/* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { BaseSyntheticEvent, useState } from 'react';
-import { RouterInputs, api } from '~/utils/api';
+import { type BaseSyntheticEvent, useState } from 'react';
+import { type RouterInputs, api } from '~/utils/api';
 import {
   Table,
   Thead,
@@ -41,7 +35,7 @@ import {
 import MerchCatalogRow from './MerchCatalogRow';
 import { TRPCClientError } from '@trpc/client';
 import { sanitizeURL, uploadFile } from '~/utils/file';
-import { type SubmitHandler, useForm, Controller } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 
 interface FormValues {
   name: string;
@@ -50,6 +44,8 @@ interface FormValues {
   image: FileList;
   isPublished: boolean;
 }
+
+type FieldType = 'name' | 'price' | 'stock' | 'isPublished' | 'image';
 
 export default function MerchCatalog() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -90,7 +86,7 @@ export default function MerchCatalog() {
     filterBy: filterBy,
     searchQuery: searchQuery
   });
-  const requestData = requestQuery.data?.data;
+  const requestData = requestQuery.data ? requestQuery.data.data : [];
   const requestMetadata = requestQuery.data?.metadata;
 
   const prevPage = () => {
@@ -133,8 +129,8 @@ export default function MerchCatalog() {
   const addMerch = async (data: FormValues) => {
     setLoading(true);
     let additionalFilePath = '';
-    if (data.image) {
-      const fileName = data.image[0]?.name;
+    if (data.image && data.image[0]) {
+      const fileName = data.image[0].name;
       additionalFilePath = sanitizeURL(
         `https://cdn.oskmitb.com/merch-images/${fileName}`
       );
@@ -142,9 +138,8 @@ export default function MerchCatalog() {
     }
     const payload: RouterInputs['merch']['addNewMerch'] = {
       name: data.name,
-      price: parseInt(data.price),
-      stock: parseInt(data.stock),
-      isPublished: data.isPublished,
+      price: parseInt(data.price.toString()),
+      stock: parseInt(data.stock.toString()),
       image: additionalFilePath
     };
 
@@ -177,11 +172,11 @@ export default function MerchCatalog() {
     onClose();
   };
 
-  const handleNumberInputChange = (fieldName, value) => {
+  const handleNumberInputChange = (fieldName: FieldType, value: string) => {
     setValue(fieldName, value !== '' ? parseInt(value) : '');
   };
 
-  const handleInputChange = (fieldName, value) => {
+  const handleInputChange = (fieldName: FieldType, value: string) => {
     setValue(fieldName, value !== '' ? value : '');
   };
 
@@ -384,7 +379,7 @@ export default function MerchCatalog() {
           </ModalContent>
         </Modal>
       </Flex>
-      {requestMetadata?.total > 5 && (
+      {requestMetadata && requestMetadata.total > 5 && (
         <Flex placeSelf={'flex-end'}>
           <Button
             variant='mono-outline'
