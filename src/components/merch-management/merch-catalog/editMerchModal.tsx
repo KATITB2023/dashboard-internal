@@ -165,21 +165,27 @@ export default function EditMerchModal({ props }: Props) {
                     }
                   }}
                   render={() => (
-                    <NumberInput
-                      min={1}
-                      clampValueOnBlur={false}
-                      {...register('stock', {
-                        required:
-                          'Stock tidak boleh kosong dan harus lebih dari 0'
-                      })}
-                      onChange={(e) => handleNumberInputChange('stock', e)}
-                    >
-                      <NumberInputField />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
+                    <>
+                      <Input
+                        type='number'
+                        {...register('stock', {
+                          required:
+                            'Stock tidak boleh kosong dan harus lebih dari 0',
+                          min: {
+                            value: 1,
+                            message: 'Angka tidak boleh negatif'
+                          }
+                        })}
+                        onChange={(e) =>
+                          handleNumberInputChange('stock', e.target.value)
+                        }
+                      />
+                      {errors.price && (
+                        <FormErrorMessage>
+                          {errors.price.message}
+                        </FormErrorMessage>
+                      )}
+                    </>
                   )}
                 />
               </FormControl>
@@ -199,16 +205,27 @@ export default function EditMerchModal({ props }: Props) {
                         }
                       }}
                       render={() => (
-                        <NumberInput
-                          min={1}
-                          {...register('price', {
-                            required:
-                              'Harga tidak boleh kosong dan harus lebih dari 0'
-                          })}
-                          onChange={(e) => handleNumberInputChange('price', e)}
-                        >
-                          <NumberInputField />
-                        </NumberInput>
+                        <>
+                          <Input
+                            type='number'
+                            {...register('price', {
+                              required:
+                                'Harga tidak boleh kosong dan harus lebih dari 0',
+                              min: {
+                                value: 1,
+                                message: 'Angka tidak boleh negatif'
+                              }
+                            })}
+                            onChange={(e) =>
+                              handleNumberInputChange('price', e.target.value)
+                            }
+                          />
+                          {errors.price && (
+                            <FormErrorMessage>
+                              {errors.price.message}
+                            </FormErrorMessage>
+                          )}
+                        </>
                       )}
                     />
                   </FormControl>
