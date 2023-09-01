@@ -529,6 +529,54 @@ export const attendanceRouter = createTRPCRouter({
     });
   }),
 
+  addAttendanceRecord: mentorProcedure
+    .input(
+      z.object({
+        eventId: z.string().uuid(),
+        studentId: z.string().uuid(),
+        kehadiran: z.nativeEnum(Status),
+        reason: z.string().optional()
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (input.kehadiran !== Status.HADIR && !input.reason) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Please provide a reason'
+        });
+      }
+
+      try {
+        const currentTime = new Date();
+        const attendanceRecord = await ctx.prisma.attendanceRecord.create({
+          data: {
+            date: currentTime,
+            status: input.kehadiran,
+            reason: input.kehadiran !== Status.HADIR ? input.reason : null,
+            student: {
+              connect: {
+                id: input.studentId
+              }
+            },
+            event: {
+              connect: {
+                id: input.eventId
+              }
+            }
+          }
+        });
+        return {
+          message: 'Add attendance successful',
+          attendanceRecord
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to add the attendance record'
+        });
+      }
+    }),
+
   editAttendanceRecord: adminAndMentorProcedure
     .input(
       z.object({

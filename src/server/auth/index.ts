@@ -8,10 +8,10 @@ import {
 } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { compare } from 'bcrypt';
+import { TRPCError } from '@trpc/server';
 import { prisma } from '~/server/db';
 import { type UserRole } from '@prisma/client';
-import { env } from '~/env.mjs';
-import { TRPCError } from '@trpc/server';
+import { env } from '~/env.cjs';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -66,9 +66,9 @@ export const authOptions: NextAuthOptions = {
           }
         });
 
-        payload.user.name = profile?.name;
-        payload.user.email = profile?.email;
-        payload.user.image = profile?.image;
+        payload.user.name = profile?.name ? profile?.name : '';
+        payload.user.email = profile?.email ? profile?.email : '';
+        payload.user.image = profile?.image ? profile?.image : '';
       }
 
       return payload;
@@ -175,9 +175,9 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           role: user.role,
-          name: profile?.name,
-          email: profile?.email,
-          image: profile?.image
+          name: profile?.name ? profile?.name : '',
+          email: profile?.email ? profile?.email : '',
+          image: profile?.image ? profile?.image : ''
         };
       }
     })

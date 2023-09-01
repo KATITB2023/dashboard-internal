@@ -1,21 +1,24 @@
-import ArticleCMS from '../pages/article-cms';
+import { HiUserGroup } from 'react-icons/hi';
+import { FaFileInvoice, FaPersonBooth } from 'react-icons/fa';
+import { LuClipboardList } from 'react-icons/lu';
+import { RiMailSettingsFill } from 'react-icons/ri';
+import { BiSolidCalendarStar } from 'react-icons/bi';
+import { BsGrid3X3GapFill, BsGiftFill } from 'react-icons/bs';
+
+import ArticleCMS from '~/pages/article-cms';
 import GroupInformation from '~/pages/group-information';
 import RekapAbsensi from '~/pages/rekap-absensi';
 import RekapPenilaian from '~/pages/rekap-penilaian';
 import Feeds from '~/pages/feeds';
+import Merch from '~/pages/merchandise';
 
-import Absensi from '../pages/absensi';
+import Absensi from '~/pages/absensi';
 import GroupManagement from '~/pages/group-management';
 import Penilaian from '~/pages/penilaian';
+import TambahPoin from '~/pages/tambah-poin';
 
 import { type SidebarRoute } from '~/components/sidebar/Links';
-
-import { HiUserGroup } from 'react-icons/hi';
-import { FaFileInvoice } from 'react-icons/fa';
-import { LuClipboardList } from 'react-icons/lu';
-import { RiMailSettingsFill } from 'react-icons/ri';
-import { BiSolidCalendarStar } from 'react-icons/bi';
-import { BsGrid3X3GapFill } from 'react-icons/bs';
+import Pengunjung from '~/pages/pengunjung';
 
 export const adminRoutes: SidebarRoute[] = [
   {
@@ -47,6 +50,12 @@ export const adminRoutes: SidebarRoute[] = [
     path: '/feeds',
     icon: BsGrid3X3GapFill,
     component: <Feeds />
+  },
+  {
+    name: 'Merchandise',
+    path: '/merchandise',
+    icon: BsGiftFill,
+    component: <Merch />
   }
 ];
 
@@ -68,6 +77,12 @@ export const mentorRoutes: SidebarRoute[] = [
     path: '/absensi',
     icon: FaFileInvoice,
     component: <Absensi />
+  },
+  {
+    name: 'Tambah Poin',
+    path: '/tambah-poin',
+    icon: BiSolidCalendarStar,
+    component: <TambahPoin />
   }
 ];
 
@@ -77,5 +92,20 @@ export const eoRoutes: SidebarRoute[] = [
     path: '/penilaian',
     icon: LuClipboardList,
     component: <Penilaian />
+  },
+  {
+    name: 'Merchandise',
+    path: '/merchandise',
+    icon: BsGiftFill,
+    component: <Merch />
+  }
+];
+
+export const unitRoutes: SidebarRoute[] = [
+  {
+    name: 'Pengunjung',
+    path: '/pengunjung',
+    icon: FaPersonBooth,
+    component: <Pengunjung />
   }
 ];
