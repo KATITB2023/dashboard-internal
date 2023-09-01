@@ -51,13 +51,6 @@ export const adminRoutes: SidebarRoute[] = [
     icon: BsGrid3X3GapFill,
     component: <Feeds />
   },
-  // nanti dihapus
-  {
-    name: 'Pengunjung',
-    path: '/pengunjung',
-    icon: FaPersonBooth,
-    component: <Pengunjung />
-  },
   {
     name: 'Merchandise',
     path: '/merchandise',

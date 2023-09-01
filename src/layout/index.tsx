@@ -14,7 +14,7 @@ import Navbar from '~/components/sidebar/Navbar';
 interface Props {
   title: string;
   children?: React.ReactNode;
-  type: 'mentor' | 'admin';
+  type: 'mentor' | 'admin' | 'unit';
   fullBg: boolean;
   isEO?: boolean;
 }

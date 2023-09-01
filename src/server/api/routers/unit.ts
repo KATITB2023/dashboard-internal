@@ -1,17 +1,13 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import {
-  adminProcedure,
-  createTRPCRouter,
-  unitProcedure
-} from '~/server/api/trpc';
+import { createTRPCRouter, unitProcedure } from '~/server/api/trpc';
 import { REWARD_CONFIG } from '~/utils/reward';
 
 export const unitRouter = createTRPCRouter({
-  getUnitProfile: adminProcedure.query(async ({ ctx }) => {
+  getUnitProfile: unitProcedure.query(async ({ ctx }) => {
     const unit = await ctx.prisma.unitProfile.findUnique({
       where: {
-        userId: 'f4c329ac-1119-43a0-8ef0-647ae6dbf22d'
+        userId: ctx.session.user.id
       }
     });
 
@@ -41,41 +37,119 @@ export const unitRouter = createTRPCRouter({
     return total;
   }),
 
-  getAllVisit: unitProcedure.query(async ({ ctx }) => {
-    const unit = await ctx.prisma.unitProfile.findUnique({
-      where: {
-        userId: ctx.session.user.id
-      },
-      select: {
-        userId: true
-      }
-    });
+  getAllVisit: unitProcedure
+    .input(
+      z.object({
+        page: z.number(),
+        limit: z.number(),
+        search: z.string().optional()
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const unit = await ctx.prisma.unitProfile.findUnique({
+        where: {
+          userId: ctx.session.user.id
+        },
+        select: {
+          userId: true
+        }
+      });
 
-    if (!unit) return [];
+      if (!unit)
+        return {
+          data: [],
+          metadata: {
+            total: 0,
+            lastPage: 0
+          }
+        };
 
-    const visits = await ctx.prisma.unitVisit.findMany({
-      where: {
-        unitId: unit.userId
-      },
-      include: {
-        student: true
-      }
-    });
+      const offset = (input.page - 1) * input.limit;
+      const visits = await ctx.prisma.unitVisit.findMany({
+        where: {
+          unitId: unit.userId,
+          OR: [
+            {
+              student: {
+                nim: {
+                  contains: input.search,
+                  mode: 'insensitive'
+                }
+              }
+            },
+            {
+              student: {
+                profile: {
+                  name: {
+                    contains: input.search,
+                    mode: 'insensitive'
+                  }
+                }
+              }
+            }
+          ]
+        },
+        include: {
+          student: {
+            select: {
+              nim: true,
+              profile: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
+        },
+        take: input.limit,
+        skip: offset,
+        orderBy: [
+          {
+            createdAt: 'desc'
+          }
+        ]
+      });
 
-    const total = await ctx.prisma.unitVisit.count({
-      where: {
-        unitId: unit.userId
-      }
-    });
+      const total = await ctx.prisma.unitVisit.count({
+        where: {
+          unitId: unit.userId
+        }
+      });
 
-    return {
-      data: visits,
-      metadata: {
-        total,
-        lastPage: Math.ceil(total / 10)
-      }
-    };
-  }),
+      return {
+        data: visits,
+        metadata: {
+          total,
+          lastPage: Math.ceil(total / input.limit)
+        }
+      };
+    }),
+
+  getStudent: unitProcedure
+    .input(
+      z.object({
+        id: z.string().uuid()
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const student = await ctx.prisma.user.findUnique({
+        where: {
+          id: input.id
+        },
+        select: {
+          nim: true,
+          profile: {
+            select: {
+              name: true
+            }
+          }
+        }
+      });
+
+      if (!student) return null;
+
+      return student;
+    }),
 
   sentReward: unitProcedure
     .input(

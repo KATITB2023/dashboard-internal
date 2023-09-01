@@ -1,6 +1,6 @@
 import { useSession } from 'next-auth/react';
 import { GrantPengunjung } from '~/components/pengunjung/GrantPengunjung';
-import AdminRoute from '~/layout/AdminRoute';
+import UnitRoute from '~/layout/UnitRoute';
 import { withSession } from '~/server/auth/withSession';
 
 export const getServerSideProps = withSession({ force: true });
@@ -9,8 +9,8 @@ export default function PengunjungListPage() {
   const { data: session } = useSession();
 
   return (
-    <AdminRoute session={session}>
+    <UnitRoute session={session}>
       <GrantPengunjung />
-    </AdminRoute>
+    </UnitRoute>
   );
 }
