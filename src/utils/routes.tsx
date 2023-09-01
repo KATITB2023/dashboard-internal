@@ -1,5 +1,5 @@
 import { HiUserGroup } from 'react-icons/hi';
-import { FaFileInvoice } from 'react-icons/fa';
+import { FaFileInvoice, FaPersonBooth, FaShoppingCart } from 'react-icons/fa';
 import { LuClipboardList } from 'react-icons/lu';
 import { RiMailSettingsFill } from 'react-icons/ri';
 import { BiSolidCalendarStar } from 'react-icons/bi';
@@ -18,6 +18,7 @@ import Penilaian from '~/pages/penilaian';
 import TambahPoin from '~/pages/tambah-poin';
 
 import { type SidebarRoute } from '~/components/sidebar/Links';
+import Pengunjung from '~/pages/pengunjung';
 
 export const adminRoutes: SidebarRoute[] = [
   {
@@ -49,6 +50,13 @@ export const adminRoutes: SidebarRoute[] = [
     path: '/feeds',
     icon: BsGrid3X3GapFill,
     component: <Feeds />
+  },
+  // nanti dihapus
+  {
+    name: 'Pengunjung',
+    path: '/pengunjung',
+    icon: FaPersonBooth,
+    component: <Pengunjung />
   },
   {
     name: 'Merchandise',
@@ -91,11 +99,20 @@ export const eoRoutes: SidebarRoute[] = [
     path: '/penilaian',
     icon: LuClipboardList,
     component: <Penilaian />
+  }
+];
+
+export const unitRoutes: SidebarRoute[] = [
+  {
+    name: 'Pengunjung',
+    path: '/pengunjung',
+    icon: FaPersonBooth,
+    component: <Pengunjung />
   },
   {
     name: 'Merchandise',
     path: '/merchandise',
-    icon: BsGiftFill,
-    component: <Merch />
+    icon: FaShoppingCart,
+    component: <></>
   }
 ];

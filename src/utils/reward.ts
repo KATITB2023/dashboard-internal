@@ -1,5 +1,5 @@
 export enum REWARD_CONFIG {
-  EASY = 100,
-  MEDIUM = 200,
-  HARD = 300
+  EASY = 10,
+  MEDIUM = 30,
+  HARD = 50
 }

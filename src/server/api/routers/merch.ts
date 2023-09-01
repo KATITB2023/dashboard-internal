@@ -1,6 +1,7 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { createTRPCRouter, adminAndEOProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, adminAndEOProcedure } from '~/server/api/trpc';
 
 export const merchRouter = createTRPCRouter({
   getAllMerch: adminAndEOProcedure
