@@ -136,7 +136,7 @@ export const GrantPengunjung = () => {
         size='xs'
       >
         <ModalOverlay />
-        <ModalContent bg='gray.600'>
+        <ModalContent bg='gray.600' containerProps={{ px: 6 }}>
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={2} alignItems='center' py={4}>
