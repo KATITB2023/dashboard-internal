@@ -2,9 +2,8 @@ import { schedule } from 'node-cron';
 import { randomBytes } from 'crypto';
 import { prisma } from '~/server/db';
 
-// Update pin per unit every 5 minutes
 export const updatePinPerUnitSchedule = schedule(
-  '*/5 * * * *',
+  '0,5,10,15,20,25,30,35,40,45,50,55 * * * *',
   () => {
     void prisma.$transaction(async (tx) => {
       const units = await tx.unitProfile.findMany({

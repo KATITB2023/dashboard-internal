@@ -3,7 +3,12 @@ import { motion } from 'framer-motion';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Box, useBreakpointValue } from '@chakra-ui/react';
 import Sidebar from '~/components/sidebar/Sidebar';
-import { adminRoutes, mentorRoutes, eoRoutes } from '~/utils/routes';
+import {
+  adminRoutes,
+  mentorRoutes,
+  eoRoutes,
+  unitRoutes
+} from '~/utils/routes';
 import Navbar from '~/components/sidebar/Navbar';
 
 interface Props {
@@ -22,6 +27,11 @@ export default function Layout({
   isEO = false
 }: Props) {
   const isLg = useBreakpointValue({ base: false, lg: true });
+  const route = {
+    admin: adminRoutes,
+    unit: unitRoutes,
+    mentor: isEO ? eoRoutes : mentorRoutes
+  };
 
   return (
     <>
@@ -31,29 +41,9 @@ export default function Layout({
         <link rel='icon' href='/favicon.ico' />
       </Head>
       {isLg ? (
-        <Sidebar
-          routes={
-            type === 'admin'
-              ? adminRoutes
-              : type === 'mentor'
-              ? isEO
-                ? eoRoutes
-                : mentorRoutes
-              : []
-          }
-        />
+        <Sidebar routes={route[type] || []} />
       ) : (
-        <Navbar
-          routes={
-            type === 'admin'
-              ? adminRoutes
-              : type === 'mentor'
-              ? isEO
-                ? eoRoutes
-                : mentorRoutes
-              : []
-          }
-        />
+        <Navbar routes={route[type] || []} />
       )}
 
       <motion.div
