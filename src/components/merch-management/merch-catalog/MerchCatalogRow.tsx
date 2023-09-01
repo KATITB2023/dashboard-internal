@@ -21,7 +21,7 @@ import React from 'react';
 import { api } from '~/utils/api';
 
 interface Props {
-  data: RouterOutputs['merch']['getAllMerch'][0];
+  data: RouterOutputs['merch']['getAllMerch']['data'][0];
   index: number;
   loading: boolean;
 }
