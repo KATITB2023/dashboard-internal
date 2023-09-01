@@ -1,5 +1,5 @@
 import { HiUserGroup } from 'react-icons/hi';
-import { FaFileInvoice, FaPersonBooth, FaShoppingCart } from 'react-icons/fa';
+import { FaFileInvoice, FaPersonBooth } from 'react-icons/fa';
 import { LuClipboardList } from 'react-icons/lu';
 import { RiMailSettingsFill } from 'react-icons/ri';
 import { BiSolidCalendarStar } from 'react-icons/bi';
@@ -99,6 +99,12 @@ export const eoRoutes: SidebarRoute[] = [
     path: '/penilaian',
     icon: LuClipboardList,
     component: <Penilaian />
+  },
+  {
+    name: 'Merchandise',
+    path: '/merchandise',
+    icon: BsGiftFill,
+    component: <Merch />
   }
 ];
 
@@ -108,11 +114,5 @@ export const unitRoutes: SidebarRoute[] = [
     path: '/pengunjung',
     icon: FaPersonBooth,
     component: <Pengunjung />
-  },
-  {
-    name: 'Merchandise',
-    path: '/merchandise',
-    icon: FaShoppingCart,
-    component: <></>
   }
 ];
