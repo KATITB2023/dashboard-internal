@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Tr,
   Td,
@@ -26,10 +23,10 @@ interface Props {
   loading: boolean;
 }
 
-export default function MerchCatalogRow({ data, index, loading }: Props) {
+export default function MerchCatalogRow({ data, index }: Props) {
   const deleteAlert = useDisclosure();
   const publishAlert = useDisclosure();
-  const cancelRef = React.useRef();
+  const cancelRef = React.useRef(null);
   const toast = useToast();
 
   const deleteMerchMutation = api.merch.deleteMerch.useMutation();
@@ -82,7 +79,7 @@ export default function MerchCatalogRow({ data, index, loading }: Props) {
               </AlertDialogHeader>
 
               <AlertDialogBody>
-                Are you sure? You can't undo this action
+                {`Are you sure? You can't undo this action`}
               </AlertDialogBody>
 
               <AlertDialogFooter>
@@ -137,7 +134,7 @@ export default function MerchCatalogRow({ data, index, loading }: Props) {
                   </AlertDialogHeader>
 
                   <AlertDialogBody>
-                    Are you sure? You can't undo this action
+                    {`Are you sure? You can't undo this action`}
                   </AlertDialogBody>
 
                   <AlertDialogFooter>
