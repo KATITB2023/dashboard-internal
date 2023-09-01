@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Td,
   Button,
@@ -25,10 +22,10 @@ import {
 } from '@chakra-ui/react';
 import { MdEdit } from 'react-icons/md';
 import { type Merchandise } from '@prisma/client';
-import { SubmitHandler, useForm, Controller } from 'react-hook-form';
-import { BaseSyntheticEvent, useState } from 'react';
+import { type SubmitHandler, useForm, Controller } from 'react-hook-form';
+import { type BaseSyntheticEvent, useState } from 'react';
 import { sanitizeURL, uploadFile } from '~/utils/file';
-import { RouterInputs, api } from '~/utils/api';
+import { type RouterInputs, api } from '~/utils/api';
 import { TRPCClientError } from '@trpc/client';
 
 interface FormValues {
@@ -42,6 +39,8 @@ interface FormValues {
 interface Props {
   props: Merchandise;
 }
+
+type FieldType = 'name' | 'price' | 'stock' | 'isPublished' | 'image';
 
 export default function EditMerchModal({ props }: Props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -71,7 +70,7 @@ export default function EditMerchModal({ props }: Props) {
   const editMerch: SubmitHandler<FormValues> = async (data: FormValues) => {
     let additionalFilePath = '';
 
-    if (data.image) {
+    if (data.image && data.image[0]) {
       const fileName = data.image[0]?.name;
       additionalFilePath = sanitizeURL(
         `https://cdn.oskmitb.com/merch-images/${fileName}`
@@ -82,9 +81,8 @@ export default function EditMerchModal({ props }: Props) {
     const payload: RouterInputs['merch']['editMerch'] = {
       merchId: props.id,
       name: data.name,
-      price: parseInt(data.price),
-      stock: parseInt(data.stock),
-      isPublished: data.isPublished,
+      price: parseInt(data.price.toString()),
+      stock: parseInt(data.stock.toString()),
       image: additionalFilePath
     };
     try {
@@ -117,11 +115,11 @@ export default function EditMerchModal({ props }: Props) {
     onClose();
   };
 
-  const handleNumberInputChange = (fieldName, value) => {
+  const handleNumberInputChange = (fieldName: FieldType, value: string) => {
     setValue(fieldName, value !== '' ? parseInt(value) : '');
   };
 
-  const handleInputChange = (fieldName, value) => {
+  const handleInputChange = (fieldName: FieldType, value: string) => {
     setValue(fieldName, value !== '' ? value : '');
   };
 
