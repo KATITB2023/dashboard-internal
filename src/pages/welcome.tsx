@@ -6,7 +6,12 @@ import Sidebar from '~/components/sidebar/Sidebar';
 import { UserRole } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import { withSession } from '~/server/auth/withSession';
-import { adminRoutes, mentorRoutes, eoRoutes } from '~/utils/routes';
+import {
+  adminRoutes,
+  mentorRoutes,
+  eoRoutes,
+  unitRoutes
+} from '~/utils/routes';
 import Navbar from '~/components/sidebar/Navbar';
 
 export const getServerSideProps = withSession({ force: true });
@@ -23,6 +28,8 @@ export default function WelcomePage() {
       ? mentorRoutes
       : session?.user.role === UserRole.EO
       ? eoRoutes
+      : session?.user.role === UserRole.UNIT
+      ? unitRoutes
       : [];
 
   return (

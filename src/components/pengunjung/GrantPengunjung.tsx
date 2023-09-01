@@ -1,4 +1,4 @@
-import router from 'next/router';
+import router, { useRouter } from 'next/router';
 import Layout from '~/layout';
 import { Header } from '../Header';
 import {
@@ -11,16 +11,60 @@ import {
   RadioGroup,
   Radio,
   Image,
-  Button
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  useToast
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { REWARD_CONFIG } from '~/utils/reward';
+import { api } from '~/utils/api';
+import { BsCheckCircleFill } from 'react-icons/bs';
+import { TRPCClientError } from '@trpc/client';
 
 export const GrantPengunjung = () => {
-  const userId = router.query.id;
+  const id = router.query.id;
+  const rewardMutation = api.unit.sentReward.useMutation();
+  const studentQuery = api.unit.getStudent.useQuery({
+    id: id as string
+  });
+  const { data: student } = studentQuery;
   const [select, setSelect] = useState<REWARD_CONFIG>(REWARD_CONFIG.EASY);
+  const [loading, setLoading] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const route = useRouter();
+  const toast = useToast();
+
+  const handleGrant = async () => {
+    setLoading(true);
+
+    try {
+      await rewardMutation.mutateAsync({
+        studentId: id as string,
+        reward: select
+      });
+      onOpen();
+    } catch (err: unknown) {
+      if (!(err instanceof TRPCClientError)) throw err;
+
+      toast({
+        description: err.message || 'Something went wrong',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'top'
+      });
+    }
+
+    setLoading(false);
+  };
+
   return (
-    <Layout type='admin' title='Grant Coin' fullBg={false}>
+    <Layout type='unit' title='Grant Coin' fullBg={false}>
       <Header title='Grant Coins' />
       <Flex flexDirection='column' gap={3} mt={10}>
         <Text fontSize='lg'>Mengirim koin ke</Text>
@@ -34,10 +78,10 @@ export const GrantPengunjung = () => {
           borderRadius='lg'
           alignItems='center'
         >
-          <Avatar name='ASD' />
+          <Avatar name={student?.profile?.name} />
           <Box>
-            <Text fontWeight='bold'>Tulip</Text>
-            <Text>NIM</Text>
+            <Text fontWeight='bold'>{student?.profile?.name}</Text>
+            <Text>{student?.nim}</Text>
           </Box>
         </HStack>
         <VStack
@@ -72,10 +116,50 @@ export const GrantPengunjung = () => {
             {select}
           </Text>
         </HStack>
-        <Button w={{ base: '200px', lg: '70%' }} alignSelf='center'>
+        <Button
+          w={{ base: '200px', lg: '70%' }}
+          alignSelf='center'
+          onClick={() => void handleGrant()}
+          isLoading={loading}
+          loadingText='Granting'
+        >
           Grant
         </Button>
       </Flex>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          onClose();
+          void route.push('/pengunjung/list');
+        }}
+        isCentered
+        size='xs'
+      >
+        <ModalOverlay />
+        <ModalContent bg='gray.600'>
+          <ModalCloseButton />
+          <ModalBody>
+            <VStack spacing={2} alignItems='center' py={4}>
+              <BsCheckCircleFill color='#2FC1AD' size={48} />
+              <Text
+                fontFamily='SomarRounded-Bold'
+                color='white'
+                textAlign='center'
+                fontSize='2xl'
+              >
+                {select} COINS!
+              </Text>
+              <Text
+                fontFamily='SomarRounded-Bold'
+                color='rgba(255, 255, 255, 0.6)'
+                textAlign='center'
+              >
+                Koin berhasil dikirim!
+              </Text>
+            </VStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Layout>
   );
 };

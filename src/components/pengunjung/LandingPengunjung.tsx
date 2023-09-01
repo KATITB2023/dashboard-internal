@@ -13,12 +13,35 @@ import {
 import { colors } from '~/styles/component/colors';
 import { FaGreaterThan } from 'react-icons/fa';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 export const LandingPengunjung = () => {
   const unitQuery = api.unit.getUnitProfile.useQuery();
-  const unitData = unitQuery.data;
+  const visitorQuery = api.unit.getAllVisitCount.useQuery();
+  const { data: unitData } = unitQuery;
+  const { data: visitorData } = visitorQuery;
+
+  useEffect(() => {
+    const ONE_MINUTE = 1 * 60 * 1000;
+    const INTERVAL = 5.01;
+
+    const updateString = () => {
+      void unitQuery.refetch();
+      clearInterval(interval);
+      setInterval(() => void unitQuery.refetch(), INTERVAL * ONE_MINUTE);
+    };
+
+    const curTime = new Date();
+    const nextInterval =
+      Math.floor(curTime.getMinutes() / INTERVAL) * INTERVAL + INTERVAL;
+    const diffToNextInterval =
+      (nextInterval - curTime.getMinutes()) * ONE_MINUTE -
+      curTime.getSeconds() * 1000;
+    const interval = setInterval(updateString, diffToNextInterval);
+  }, []);
+
   return (
-    <Layout title='Pengunjung' type='admin' fullBg={false}>
+    <Layout title='Pengunjung' type='unit' fullBg={false}>
       <Header title='ITB SHOWCASE' />
       <Flex
         flexDirection={{ base: 'column', lg: 'row' }}
@@ -95,7 +118,7 @@ export const LandingPengunjung = () => {
                   overflow='hidden'
                   whiteSpace='nowrap'
                 >
-                  9999999999999999999999999999999999999999
+                  {visitorData}
                 </Text>
               </HStack>
               <Link href='/pengunjung/list'>
@@ -119,6 +142,7 @@ export const LandingPengunjung = () => {
           w='100%'
           gap={5}
           px={4}
+          py={3}
         >
           <VStack spacing={1} textAlign='center'>
             <Heading fontSize={{ base: 'lg', lg: '2xl' }} color='yellow.5'>
@@ -143,20 +167,27 @@ export const LandingPengunjung = () => {
               color='gray.400'
               textAlign='center'
             >
-              Code generated at 11.59
+              Code generated at{' '}
+              {new Date(unitData?.updatedAt as Date).toLocaleTimeString(
+                'id-ID',
+                {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                }
+              )}
             </Text>
             <Heading
               fontSize={{ base: '3xl', lg: '6xl' }}
               letterSpacing='wider'
               textAlign='center'
             >
-              123456
+              {unitData?.pin}
             </Heading>
             <Image
               position='absolute'
               draggable='false'
-              w='250px'
-              bottom='-200'
+              w='200px'
+              bottom='-125'
               alt=''
               src='/images/space-object/bulan-glow.png'
               display={{ base: 'none', lg: 'block' }}
