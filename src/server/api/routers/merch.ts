@@ -3,6 +3,51 @@ import { z } from 'zod';
 import { createTRPCRouter, adminAndEOProcedure } from '~/server/api/trpc';
 
 export const merchRouter = createTRPCRouter({
+  getAllMerch: adminAndEOProcedure
+    .input(
+      z.object({
+        page: z.number(),
+        filterBy: z.string(),
+        searchQuery: z.string().optional()
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.prisma.merchandise.findMany({
+        where: {
+          name: {
+            contains: input.filterBy === 'Nama' ? input.searchQuery : ''
+          },
+          isPublished:
+            input.filterBy === 'Status'
+              ? input.searchQuery === 'Published'
+                ? true
+                : false
+              : undefined
+        },
+        take: 5,
+        skip: (input.page - 1) * 5
+      });
+
+      const total = await ctx.prisma.merchandise.count({
+        where: {
+          name: {
+            contains: input.filterBy === 'name' ? input.searchQuery : ''
+          },
+          isPublished:
+            input.filterBy === 'status' ? !!input.searchQuery : undefined
+        }
+      });
+
+      return {
+        data,
+        metadata: {
+          total: total,
+          currentPage: input.page,
+          lastPage: Math.ceil(total / 5)
+        }
+      };
+    }),
+
   addNewMerch: adminAndEOProcedure
     .input(
       z.object({
@@ -153,22 +198,71 @@ export const merchRouter = createTRPCRouter({
     }),
 
   getMerchRequest: adminAndEOProcedure
-    .input(z.object({ nim: z.string().optional() }))
+    .input(
+      z.object({
+        page: z.number(),
+        filterBy: z.string(),
+        searchQuery: z.string().optional()
+      })
+    )
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.merchandiseRequest.findMany({
+      const data = await ctx.prisma.merchandiseRequest.findMany({
         where: {
+          merch: {
+            name: {
+              contains: input.filterBy === 'Merch' ? input.searchQuery : ''
+            }
+          },
           student: {
             nim: {
-              contains: input.nim
+              contains: input.filterBy === 'NIM' ? input.searchQuery : ''
             }
           }
         },
         include: {
-          student: true,
+          student: {
+            include: {
+              profile: true
+            }
+          },
           merch: true
+        },
+        take: 5,
+        skip: (input.page - 1) * 5
+      });
+
+      const total = await ctx.prisma.merchandiseRequest.count({
+        where: {
+          merch: {
+            name: {
+              contains: input.filterBy === 'Merch' ? input.searchQuery : ''
+            }
+          },
+          student: {
+            nim: {
+              contains: input.filterBy === 'NIM' ? input.searchQuery : ''
+            }
+          }
         }
       });
+
+      return {
+        data,
+        metadata: {
+          total: total,
+          currentPage: input.page,
+          lastPage: Math.ceil(total / 5)
+        }
+      };
     }),
+
+  getMerchNameList: adminAndEOProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.merchandise.findMany({
+      select: {
+        name: true
+      }
+    });
+  }),
 
   approveMerchRequest: adminAndEOProcedure
     .input(z.object({ requestId: z.string().uuid() }))
