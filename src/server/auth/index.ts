@@ -66,9 +66,9 @@ export const authOptions: NextAuthOptions = {
           }
         });
 
-        payload.user.name = profile?.name;
-        payload.user.email = profile?.email;
-        payload.user.image = profile?.image;
+        payload.user.name = profile?.name ? profile?.name : '';
+        payload.user.email = profile?.email ? profile?.email : '';
+        payload.user.image = profile?.image ? profile?.image : '';
       }
 
       return payload;
@@ -175,9 +175,9 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           role: user.role,
-          name: profile?.name,
-          email: profile?.email,
-          image: profile?.image
+          name: profile?.name ? profile?.name : '',
+          email: profile?.email ? profile?.email : '',
+          image: profile?.image ? profile?.image : ''
         };
       }
     })
