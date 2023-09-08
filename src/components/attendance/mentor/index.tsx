@@ -4,16 +4,24 @@ import Layout from '~/layout';
 import { api } from '~/utils/api';
 import { MentorRecap } from './mentor-recap/MentorRecap';
 import { Header } from '~/components/Header';
+import { AttendanceDay, AttendanceEvent } from '@prisma/client';
 
 export default function AttendancePageMentor() {
   const eventListQuery = api.attendance.mentorGetEventList.useQuery();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const eventList = eventListQuery.data || [];
   const [eventId, setEventId] = useState<string | undefined>('');
+  const [day, setDay] = useState<(AttendanceDay & {event: AttendanceEvent[]})| undefined>(eventList[0]);
+  const [dayId, setDayId] = useState<string | undefined>('');
 
   const groupQuery = api.group.mentorGetAttendanceData.useQuery({
     eventId: eventId || ''
   });
+  const dayChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setDayId(e.target.value);
+    setDay(eventList.find((event) => event.id === e.target.value));
+  };
+
   const eventChangeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setEventId(e.target.value);
   };
@@ -24,6 +32,7 @@ export default function AttendancePageMentor() {
 
   useEffect(() => {
     if (eventList) setEventId(eventList[0]?.event[0]?.id);
+    console.log(eventList)
   }, [eventList]);
 
   return (
@@ -70,11 +79,24 @@ export default function AttendancePageMentor() {
           borderRadius='md'
           bg='black'
           w='10em'
-          onChange={eventChangeHandler}
+          onChange={dayChangeHandler}
         >
           {eventList.map((event, i) => (
             <option value={event.id} key={i} style={{ color: 'black' }}>
               {event.name}
+            </option>
+          ))}
+        </Select>
+        <Select
+          color='white'
+          borderRadius='md'
+          bg='black'
+          w='10em'
+          onChange={eventChangeHandler}
+        >
+          {day && day.event.map((event, i) => (
+            <option value={event.id} key={i} style={{ color: 'black' }}>
+              {event.title}
             </option>
           ))}
         </Select>
